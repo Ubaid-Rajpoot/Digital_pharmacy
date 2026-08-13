@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanara Pharmacy — Because Every Dose Matters</title>
+<meta name="description" content="Order genuine medicines online with confidence. Licensed pharmacists, verified batches, cold-chain delivery and care for your whole family.">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400..800&family=Spline+Sans+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#0A2440; --navy:#0E3158; --royal:#1D5BE0; --royal-deep:#123FA8; --royal-soft:#E8F0FE;
+  --mint:#38C793; --mint-soft:#E2F7EF; --cyan:#DFF2F8; --cyan-strong:#9ADCEF;
+  --success:#1FA971; --error:#E4574F;
+  --paper:#FFFFFF; --bg:#F5F8FC; --line:#E3EAF3; --muted:#5B7086;
+  --r-sm:14px; --r:20px; --r-lg:28px;
+  --sh-sm:0 1px 2px rgba(13,36,64,.05),0 4px 14px rgba(13,36,64,.06);
+  --sh-lg:0 2px 4px rgba(13,36,64,.05),0 20px 44px -14px rgba(13,36,64,.22);
+  --disp:"Fraunces",Georgia,serif;
+  --body:"Manrope",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.22,.75,.25,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+::selection{background:var(--royal);color:#fff}
+:focus-visible{outline:3px solid rgba(29,91,224,.4);outline-offset:2px;border-radius:6px}
+section{scroll-margin-top:110px}
+.container{width:min(1200px,92vw);margin-inline:auto}
+.skip{position:fixed;top:-60px;left:16px;z-index:999;background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;transition:top .3s}
+.skip:focus{top:12px}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.icon.fill{fill:currentColor;stroke:none}
+.mono{font-family:var(--mono)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ============ UTILITIES ============ */
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--royal);display:inline-flex;align-items:center;gap:10px;font-weight:500}
+.eyebrow::before{content:"";width:26px;height:1.5px;background:var(--royal);opacity:.6}
+.h2{font-family:var(--disp);font-weight:560;font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.12;letter-spacing:-.01em}
+.h2 em{font-style:italic;color:var(--royal);font-weight:480}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(28px,4vw,48px);flex-wrap:wrap}
+.sec-head p{color:var(--muted);max-width:52ch;margin-top:10px;font-size:.98rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:.93rem;padding:14px 26px;border-radius:999px;transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s,color .25s;position:relative;overflow:hidden;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn .icon{width:17px;height:17px;transition:transform .3s var(--ease)}
+.btn:hover .icon.arr{transform:translateX(4px)}
+.btn-primary{background:var(--royal);color:#fff;box-shadow:0 8px 20px -6px rgba(29,91,224,.5)}
+.btn-primary:hover{background:var(--royal-deep);transform:translateY(-2px);box-shadow:0 14px 28px -8px rgba(29,91,224,.55)}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:var(--sh-sm)}
+.btn-ghost:hover{border-color:var(--royal);color:var(--royal);transform:translateY(-2px);box-shadow:var(--sh-lg)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{background:var(--navy);transform:translateY(-2px)}
+.btn-sm{padding:10px 18px;font-size:.85rem}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+.ripple.dark{background:rgba(29,91,224,.18)}
+@keyframes rip{to{transform:scale(3.4);opacity:0}}
+.js [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.js [data-reveal="left"]{transform:translateX(-34px)}
+.js [data-reveal="right"]{transform:translateX(34px)}
+.js [data-reveal].in{opacity:1;transform:none}
+.grain{position:relative}
+.grain::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.kenburns{overflow:hidden}
+.kenburns img{width:100%;height:100%;object-fit:cover;animation:kb 18s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.09) translate(-1.5%,1.5%)}}
+
+/* ============ PROGRESS + TOPBAR ============ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--royal),var(--mint));z-index:500;border-radius:0 3px 3px 0}
+.topbar{background:var(--ink);color:#CBDCF2;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.07)}
+.tick-track{display:flex;width:max-content;animation:tick 36s linear infinite;padding:8px 0}
+.topbar:hover .tick-track{animation-play-state:paused}
+.tick-track span{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;padding:0 34px;white-space:nowrap}
+.tick-track i{width:5px;height:5px;border-radius:50%;background:var(--mint);display:inline-block}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* ============ HEADER ============ */
+.site-head{position:sticky;top:0;z-index:160;background:rgba(255,255,255,.02);transition:background .35s,box-shadow .35s}
+.site-head.scrolled{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 var(--line),0 10px 30px -18px rgba(13,36,64,.25)}
+.head-row1{display:flex;align-items:center;gap:22px;padding:16px 0}
+.logo{display:flex;align-items:center;gap:11px;flex:none}
+.logo-mark{width:42px;height:42px}
+.logo-word{font-family:var(--disp);font-size:1.42rem;font-weight:600;letter-spacing:-.01em;line-height:1}
+.logo-word small{display:block;font-family:var(--mono);font-size:.55rem;letter-spacing:.42em;color:var(--royal);margin-top:3px;font-weight:500}
+.nav-search{flex:1;max-width:430px;margin-inline:auto;display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:11px 20px;color:var(--muted);font-size:.9rem;transition:border-color .3s,box-shadow .3s;cursor:pointer;width:100%}
+.nav-search:hover{border-color:var(--royal);box-shadow:0 0 0 4px rgba(29,91,224,.08)}
+.head-actions{display:flex;align-items:center;gap:8px;flex:none}
+.icon-btn{position:relative;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--ink);transition:background .25s,color .25s,transform .25s}
+.icon-btn:hover{background:var(--royal-soft);color:var(--royal);transform:translateY(-2px)}
+.badge-n{position:absolute;top:3px;right:2px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--royal);color:#fff;font-size:.62rem;font-weight:800;display:grid;place-items:center;font-family:var(--mono)}
+.badge-n.hot{background:var(--error)}
+.badge-n.bump{animation:bump .45s var(--ease)}
+@keyframes bump{30%{transform:scale(1.45)}}
+.auth-group{display:flex;align-items:center;gap:10px;margin-left:6px}
+.auth-group .btn-sm{border-radius:12px}
+.emg{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;border:1.5px solid rgba(228,87,79,.35);background:#fff;color:var(--ink);font-weight:700;font-size:.82rem;transition:.3s;margin-left:4px}
+.emg:hover{border-color:var(--error);color:var(--error);transform:translateY(-2px)}
+.emg i{width:8px;height:8px;border-radius:50%;background:var(--error);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(228,87,79,.18)}}
+.head-row2-wrap{overflow:hidden;max-height:52px;transition:max-height .4s var(--ease),opacity .35s;opacity:1}
+.site-head.scrolled .head-row2-wrap{max-height:0;opacity:0}
+.head-row2{display:flex;align-items:center;gap:4px;padding-bottom:12px;border-top:1px solid var(--line);padding-top:10px}
+.head-row2 a{font-size:.86rem;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:9px;position:relative;transition:color .25s,background .25s}
+.head-row2 a:hover{color:var(--royal);background:var(--royal-soft)}
+.head-row2 a .sale{font-family:var(--mono);font-size:.58rem;background:var(--mint);color:#fff;border-radius:5px;padding:2px 6px;margin-left:5px;letter-spacing:.08em;vertical-align:2px}
+.burger{display:none;width:42px;height:42px;border-radius:12px;place-items:center;border:1.5px solid var(--line)}
+.mobile-menu{position:fixed;inset:0;z-index:170;background:rgba(10,36,64,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mm-panel{position:absolute;top:0;right:0;height:100%;width:min(380px,88vw);background:#fff;padding:28px;transform:translateX(105%);transition:transform .45s var(--ease);display:flex;flex-direction:column;gap:6px;overflow:auto}
+.mobile-menu.open .mm-panel{transform:none}
+.mm-panel a{padding:13px 6px;border-bottom:1px solid var(--line);font-weight:700;font-size:1.02rem;display:flex;justify-content:space-between;align-items:center}
+.mm-close{align-self:flex-end;margin-bottom:10px}
+
+/* ============ HERO ============ */
+.hero{position:relative;padding:clamp(48px,7vw,88px) 0 0;background:linear-gradient(180deg,#F1F7FD 0%,#FFFFFF 78%);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(29,91,224,.07) 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(180deg,#000 0%,transparent 85%);pointer-events:none}
+.hero::after{content:"";position:absolute;top:-160px;right:-140px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(56,199,147,.16),transparent 65%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,70px);align-items:center;position:relative;z-index:2}
+.hero-copy .eyebrow{margin-bottom:22px}
+.hero-title{font-family:var(--disp);font-weight:560;font-size:clamp(2.7rem,6.2vw,4.7rem);line-height:1.04;letter-spacing:-.02em}
+.hline{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.hline>span{display:inline-block;transform:translateY(118%);animation:rise 1s var(--ease) forwards}
+.hline:nth-child(2)>span{animation-delay:.14s}
+.hline:nth-child(3)>span{animation-delay:.28s}
+@keyframes rise{to{transform:none}}
+.hero-title em{font-style:italic;color:var(--royal);font-weight:460}
+.hero-sub{color:var(--muted);font-size:clamp(1rem,1.4vw,1.1rem);max-width:52ch;margin:24px 0 32px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.trust-row{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:34px}
+.trust-row li{list-style:none;display:flex;align-items:center;gap:8px;font-size:.83rem;font-weight:600;color:var(--navy)}
+.trust-row .icon{width:16px;height:16px;color:var(--success);stroke-width:2.4}
+.hero-visual{position:relative;min-height:520px}
+.hv-main{position:absolute;right:0;top:0;width:min(400px,82%);aspect-ratio:4/5;border-radius:var(--r-lg);box-shadow:var(--sh-lg);border:6px solid #fff}
+.hv-badge{position:absolute;top:30px;left:0;background:#fff;border-radius:var(--r);box-shadow:var(--sh-lg);padding:14px 18px;display:flex;gap:12px;align-items:center;animation:floaty 7s ease-in-out infinite}
+.hv-badge .dot{width:38px;height:38px;border-radius:12px;background:var(--mint-soft);display:grid;place-items:center;color:var(--success)}
+.hv-badge b{display:block;font-size:.85rem}
+.hv-badge span{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.06em}
+.hv-order{position:absolute;bottom:64px;left:-10px;width:min(320px,86%);background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.9);border-radius:var(--r);box-shadow:var(--sh-lg);padding:18px 20px;animation:floaty 8s 1s ease-in-out infinite}
+.hv-order .top{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700}
+.hv-order .top span{font-family:var(--mono);color:var(--royal);font-size:.68rem;letter-spacing:.08em}
+.hv-track{position:relative;height:4px;background:var(--line);border-radius:99px;margin:20px 0 10px}
+.hv-track i{position:absolute;left:0;top:0;bottom:0;width:72%;background:linear-gradient(90deg,var(--royal),var(--mint));border-radius:99px}
+.hv-track b{position:absolute;top:50%;left:72%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid var(--royal);animation:ship 3.4s ease-in-out infinite alternate}
+@keyframes ship{to{left:76%}}
+.hv-order .st{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
+.hv-order .st b{color:var(--success);font-weight:600}
+.hv-doc{position:absolute;bottom:-8px;right:6%;display:flex;align-items:center;gap:12px;background:#fff;border-radius:999px;box-shadow:var(--sh-lg);padding:10px 20px 10px 10px;animation:floaty 6.4s .5s ease-in-out infinite}
+.hv-doc img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+.hv-doc b{font-size:.83rem;display:block}
+.hv-doc span{font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.hv-doc span i{width:7px;height:7px;border-radius:50%;background:var(--success)}
+.f-ic{position:absolute;color:var(--royal);opacity:.32;animation:floaty 9s ease-in-out infinite}
+.f-ic.m{color:var(--mint)}
+.f-ic .icon{width:100%;height:100%}
+@keyframes floaty{50%{transform:translateY(-13px)}}
+.stats-band{border-top:1px solid var(--line);margin-top:clamp(44px,6vw,72px);position:relative;z-index:2;background:rgba(255,255,255,.6)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{padding:26px 18px;text-align:center;border-left:1px solid var(--line)}
+.stat:first-child{border-left:none}
+.stat b{font-family:var(--disp);font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:600;display:block;color:var(--royal)}
+.stat span{font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* ============ CERT MARQUEE ============ */
+.certs{background:var(--bg);border-block:1px solid var(--line);overflow:hidden}
+.cert-track{display:flex;width:max-content;animation:tick 30s linear infinite;padding:15px 0}
+.cert-track span{display:inline-flex;align-items:center;gap:9px;padding:0 38px;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:500;white-space:nowrap}
+.cert-track .icon{width:15px;height:15px;color:var(--royal)}
+
+/* ============ CATEGORIES ============ */
+.cats{padding:clamp(64px,9vw,110px) 0}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.cat-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px 22px;display:flex;flex-direction:column;gap:14px;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s;overflow:hidden;cursor:pointer}
+.cat-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(29,91,224,.06),rgba(56,199,147,.08));opacity:0;transition:opacity .35s}
+.cat-card:hover{transform:translateY(-6px);box-shadow:var(--sh-lg);border-color:rgba(29,91,224,.3)}
+.cat-card:hover::before{opacity:1}
+.cat-ic{width:52px;height:52px;border-radius:16px;background:var(--royal-soft);color:var(--royal);display:grid;place-items:center;transition:.35s var(--ease)}
+.cat-ic .icon{width:25px;height:25px}
+.cat-card:hover .cat-ic{background:var(--royal);color:#fff;transform:rotate(-6deg) scale(1.06)}
+.cat-card h3{font-size:1rem;font-weight:800}
+.cat-card small{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.08em}
+.cat-arrow{position:absolute;right:18px;bottom:18px;color:var(--royal);opacity:0;transform:translateX(-8px);transition:.35s var(--ease)}
+.cat-card:hover .cat-arrow{opacity:1;transform:none}
+.cat-feat{grid-column:span 2;background:linear-gradient(135deg,var(--ink) 0%,var(--navy) 60%,#14457C 100%);border:none;color:#fff;justify-content:space-between;min-height:210px}
+.cat-feat::before{background:radial-gradient(circle at 85% 15%,rgba(56,199,147,.28),transparent 55%)}
+.cat-feat .cat-ic{background:rgba(255,255,255,.12);color:var(--mint)}
+.cat-feat:hover .cat-ic{background:var(--mint);color:var(--ink)}
+.cat-feat p{color:#B9CDE6;font-size:.88rem;max-width:34ch}
+.cat-feat .btn{align-self:flex-start;background:#fff;color:var(--ink)}
+.cat-feat .btn:hover{background:var(--mint);color:var(--ink)}
+
+/* ============ SEARCH ============ */
+.search-sec{padding:clamp(60px,8vw,100px) 0;background:linear-gradient(180deg,#fff,var(--bg))}
+.search-shell{max-width:780px;margin-inline:auto;text-align:center;position:relative}
+.search-shell .h2{margin:16px 0 34px}
+.s-tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px;gap:2px;box-shadow:var(--sh-sm);margin-bottom:18px;flex-wrap:wrap;justify-content:center}
+.s-tab{padding:9px 20px;border-radius:999px;font-size:.83rem;font-weight:700;color:var(--muted);transition:.25s}
+.s-tab:hover{color:var(--royal)}
+.s-tab.on{background:var(--royal);color:#fff;box-shadow:0 6px 14px -4px rgba(29,91,224,.5)}
+.s-box{position:relative;text-align:left}
+.s-input-wrap{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:18px;padding:8px 8px 8px 24px;box-shadow:var(--sh-lg);transition:border-color .3s,box-shadow .3s}
+.s-input-wrap:focus-within{border-color:var(--royal);box-shadow:0 0 0 5px rgba(29,91,224,.12),var(--sh-lg)}
+.s-input-wrap .icon{width:22px;height:22px;color:var(--royal)}
+#sInput{flex:1;border:none;outline:none;font-size:1.05rem;font-weight:600;padding:12px 0;background:none;min-width:0}
+#sInput::placeholder{color:#9DAEC2;font-weight:500}
+.s-go{flex:none}
+.s-drop{position:absolute;top:calc(100% + 10px);left:0;right:0;background:#fff;border-radius:var(--r);box-shadow:var(--sh-lg);border:1px solid var(--line);overflow:hidden;z-index:40;display:none}
+.s-drop.show{display:block;animation:dropIn .3s var(--ease)}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px)}}
+.s-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s}
+.s-row:last-of-type{border-bottom:none}
+.s-row:hover,.s-row.act{background:var(--royal-soft)}
+.s-row .pill-ic{width:40px;height:40px;border-radius:12px;background:var(--cyan);color:var(--royal);display:grid;place-items:center;flex:none}
+.s-row .info{flex:1;min-width:0}
+.s-row .info b{font-size:.92rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s-row .info b mark{background:rgba(56,199,147,.3);border-radius:3px;padding:0 1px}
+.s-row .info span{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.s-row .rx-chip{font-family:var(--mono);font-size:.6rem;background:var(--royal-soft);color:var(--royal);padding:3px 8px;border-radius:6px;letter-spacing:.08em;flex:none}
+.s-row .price{font-weight:800;font-size:.9rem;flex:none}
+.s-row .add-mini{flex:none;width:34px;height:34px;border-radius:10px;background:var(--royal);color:#fff;display:grid;place-items:center;transition:.25s}
+.s-row .add-mini:hover{transform:scale(1.1)}
+.s-empty{padding:22px;text-align:center;color:var(--muted);font-size:.9rem}
+.s-trend{margin-top:22px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap;align-items:center}
+.s-trend span{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.chip{padding:7px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:.8rem;font-weight:600;color:var(--navy);transition:.25s}
+.chip:hover{border-color:var(--royal);color:var(--royal);transform:translateY(-2px);box-shadow:var(--sh-sm)}
+
+/* ============ PRODUCTS ============ */
+.prods{padding:clamp(64px,9vw,110px) 0}
+.flash{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:linear-gradient(100deg,var(--royal-deep),var(--royal) 55%,#3B7BF0);border-radius:var(--r);padding:20px 28px;color:#fff;margin-bottom:34px;box-shadow:0 16px 36px -14px rgba(29,91,224,.55);position:relative;overflow:hidden}
+.flash::after{content:"";position:absolute;top:-40px;right:-30px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%)}
+.flash .bolt{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none}
+.flash b{font-family:var(--disp);font-size:1.2rem;font-weight:600;display:block}
+.flash p{font-size:.84rem;opacity:.85}
+.flash-timer{display:flex;gap:8px;margin-left:auto;position:relative;z-index:1}
+.ft-cell{background:rgba(10,36,64,.35);border-radius:12px;padding:8px 12px;text-align:center;min-width:56px}
+.ft-cell b{font-family:var(--mono);font-size:1.15rem;display:block}
+.ft-cell span{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;opacity:.75}
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.prod{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s}
+.prod:hover{transform:translateY(-7px);box-shadow:var(--sh-lg);border-color:rgba(29,91,224,.25)}
+.prod-media{position:relative;aspect-ratio:4/3;background:var(--cyan);overflow:hidden}
+.prod-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.prod:hover .prod-media img{transform:scale(1.07)}
+.tag{position:absolute;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;padding:5px 10px;border-radius:8px;font-weight:600}
+.tag.deal{top:12px;left:12px;background:var(--error);color:#fff}
+.tag.rx{top:12px;right:12px;background:rgba(10,36,64,.85);color:#fff;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.tag.best{top:12px;left:12px;background:var(--mint);color:#fff}
+.prod-acts{position:absolute;bottom:12px;left:12px;display:flex;gap:8px;opacity:0;transform:translateY(10px);transition:.35s var(--ease)}
+.prod:hover .prod-acts,.prod:focus-within .prod-acts{opacity:1;transform:none}
+.pa-btn{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;color:var(--ink);box-shadow:var(--sh-sm);transition:.25s}
+.pa-btn:hover{background:var(--royal);color:#fff;transform:translateY(-3px)}
+.pa-btn .icon{width:17px;height:17px}
+.pa-btn.wish.on{background:var(--error);color:#fff}
+.prod-body{padding:18px;display:flex;flex-direction:column;gap:7px;flex:1}
+.p-brand{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.p-name{font-size:1.02rem;font-weight:800;line-height:1.3}
+.p-desc{font-size:.82rem;color:var(--muted);line-height:1.5}
+.p-rate{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700}
+.p-rate .stars{color:#F5A623;letter-spacing:2px;font-size:.8rem}
+.p-rate span{color:var(--muted);font-weight:500}
+.p-stock{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.04em}
+.p-stock i{width:7px;height:7px;border-radius:50%;background:var(--success)}
+.p-stock.low i{background:var(--error);animation:pulse 1.5s infinite}
+.p-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px;border-top:1px dashed var(--line)}
+.price{font-weight:800;font-size:1.12rem}
+.price s{color:var(--muted);font-weight:500;font-size:.8rem;margin-left:6px}
+.add-cart{display:inline-flex;align-items:center;gap:7px;background:var(--royal-soft);color:var(--royal);font-weight:800;font-size:.82rem;padding:10px 17px;border-radius:12px;transition:.3s;position:relative;overflow:hidden}
+.add-cart:hover{background:var(--royal);color:#fff;box-shadow:0 8px 18px -6px rgba(29,91,224,.5)}
+.add-cart .icon{width:15px;height:15px}
+.recent-strip{margin-top:44px;display:none;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 22px;flex-wrap:wrap}
+.recent-strip.show{display:flex}
+.recent-strip>span{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.recent-chip{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:5px 14px 5px 5px;font-size:.8rem;font-weight:700;transition:.25s}
+.recent-chip:hover{border-color:var(--royal);color:var(--royal)}
+.recent-chip img{width:30px;height:30px;border-radius:50%;object-fit:cover}
+
+/* ============ WHY BENTO ============ */
+.why{padding:clamp(64px,9vw,110px) 0;background:var(--bg)}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.b-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px;position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s}
+.b-card:hover{transform:translateY(-5px);box-shadow:var(--sh-lg)}
+.b-ic{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;margin-bottom:18px;background:var(--royal-soft);color:var(--royal)}
+.b-ic .icon{width:24px;height:24px}
+.b-card h3{font-size:1.05rem;font-weight:800;margin-bottom:8px}
+.b-card p{font-size:.86rem;color:var(--muted);line-height:1.6}
+.b-3{grid-column:span 3}.b-2{grid-column:span 2}
+.b-genuine .scan{margin-top:20px;background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:13px;border:1px dashed rgba(29,91,224,.35)}
+.b-genuine .scan .qr{width:44px;height:44px;background:var(--ink);border-radius:8px;flex:none;background-image:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.85) 3px 5px),repeating-linear-gradient(90deg,transparent 0 3px,rgba(255,255,255,.85) 3px 5px);background-size:11px 11px;background-position:6px 6px;background-repeat:no-repeat}
+.b-genuine .scan b{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;display:block}
+.b-genuine .scan span{font-size:.75rem;color:var(--success);font-weight:700;display:flex;align-items:center;gap:6px}
+.b-pharm .faces{display:flex;margin-top:18px}
+.b-pharm .faces img{width:44px;height:44px;border-radius:50%;border:3px solid #fff;object-fit:cover;margin-left:-10px}
+.b-pharm .faces img:first-child{margin-left:0}
+.b-pharm .faces span{width:44px;height:44px;border-radius:50%;background:var(--mint);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.72rem;margin-left:-10px;border:3px solid #fff}
+.b-cold{background:linear-gradient(150deg,var(--ink),#123E6E);color:#fff;border:none}
+.b-cold p{color:#AFC5DE}
+.b-cold .b-ic{background:rgba(154,220,239,.15);color:var(--cyan-strong)}
+.cold-live{margin-top:18px;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(154,220,239,.25);border-radius:14px;padding:12px 16px}
+.cold-live b{font-family:var(--mono);font-size:1.5rem;color:var(--cyan-strong)}
+.cold-live span{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#8FB0D4;line-height:1.5}
+.cold-live i{width:9px;height:9px;border-radius:50%;background:var(--mint);animation:pulse 1.8s infinite;margin-left:auto}
+
+/* ============ HOW IT WORKS ============ */
+.how{padding:clamp(64px,9vw,110px) 0}
+.how-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(36px,6vw,80px);align-items:start}
+.how-sticky{position:sticky;top:120px}
+.how-sticky p{color:var(--muted);margin:14px 0 30px;max-width:44ch}
+.how-screen{position:relative;height:400px;background:linear-gradient(150deg,var(--ink),var(--navy));border-radius:var(--r-lg);box-shadow:var(--sh-lg);overflow:hidden}
+.how-screen::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(154,220,239,.12) 1px,transparent 1px);background-size:20px 20px}
+.h-panel{position:absolute;inset:0;display:grid;place-items:center;padding:34px;opacity:0;transform:scale(.94) translateY(14px);transition:.55s var(--ease);pointer-events:none}
+.h-panel.on{opacity:1;transform:none}
+.mini-card{background:#fff;border-radius:var(--r);box-shadow:0 24px 50px -16px rgba(0,0,0,.4);padding:26px;width:min(320px,100%)}
+.mini-card .bar{height:46px;border-radius:12px;background:var(--bg);border:1.5px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 15px;color:var(--muted);font-size:.85rem}
+.mini-card .bar .type{color:var(--ink);font-weight:700}
+.caret{width:2px;height:18px;background:var(--royal);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.mini-card h4{font-size:.95rem;margin-bottom:6px}
+.mini-card small{color:var(--muted);font-size:.78rem}
+.dropzone{margin-top:16px;border:2px dashed rgba(29,91,224,.4);border-radius:14px;padding:22px;text-align:center;color:var(--royal);font-weight:700;font-size:.85rem;background:var(--royal-soft)}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px dashed var(--line);font-size:.85rem;font-weight:700}
+.pay-row span{color:var(--muted);font-weight:600;font-size:.78rem}
+.mini-lock{margin-top:14px;display:flex;align-items:center;gap:9px;background:var(--mint-soft);color:var(--success);border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:800}
+.route{height:70px;position:relative;margin:18px 0 8px}
+.route svg{width:100%;height:100%}
+.route .dash{stroke:var(--royal);stroke-width:2.5;stroke-dasharray:6 7;fill:none;animation:dashmove 1.4s linear infinite}
+@keyframes dashmove{to{stroke-dashoffset:-26}}
+.route .van{position:absolute;top:-4px;left:0;width:34px;height:34px;border-radius:50%;background:var(--royal);color:#fff;display:grid;place-items:center;animation:vanmove 3.5s ease-in-out infinite alternate;box-shadow:0 6px 14px -4px rgba(29,91,224,.6)}
+@keyframes vanmove{to{left:calc(100% - 34px)}}
+.how-steps{position:relative;padding-left:46px}
+.how-line{position:absolute;left:16px;top:12px;bottom:12px;width:2px;background:var(--line);border-radius:2px}
+.how-line i{position:absolute;top:0;left:0;width:100%;height:var(--p,8%);background:linear-gradient(180deg,var(--royal),var(--mint));border-radius:2px;transition:height .6s var(--ease)}
+.step{padding:34px 0;min-height:34vh;display:flex;flex-direction:column;justify-content:center;opacity:.35;transition:opacity .5s}
+.step.on{opacity:1}
+.step-num{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;color:var(--royal);display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.step-num b{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;transition:.4s;position:absolute;left:0;top:36px}
+.step.on .step-num b{background:var(--royal);border-color:var(--royal);color:#fff;box-shadow:0 0 0 6px rgba(29,91,224,.14)}
+.step h3{font-family:var(--disp);font-size:1.5rem;font-weight:600;margin-bottom:10px}
+.step p{color:var(--muted);max-width:46ch;font-size:.94rem}
+.step .chips{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+/* ============ DOCTORS ============ */
+.docs{padding:clamp(64px,9vw,110px) 0;background:linear-gradient(180deg,#fff,#EDF5FB)}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,80px);align-items:center}
+.docs-copy ul{list-style:none;margin:26px 0 32px;display:grid;gap:16px}
+.docs-copy li{display:flex;gap:14px;align-items:flex-start}
+.docs-copy li .b-ic{width:42px;height:42px;margin:0;border-radius:13px;flex:none}
+.docs-copy li .b-ic .icon{width:20px;height:20px}
+.docs-copy li b{display:block;font-size:.96rem}
+.docs-copy li span{font-size:.84rem;color:var(--muted)}
+.slot-chip{display:inline-flex;align-items:center;gap:10px;background:var(--mint-soft);color:var(--success);border-radius:999px;padding:9px 18px;font-weight:800;font-size:.82rem;margin-left:14px}
+.slot-chip i{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.6s infinite}
+.docs-visual{position:relative;min-height:520px}
+.docs-img{position:absolute;inset:0 10% 8% 0;border-radius:var(--r-lg);box-shadow:var(--sh-lg);border:6px solid #fff}
+.doc-card{position:absolute;background:#fff;border-radius:var(--r);box-shadow:var(--sh-lg);padding:15px 18px;display:flex;gap:13px;align-items:center}
+.doc-card img{width:48px;height:48px;border-radius:14px;object-fit:cover}
+.doc-card b{font-size:.88rem;display:block}
+.doc-card span{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.doc-card span i{color:var(--success);display:inline-flex}
+.doc-card span .icon{width:13px;height:13px;stroke-width:2.5}
+.dc1{bottom:4%;left:-4%;animation:floaty 7s ease-in-out infinite}
+.dc2{top:6%;right:-2%;animation:floaty 8s .8s ease-in-out infinite}
+
+/* ============ ARTICLES ============ */
+.arts{padding:clamp(64px,9vw,110px) 0}
+.art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.art{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s;display:flex;flex-direction:column}
+.art:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+.art-img{aspect-ratio:16/9;overflow:hidden}
+.art-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+.art:hover .art-img img{transform:scale(1.07)}
+.art-feat{grid-column:span 2;grid-row:span 2;flex-direction:column}
+.art-feat .art-img{aspect-ratio:16/10}
+.art-body{padding:22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.art-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--royal);display:flex;align-items:center;gap:10px}
+.art-tag i{width:18px;height:1.5px;background:var(--royal);opacity:.5}
+.art h3{font-family:var(--disp);font-weight:600;font-size:1.15rem;line-height:1.3}
+.art-feat h3{font-size:1.55rem}
+.art p{font-size:.85rem;color:var(--muted)}
+.art .read{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:.83rem;color:var(--royal)}
+.art .read .icon{width:15px;height:15px;transition:transform .3s}
+.art:hover .read .icon{transform:translateX(5px)}
+
+/* ============ TESTIMONIALS ============ */
+.reviews{background:linear-gradient(160deg,#081D36,var(--ink) 45%,#10345E);color:#fff;padding:clamp(64px,9vw,110px) 0;overflow:hidden}
+.reviews .eyebrow{color:var(--cyan-strong)}
+.reviews .eyebrow::before{background:var(--cyan-strong)}
+.reviews .h2{color:#fff}
+.rev-stats{display:flex;gap:clamp(24px,5vw,64px);margin:34px 0 46px;flex-wrap:wrap}
+.rev-stats div b{font-family:var(--disp);font-size:1.9rem;color:var(--mint);display:block}
+.rev-stats div span{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#8FA9C9}
+.t-slider{position:relative;max-width:860px}
+.t-window{overflow:hidden;border-radius:var(--r-lg)}
+.t-track{display:flex;transition:transform .65s var(--ease)}
+.t-slide{min-width:100%;padding:4px}
+.t-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:var(--r-lg);padding:clamp(28px,4vw,50px)}
+.t-card .q{font-family:var(--disp);font-style:italic;font-weight:440;font-size:clamp(1.15rem,2.2vw,1.65rem);line-height:1.5;color:#EAF2FB}
+.t-card .q::before{content:"“";display:block;font-size:4rem;line-height:.4;color:var(--mint);margin-bottom:22px;font-style:normal}
+.t-foot{display:flex;align-items:center;gap:16px;margin-top:28px;flex-wrap:wrap}
+.t-foot img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+.t-foot b{display:block;font-size:.95rem}
+.t-foot span{font-size:.78rem;color:#9FB6D3}
+.t-stars{margin-left:auto;color:#F5C64B;letter-spacing:3px}
+.t-verif{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;background:rgba(56,199,147,.15);color:var(--mint);padding:5px 11px;border-radius:99px;display:inline-flex;align-items:center;gap:6px}
+.t-ctrl{display:flex;align-items:center;gap:14px;margin-top:26px}
+.t-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);color:#fff;display:grid;place-items:center;transition:.3s}
+.t-btn:hover{background:#fff;color:var(--ink);transform:scale(1.08)}
+.t-dots{display:flex;gap:8px;margin-left:8px}
+.t-dots i{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.25);transition:.35s;cursor:pointer}
+.t-dots i.on{width:26px;background:var(--mint)}
+
+/* ============ APP ============ */
+.app-sec{padding:clamp(64px,9vw,110px) 0;background:linear-gradient(180deg,#fff,var(--cyan) 140%)}
+.app-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(36px,6vw,80px);align-items:center}
+.phone{width:min(300px,80%);margin-inline:auto;background:var(--ink);border-radius:44px;padding:14px;box-shadow:0 40px 80px -24px rgba(10,36,64,.5);position:relative;transform:rotate(-2.5deg);transition:transform .6s var(--ease)}
+.phone:hover{transform:rotate(0) scale(1.02)}
+.phone-screen{background:#F7FAFE;border-radius:32px;overflow:hidden;aspect-ratio:9/18.6;display:flex;flex-direction:column}
+.ph-head{background:var(--royal);color:#fff;padding:18px 18px 34px;border-radius:0 0 24px 24px}
+.ph-head small{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;opacity:.8}
+.ph-head b{font-family:var(--disp);font-size:1.05rem;display:block;margin-top:2px}
+.ph-search{margin:-18px 14px 0;background:#fff;border-radius:12px;box-shadow:var(--sh-sm);padding:10px 14px;font-size:.68rem;color:var(--muted);display:flex;gap:8px;align-items:center}
+.ph-body{padding:16px 14px;display:grid;gap:12px}
+.ph-remind{background:var(--mint-soft);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center}
+.ph-remind .icon{width:26px;height:26px;color:var(--success);background:#fff;border-radius:9px;padding:4px}
+.ph-remind b{font-size:.7rem;display:block}
+.ph-remind span{font-size:.58rem;color:var(--muted)}
+.ph-ord{background:#fff;border-radius:14px;padding:13px 14px;box-shadow:var(--sh-sm)}
+.ph-ord b{font-size:.68rem;display:block;margin-bottom:8px}
+.ph-bar{height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+.ph-bar i{display:block;height:100%;width:70%;background:linear-gradient(90deg,var(--royal),var(--mint));border-radius:99px}
+.ph-ord small{font-family:var(--mono);font-size:.52rem;color:var(--muted);display:block;margin-top:7px;letter-spacing:.08em}
+.ph-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ph-grid4 div{background:#fff;border-radius:12px;aspect-ratio:1;display:grid;place-items:center;color:var(--royal);box-shadow:var(--sh-sm)}
+.ph-grid4 .icon{width:19px;height:19px}
+.ph-notif{position:absolute;top:110px;right:-38px;background:#fff;border-radius:16px;box-shadow:var(--sh-lg);padding:13px 17px;display:flex;gap:11px;align-items:center;max-width:250px;animation:floaty 6.5s ease-in-out infinite;z-index:2}
+.ph-notif .icon{width:30px;height:30px;color:var(--royal);background:var(--royal-soft);border-radius:10px;padding:5px;flex:none}
+.ph-notif b{font-size:.75rem;display:block}
+.ph-notif span{font-size:.65rem;color:var(--muted)}
+.app-feats{display:grid;gap:18px;margin:30px 0 34px}
+.app-feat{display:flex;gap:16px;align-items:flex-start}
+.app-feat .b-ic{margin:0;width:46px;height:46px;flex:none}
+.app-feat b{display:block;font-size:.98rem}
+.app-feat span{font-size:.85rem;color:var(--muted)}
+.store-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.store-btn{display:flex;align-items:center;gap:11px;background:var(--ink);color:#fff;border-radius:14px;padding:11px 20px;transition:.3s}
+.store-btn:hover{transform:translateY(-3px);box-shadow:var(--sh-lg)}
+.store-btn small{font-family:var(--mono);font-size:.52rem;letter-spacing:.12em;display:block;opacity:.7}
+.store-btn b{font-size:.95rem}
+.qr-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:var(--sh-sm);display:flex;gap:12px;align-items:center}
+.qr-box svg{width:74px;height:74px;display:block}
+.qr-box span{font-size:.72rem;color:var(--muted);max-width:11ch;font-weight:700;line-height:1.4}
+
+/* ============ FAQ ============ */
+.faq{padding:clamp(64px,9vw,110px) 0}
+.faq-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(32px,5vw,70px);align-items:start}
+.faq-side{position:sticky;top:130px}
+.faq-side p{color:var(--muted);margin:14px 0 26px;max-width:38ch}
+.help-card{background:linear-gradient(150deg,var(--ink),var(--navy));color:#fff;border-radius:var(--r);padding:28px;position:relative;overflow:hidden}
+.help-card::after{content:"";position:absolute;bottom:-50px;right:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(56,199,147,.3),transparent 70%)}
+.help-card b{font-family:var(--disp);font-size:1.25rem;font-weight:600;display:block;margin-bottom:6px}
+.help-card p{color:#AFC5DE;font-size:.85rem;margin:0 0 20px}
+.help-card .btn{background:var(--mint);color:var(--ink)}
+.help-card .btn:hover{background:#fff}
+.faq-item{border:1px solid var(--line);border-radius:var(--r);background:#fff;margin-bottom:12px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.faq-item.open{border-color:rgba(29,91,224,.35);box-shadow:var(--sh-sm)}
+.faq-q{width:100%;display:flex;align-items:center;gap:16px;text-align:left;padding:20px 24px;font-weight:800;font-size:.98rem}
+.faq-q .fi{width:30px;height:30px;border-radius:50%;background:var(--royal-soft);color:var(--royal);display:grid;place-items:center;flex:none;margin-left:auto;transition:.4s var(--ease)}
+.faq-item.open .fi{background:var(--royal);color:#fff;transform:rotate(45deg)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a>div{overflow:hidden}
+.faq-a p{padding:0 24px 22px;color:var(--muted);font-size:.9rem;max-width:62ch}
+
+/* ============ NEWSLETTER ============ */
+.news{padding:0 0 clamp(64px,9vw,110px)}
+.news-card{background:linear-gradient(120deg,var(--cyan) 0%,#EAF6F0 100%);border-radius:var(--r-lg);padding:clamp(36px,6vw,70px);text-align:center;position:relative;overflow:hidden}
+.news-card::before,.news-card::after{content:"";position:absolute;border-radius:50%;border:1.5px dashed rgba(29,91,224,.2)}
+.news-card::before{width:220px;height:220px;top:-100px;left:-70px}
+.news-card::after{width:300px;height:300px;bottom:-160px;right:-90px}
+.news-card .h2{max-width:20ch;margin:14px auto 10px}
+.news-card>p{color:var(--muted);max-width:46ch;margin:0 auto 30px;font-size:.94rem}
+.news-form{display:flex;gap:10px;max-width:520px;margin:0 auto;background:#fff;border-radius:999px;padding:7px;box-shadow:var(--sh-lg);border:1.5px solid transparent;transition:.3s;position:relative;z-index:1}
+.news-form:focus-within{border-color:var(--royal)}
+.news-form input{flex:1;border:none;outline:none;padding:10px 20px;font-weight:600;min-width:0;background:none}
+.news-done{display:none;align-items:center;justify-content:center;gap:10px;font-weight:800;color:var(--success);padding:14px}
+.news-note{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--muted);margin-top:18px !important}
+
+/* ============ FOOTER ============ */
+footer{background:var(--ink);color:#B9CDE6;position:relative}
+.f-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.15fr;gap:40px;padding:clamp(48px,7vw,80px) 0 44px}
+.f-brand p{font-size:.87rem;margin:18px 0 22px;max-width:34ch;color:#8FA9C9}
+.f-social{display:flex;gap:10px}
+.f-social a{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;transition:.3s;color:#CBDCF2}
+.f-social a:hover{background:var(--mint);color:var(--ink);border-color:var(--mint);transform:translateY(-3px)}
+.f-social .icon{width:17px;height:17px}
+footer h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:#7E99BC;margin-bottom:20px}
+.f-col a{display:block;font-size:.88rem;padding:6px 0;color:#B9CDE6;transition:.25s;position:relative}
+.f-col a:hover{color:var(--mint);padding-left:8px}
+.f-contact li{list-style:none;display:flex;gap:12px;font-size:.86rem;padding:7px 0;align-items:flex-start}
+.f-contact .icon{width:17px;height:17px;color:var(--mint);margin-top:3px}
+.f-mid{border-top:1px solid rgba(255,255,255,.1);padding:24px 0;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+.pay-chips{display:flex;gap:9px;flex-wrap:wrap}
+.pay-chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 13px;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;font-weight:600;display:flex;align-items:center;gap:7px}
+.mc{display:inline-flex}
+.mc i{width:12px;height:12px;border-radius:50%}
+.mc i:first-child{background:#EB001B}
+.mc i:last-child{background:#F79E1B;margin-left:-5px;mix-blend-mode:screen}
+.sec-chips{display:flex;gap:9px;flex-wrap:wrap}
+.sec-chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--mint);border:1px solid rgba(56,199,147,.35);border-radius:8px;padding:6px 12px}
+.sec-chip .icon{width:13px;height:13px}
+.f-bottom{border-top:1px solid rgba(255,255,255,.1);padding:22px 0;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:.75rem;color:#7E99BC}
+.f-disc{padding:0 0 26px;font-size:.68rem;color:#5F7BA0;max-width:90ch;line-height:1.7}
+
+/* ============ DRAWER / MODALS / TOAST ============ */
+.overlay{position:fixed;inset:0;background:rgba(10,36,64,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:175;opacity:0;pointer-events:none;transition:opacity .35s}
+.overlay.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100dvh;width:min(420px,94vw);background:#fff;z-index:180;transform:translateX(105%);transition:transform .5s var(--ease);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(10,36,64,.25)}
+.drawer.open{transform:none}
+.dr-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--line)}
+.dr-head b{font-family:var(--disp);font-size:1.3rem;font-weight:600}
+.dr-ship{padding:16px 24px;background:var(--bg)}
+.dr-ship small{font-size:.76rem;font-weight:700;display:block;margin-bottom:9px}
+.dr-ship small em{color:var(--success);font-style:normal}
+.dr-bar{height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.dr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--royal),var(--mint));border-radius:99px;transition:width .6s var(--ease)}
+.dr-items{flex:1;overflow:auto;padding:14px 24px}
+.dr-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line);align-items:center}
+.dr-item img{width:62px;height:62px;border-radius:14px;object-fit:cover;background:var(--cyan)}
+.dr-item .di-info{flex:1;min-width:0}
+.dr-item b{font-size:.86rem;display:block;line-height:1.3}
+.dr-item .di-price{font-size:.8rem;color:var(--royal);font-weight:800}
+.qty{display:flex;align-items:center;gap:2px;border:1.5px solid var(--line);border-radius:10px;margin-top:7px;width:max-content}
+.qty button{width:28px;height:28px;display:grid;place-items:center;color:var(--royal);font-weight:800}
+.qty span{font-family:var(--mono);font-size:.8rem;min-width:26px;text-align:center}
+.dr-rm{color:var(--muted);transition:.25s;padding:6px}
+.dr-rm:hover{color:var(--error)}
+.dr-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.dr-empty .icon{width:52px;height:52px;color:var(--line);margin:0 auto 16px;stroke-width:1.2}
+.dr-foot{padding:20px 24px;border-top:1px solid var(--line);background:#fff}
+.dr-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;margin-bottom:14px}
+.dr-foot .btn{width:100%}
+.modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;opacity:0;visibility:hidden;transition:.35s}
+.modal.show{opacity:1;visibility:visible}
+.modal-bg{position:absolute;inset:0;background:rgba(10,36,64,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.modal-panel{position:relative;background:#fff;border-radius:var(--r-lg);max-width:780px;width:100%;max-height:90dvh;overflow:auto;transform:translateY(24px) scale(.97);transition:.4s var(--ease);box-shadow:0 40px 90px rgba(0,0,0,.35)}
+.modal.show .modal-panel{transform:none}
+.m-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:12px;background:var(--bg);display:grid;place-items:center;z-index:2;transition:.25s}
+.m-close:hover{background:var(--error);color:#fff;transform:rotate(90deg)}
+.qv-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.qv-img{background:var(--cyan);min-height:340px}
+.qv-img img{width:100%;height:100%;object-fit:cover}
+.qv-info{padding:34px}
+.qv-info .p-brand{margin-bottom:8px}
+.qv-info h3{font-family:var(--disp);font-size:1.7rem;font-weight:600;line-height:1.2;margin-bottom:12px}
+.qv-info .p-rate{margin-bottom:14px}
+.qv-info .desc{font-size:.9rem;color:var(--muted);margin-bottom:18px}
+.qv-price{font-size:1.7rem;font-weight:800;color:var(--royal);margin-bottom:6px}
+.qv-price s{font-size:1rem;color:var(--muted)}
+.qv-trust{display:grid;gap:8px;margin:18px 0 22px}
+.qv-trust li{list-style:none;display:flex;gap:9px;font-size:.8rem;font-weight:600;color:var(--navy)}
+.qv-trust .icon{width:16px;height:16px;color:var(--success)}
+.qv-buy{display:flex;gap:12px;align-items:center}
+.rx-panel{padding:clamp(28px,5vw,48px);max-width:560px;margin-inline:auto;text-align:center}
+.rx-panel h3{font-family:var(--disp);font-size:1.8rem;font-weight:600;margin-bottom:8px}
+.rx-panel>p{color:var(--muted);font-size:.9rem;margin-bottom:26px}
+.rx-zone{border:2.5px dashed rgba(29,91,224,.35);border-radius:var(--r);padding:44px 24px;background:var(--royal-soft);transition:.3s;cursor:pointer}
+.rx-zone:hover,.rx-zone.drag{border-color:var(--royal);background:#DBE8FE;transform:scale(1.01)}
+.rx-zone .icon{width:44px;height:44px;color:var(--royal);margin:0 auto 14px}
+.rx-zone b{display:block;font-size:1rem}
+.rx-zone span{font-size:.78rem;color:var(--muted)}
+.rx-file{display:none;margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;text-align:left}
+.rx-file.show{display:block;animation:dropIn .4s var(--ease)}
+.rx-file b{font-size:.85rem;display:block;margin-bottom:9px}
+.rx-prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.rx-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--royal),var(--mint));transition:width .3s}
+.rx-done{display:none;margin-top:18px;background:var(--mint-soft);color:var(--success);border-radius:14px;padding:16px;font-weight:800;font-size:.9rem;align-items:center;justify-content:center;gap:10px}
+.rx-done.show{display:flex;animation:dropIn .4s var(--ease)}
+#toasts{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:10px}
+.toast{display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:16px;padding:14px 20px;box-shadow:var(--sh-lg);font-size:.87rem;font-weight:600;transform:translateX(120%);animation:toastIn .5s var(--ease) forwards;max-width:340px}
+.toast.out{animation:toastOut .4s var(--ease) forwards}
+.toast .icon{width:19px;height:19px;color:var(--mint);flex:none}
+.toast.err .icon{color:#FF9B94}
+@keyframes toastIn{to{transform:none}}
+@keyframes toastOut{to{transform:translateX(120%);opacity:0}}
+.fly{position:fixed;width:16px;height:16px;border-radius:50%;background:var(--royal);z-index:350;pointer-events:none;transition:transform .75s cubic-bezier(.3,.6,.4,1),opacity .75s}
+#toTop{position:fixed;bottom:24px;left:24px;width:48px;height:48px;border-radius:50%;background:#fff;border:1.5px solid var(--line);box-shadow:var(--sh-lg);display:grid;place-items:center;color:var(--royal);z-index:140;opacity:0;pointer-events:none;transform:translateY(14px);transition:.35s}
+#toTop.show{opacity:1;pointer-events:auto;transform:none}
+#toTop:hover{background:var(--royal);color:#fff;transform:translateY(-3px)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1180px){.auth-group .btn-ghost{display:none}.emg span{display:none}.emg{padding:10px 12px}}
+@media(max-width:1080px){
+  .prod-grid{grid-template-columns:repeat(3,1fr)}
+  .cat-grid{grid-template-columns:repeat(3,1fr)}
+  .nav-search{display:none}
+  .b-3{grid-column:span 3}.b-2{grid-column:span 3}
+}
+@media(max-width:960px){
+  .head-row2-wrap{display:none}
+  .burger{display:grid}
+  .hero-grid,.docs-grid,.app-grid,.faq-grid,.how-grid{grid-template-columns:1fr}
+  .hero-visual{min-height:480px;margin-top:10px}
+  .how-sticky{position:static}
+  .step{min-height:auto;padding:26px 0}
+  .faq-side{position:static}
+  .art-grid{grid-template-columns:1fr 1fr}
+  .art-feat{grid-column:span 2;grid-row:auto}
+  .qv-grid{grid-template-columns:1fr}
+  .qv-img{min-height:240px}
+  .f-top{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(3){border-left:none}
+  .docs-visual{min-height:440px}
+}
+@media(max-width:720px){
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
+  .cat-feat{grid-column:span 2}
+  .b-3,.b-2{grid-column:span 6}
+  .auth-group{display:none}
+  .flash-timer{margin-left:0}
+  .art-grid{grid-template-columns:1fr}
+  .art-feat{grid-column:span 1}
+  .hero-title{font-size:clamp(2.5rem,11vw,3.4rem)}
+  .hv-main{width:88%;margin-inline:auto;position:relative}
+  .hero-visual{min-height:0;padding-bottom:56px}
+  .hv-badge{top:8px}
+  .hv-order{bottom:90px;left:0}
+  .f-top{grid-template-columns:1fr}
+  .store-row{justify-content:flex-start}
+  .ph-notif{right:-8px}
+  #toasts{left:16px;right:16px}
+  .toast{max-width:none}
+}
+@media(max-width:480px){
+  .prod-grid{grid-template-columns:1fr}
+  .cat-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .s-go{padding:12px 16px}
+  .hero-ctas .btn{flex:1}
+}
+
+/* ============ REDUCED MOTION ============ */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important}
+  .js [data-reveal]{opacity:1;transform:none}
+  .hline>span{transform:none;animation:none}
+  .tick-track,.cert-track{animation:none;width:auto}
+  .kenburns img{animation:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div id="progress" aria-hidden="true"></div>
+
+<!-- SVG SPRITE -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 12.2A2 2 0 0 0 9.4 18h8.9a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="9.5" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20c-4.5-3-8-6-8-9.5C4 7.5 6 5.5 8.5 5.5c1.6 0 3 .9 3.5 2 .5-1.1 1.9-2 3.5-2C18 5.5 20 7.5 20 10.5c0 3.5-3.5 6.5-8 9.5z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m0 0-6-6m6 6-6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-capsule" viewBox="0 0 24 24"><rect x="3.2" y="8.9" width="17.6" height="6.6" rx="3.3" transform="rotate(-35 12 12)"/><path d="M9.2 8.2l5.4 7.7"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12L16 12h5"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5.5 18.5C5.5 10.5 11.5 4.5 20 4.5c0 8.5-6 14-14.5 14z"/><path d="M4 20c2.5-5 6.5-9 11.5-11.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 2.6v5.6c0 4.6-3 7.7-7 9.3-4-1.6-7-4.7-7-9.3V5.6L12 3z"/><path d="M9 11.5l2 2 4-4"/></symbol>
+  <symbol id="i-rx" viewBox="0 0 24 24"><path d="M6.5 3h8l4.5 4.5V21h-13V3z"/><path d="M14.5 3v4.5H19"/><text x="8" y="16.5" font-size="7.5" font-weight="700" fill="currentColor" stroke="none" font-family="monospace">Rx</text></symbol>
+  <symbol id="i-baby" viewBox="0 0 24 24"><path d="M4 5h2l2.2 8.6A3 3 0 0 0 11.1 16h6.2a3 3 0 0 0 2.9-2.3L21.5 9H7"/><circle cx="10.5" cy="20" r="1.6"/><circle cx="17.5" cy="20" r="1.6"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.2 6 10a6 6 0 1 1-12 0c0-3.8 6-10 6-10z"/></symbol>
+  <symbol id="i-venus" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="5"/><path d="M12 13.5V21M9 18h6"/></symbol>
+  <symbol id="i-mars" viewBox="0 0 24 24"><circle cx="10" cy="14" r="5.2"/><path d="M13.8 10.2 20 4m0 0h-5m5 0v5"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 4l1.8 4.7 4.7 1.8-4.7 1.8L12 17l-1.8-4.7-4.7-1.8 4.7-1.8L12 4z"/><path d="M19 16.5v4M17 18.5h4"/></symbol>
+  <symbol id="i-device" viewBox="0 0 24 24"><path d="M10 4a2 2 0 0 1 4 0v9.3a4.5 4.5 0 1 1-4 0V4z"/><circle cx="12" cy="17" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-cane" viewBox="0 0 24 24"><path d="M9 21V7.5a3.5 3.5 0 0 1 7 0V9"/><path d="M4 21h16"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M14 6H2.5v10H14V6z"/><path d="M14 9.5h3.8l3.2 3.4V16H14"/><circle cx="6.5" cy="18" r="1.8"/><circle cx="16.8" cy="18" r="1.8"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2.5v19M4 7l16 10M20 7 4 17"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4m0 0L8 8m4-4 4 4"/><path d="M4 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h13a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 5h15a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 4V6.5A1.5 1.5 0 0 1 4.5 5z"/></symbol>
+  <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h9.5a6 6 0 0 1 0 12H10"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 17.4l-5.8 3 1.1-6.4L2.6 9.4l6.5-.9L12 2.6z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6.5 3h8l4.5 4.5V21h-13V3z"/><path d="M14.5 3v4.5H19M9 13h6M9 16.5h6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></symbol>
+</svg>
+
+<!-- TOP TICKER -->
+<div class="topbar" aria-hidden="true">
+  <div class="tick-track" id="tickTrack">
+    <span><i></i>Same-day delivery across the city — order before 6 PM</span>
+    <span><i></i>Pharmacist on duty: Dr. Meera Vyas · Lic. #PH-2941</span>
+    <span><i></i>Every batch QR-verified before dispatch</span>
+    <span><i></i>24/7 care line: 1800 726 272</span>
+    <span><i></i>Cold-chain certified for insulin &amp; vaccines</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-head" id="siteHead">
+  <div class="head-row1 container">
+    <a class="logo" href="#home" aria-label="Sanara Pharmacy home">
+      <svg class="logo-mark" viewBox="0 0 42 42" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D5BE0"/><stop offset="1" stop-color="#123FA8"/></linearGradient></defs><rect width="42" height="42" rx="13" fill="url(#lg1)"/><path d="M21 11v20M11 21h20" stroke="#fff" stroke-width="5.4" stroke-linecap="round"/><circle cx="32" cy="10" r="5" fill="#38C793" stroke="#fff" stroke-width="2.4"/></svg>
+      <span class="logo-word">Sanara<small>PHARMACY</small></span>
+    </a>
+    <button class="nav-search" id="navSearch" aria-label="Search medicines — jump to search">
+      <svg class="icon"><use href="#i-search"/></svg>
+      Search 12,000+ genuine medicines…
+      <span class="mono" style="margin-left:auto;font-size:.62rem;letter-spacing:.1em;background:#fff;border:1px solid var(--line);border-radius:7px;padding:3px 8px">⌘ K</span>
+    </button>
+    <div class="head-actions">
+      <button class="icon-btn" id="wishBtn" aria-label="Wishlist"><svg class="icon"><use href="#i-heart"/></svg><span class="badge-n" id="wishCount">0</span></button>
+      <button class="icon-btn" id="cartBtn" aria-label="Open cart"><svg class="icon"><use href="#i-cart"/></svg><span class="badge-n" id="cartCount">0</span></button>
+      <div class="auth-group">
+        <button class="btn btn-ghost btn-sm rip">Login</button>
+        <button class="btn btn-primary btn-sm rip">Register</button>
+      </div>
+      <a class="emg" href="tel:1800726272" aria-label="Emergency contact 1800 726 272"><i></i><svg class="icon" style="width:15px;height:15px"><use href="#i-phone"/></svg><span>1800 726 272</span></a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><svg class="icon"><use href="#i-plus"/></svg></button>
+    </div>
+  </div>
+  <div class="head-row2-wrap">
+    <nav class="head-row2 container" aria-label="Primary">
+      <a href="#home">Home</a><a href="#medicines">Medicines</a><a href="#categories">Categories</a><a href="#why">Health Products</a><a href="#medicines">Offers<span class="sale">SALE</span></a><a href="#doctors">Doctors</a><a href="#why">About</a><a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mm-panel">
+    <button class="icon-btn mm-close" id="mmClose" aria-label="Close menu"><svg class="icon"><use href="#i-x"/></svg></button>
+    <a href="#home">Home</a><a href="#medicines">Medicines</a><a href="#categories">Categories</a><a href="#why">Health Products</a><a href="#medicines">Offers 🔥</a><a href="#doctors">Doctors</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+    <div style="display:flex;gap:10px;margin-top:22px">
+      <button class="btn btn-ghost btn-sm" style="flex:1">Login</button>
+      <button class="btn btn-primary btn-sm" style="flex:1">Register</button>
+    </div>
+    <a class="emg" href="tel:1800726272" style="justify-content:center;margin-top:14px"><i></i>Emergency · 1800 726 272</a>
+  </div>
+</div>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">Licensed online pharmacy · Est. 2011</span>
+      <h1 class="hero-title">
+        <span class="hline"><span>Because</span></span>
+        <span class="hline"><span><em>every dose</em></span></span>
+        <span class="hline"><span>matters.</span></span>
+      </h1>
+      <p class="hero-sub">Order genuine medicines with total confidence — verified batches, licensed pharmacists, cold-chain delivery and care that treats your family like ours.</p>
+      <div class="hero-ctas">
+        <a href="#medicines" class="btn btn-primary rip">Shop Medicines <svg class="icon arr"><use href="#i-arrow"/></svg></a>
+        <button class="btn btn-ghost rip" data-open-rx><svg class="icon"><use href="#i-upload"/></svg> Upload Prescription</button>
+      </div>
+      <ul class="trust-row" aria-label="Trust indicators">
+        <li><svg class="icon"><use href="#i-check"/></svg>100% Genuine Medicines</li>
+        <li><svg class="icon"><use href="#i-check"/></svg>Licensed Pharmacy</li>
+        <li><svg class="icon"><use href="#i-check"/></svg>Secure Payments</li>
+        <li><svg class="icon"><use href="#i-check"/></svg>Fast Delivery</li>
+        <li><svg class="icon"><use href="#i-check"/></svg>Prescription Support</li>
+      </ul>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <span class="f-ic" style="top:2%;left:30%;width:34px;height:34px;animation-duration:8s"><svg class="icon"><use href="#i-capsule"/></svg></span>
+      <span class="f-ic m" style="top:40%;left:-4%;width:28px;height:28px;animation-duration:10s"><svg class="icon"><use href="#i-leaf"/></svg></span>
+      <span class="f-ic" style="bottom:26%;left:38%;width:24px;height:24px;animation-duration:7s;animation-delay:1s"><svg class="icon"><use href="#i-pulse"/></svg></span>
+      <span class="f-ic m" style="top:8%;right:-2%;width:26px;height:26px;animation-duration:9s"><svg class="icon"><use href="#i-cross"/></svg></span>
+      <span class="f-ic" style="bottom:-2%;right:34%;width:30px;height:30px;animation-duration:11s"><svg class="icon"><use href="#i-heart"/></svg></span>
+      <div class="hv-main kenburns"><img src="https://picsum.photos/seed/family-wellness-care/840/1040" width="840" height="1040" alt="A happy family at home, healthy and smiling" loading="eager"></div>
+      <div class="hv-badge">
+        <span class="dot"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <div><b>Batch Verified</b><span>LOT 2049-A · EXP 08/27</span></div>
+      </div>
+      <div class="hv-order">
+        <div class="top">Order #48210 <span>OUT FOR DELIVERY</span></div>
+        <div class="hv-track"><i></i><b></b></div>
+        <div class="st"><b>✓ Packed</b><b>✓ Verified</b><b>✓ En route</b><span>Home</span></div>
+      </div>
+      <div class="hv-doc">
+        <img src="https://picsum.photos/seed/pharmacist-portrait/120/120" width="44" height="44" alt="">
+        <div><b>Dr. Meera Vyas</b><span><i></i>Pharmacist on duty</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-band">
+    <div class="container stats-grid">
+      <div class="stat"><b><span class="count" data-count="14">0</span>+</b><span>Years of service</span></div>
+      <div class="stat"><b><span class="count" data-count="128400" data-suffix="+">0</span></b><span>Families served</span></div>
+      <div class="stat"><b><span class="count" data-count="4.9" data-decimals="1">0</span>★</b><span>Average rating</span></div>
+      <div class="stat"><b><span class="count" data-count="99.98" data-decimals="2">0</span>%</b><span>Genuine audit score</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CERT MARQUEE -->
+<div class="certs" aria-hidden="true">
+  <div class="cert-track" id="certTrack">
+    <span><svg class="icon"><use href="#i-shield"/></svg>Licensed Pharmacy #PH-2941</span>
+    <span><svg class="icon"><use href="#i-check"/></svg>WHO-GMP Certified Suppliers</span>
+    <span><svg class="icon"><use href="#i-lock"/></svg>256-bit SSL Secure Checkout</span>
+    <span><svg class="icon"><use href="#i-snow"/></svg>Cold-Chain Certified Logistics</span>
+    <span><svg class="icon"><use href="#i-doc"/></svg>ISO 9001:2015 Quality</span>
+    <span><svg class="icon"><use href="#i-star"/></svg>4.9/5 from 32,000+ reviews</span>
+  </div>
+</div>
+
+<!-- ============ CATEGORIES ============ -->
+<section class="cats" id="categories">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div><span class="eyebrow">Browse by need</span><h2 class="h2">Every shelf of care, <em>beautifully organised</em></h2></div>
+      <p>From daily prescriptions to first-aid essentials — 12 curated departments, each verified by our pharmacists.</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card cat-feat" data-reveal tabindex="0">
+        <div><span class="cat-ic"><svg class="icon"><use href="#i-rx"/></svg></span>
+        <h3>Prescription Medicines</h3>
+        <p>Upload once, refill forever. Every Rx order double-checked by a licensed pharmacist before dispatch.</p></div>
+        <button class="btn btn-sm rip" data-open-rx>Upload Prescription <svg class="icon arr"><use href="#i-arrow"/></svg></button>
+      </div>
+      <div class="cat-card" data-reveal style="transition-delay:.05s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-pill"/></svg></span><h3>OTC Medicines</h3><small>1,120 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.1s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-leaf"/></svg></span><h3>Vitamins &amp; Supplements</h3><small>640 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.15s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-baby"/></svg></span><h3>Baby Care</h3><small>410 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-sparkle"/></svg></span><h3>Personal Care</h3><small>890 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.05s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-drop"/></svg></span><h3>Diabetes Care</h3><small>260 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.1s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-pulse"/></svg></span><h3>Heart Care</h3><small>310 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.15s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-venus"/></svg></span><h3>Women's Health</h3><small>350 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-mars"/></svg></span><h3>Men's Health</h3><small>290 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.05s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-shield"/></svg></span><h3>Skin &amp; Derma</h3><small>520 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.1s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-device"/></svg></span><h3>Medical Devices</h3><small>180 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+      <div class="cat-card" data-reveal style="transition-delay:.15s" tabindex="0"><span class="cat-ic"><svg class="icon"><use href="#i-cane"/></svg></span><h3>Elderly Care</h3><small>230 PRODUCTS</small><svg class="icon cat-arrow"><use href="#i-arrow"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEARCH ============ -->
+<section class="search-sec" id="search">
+  <div class="container">
+    <div class="search-shell" data-reveal>
+      <span class="eyebrow" style="justify-content:center">Smart pharmacy search</span>
+      <h2 class="h2">Find any medicine <em>in seconds</em></h2>
+      <div class="s-tabs" role="tablist" aria-label="Search mode">
+        <button class="s-tab on" data-mode="n" role="tab" aria-selected="true">Medicine Name</button>
+        <button class="s-tab" data-mode="b" role="tab" aria-selected="false">Brand</button>
+        <button class="s-tab" data-mode="t" role="tab" aria-selected="false">Symptoms</button>
+        <button class="s-tab" data-mode="g" role="tab" aria-selected="false">Generic Name</button>
+      </div>
+      <div class="s-box">
+        <div class="s-input-wrap">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="sInput" type="search" placeholder="Try “paracetamol”, “allergy”, or “vitamin D”…" autocomplete="off" aria-label="Search medicines" role="combobox" aria-expanded="false" aria-controls="sDrop">
+          <button class="btn btn-primary s-go rip">Search</button>
+        </div>
+        <div class="s-drop" id="sDrop" role="listbox" aria-label="Search suggestions"></div>
+      </div>
+      <div class="s-trend">
+        <span>Trending:</span>
+        <button class="chip s-chip">paracetamol</button>
+        <button class="chip s-chip">vitamin d3</button>
+        <button class="chip s-chip">allergy</button>
+        <button class="chip s-chip">diabetes</button>
+        <button class="chip s-chip">ors</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED MEDICINES ============ -->
+<section class="prods" id="medicines">
+  <div class="container">
+    <div class="flash" data-reveal>
+      <span class="bolt"><svg class="icon" style="width:22px;height:22px"><use href="#i-bolt"/></svg></span>
+      <div><b>Flash Weekend is live</b><p>Up to 40% off vitamins, OTC essentials &amp; devices — today only.</p></div>
+      <div class="flash-timer" aria-label="Deal countdown">
+        <div class="ft-cell"><b id="ftH">00</b><span>HRS</span></div>
+        <div class="ft-cell"><b id="ftM">00</b><span>MIN</span></div>
+        <div class="ft-cell"><b id="ftS">00</b><span>SEC</span></div>
+      </div>
+      <a href="#search" class="btn btn-sm" style="background:#fff;color:var(--royal-deep)">Shop deals</a>
+    </div>
+    <div class="sec-head" data-reveal>
+      <div><span class="eyebrow">Pharmacist approved</span><h2 class="h2">Featured <em>medicines</em></h2></div>
+      <p>Best-sellers your families reorder again and again — every unit batch-verified before it ships.</p>
+    </div>
+    <div class="prod-grid">
+      <!-- Product 1 -->
+      <article class="prod" data-reveal data-name="Paracetamol 500 mg" data-brand="Cipla" data-price="2.49" data-img="https://picsum.photos/seed/med-paracetamol/600/450" data-desc="Fast-acting relief from fever, headache and mild body pain. 15 tablets per strip." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-paracetamol/600/450" width="600" height="450" alt="Paracetamol 500mg tablets" loading="lazy"><span class="tag best">BESTSELLER</span>
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Cipla</span><h3 class="p-name">Paracetamol 500 mg</h3><p class="p-desc">Fast-acting relief from fever &amp; mild pain.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.8 <span>(2,340)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · BATCH VERIFIED</div>
+          <div class="p-foot"><span class="price">$2.49 <s>$2.95</s></span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 2 -->
+      <article class="prod" data-reveal style="transition-delay:.06s" data-name="Vitamin D3 60,000 IU" data-brand="Calcirol" data-price="5.90" data-img="https://picsum.photos/seed/med-vitamin-d3/600/450" data-desc="Weekly bone &amp; immunity support chewable sachets. Pack of 4." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-vitamin-d3/600/450" width="600" height="450" alt="Vitamin D3 sachets" loading="lazy"><span class="tag deal">-20%</span>
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Calcirol</span><h3 class="p-name">Vitamin D3 60,000 IU</h3><p class="p-desc">Weekly bone &amp; immunity support sachets.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.9 <span>(1,812)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · BATCH VERIFIED</div>
+          <div class="p-foot"><span class="price">$5.90 <s>$7.40</s></span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 3 -->
+      <article class="prod" data-reveal style="transition-delay:.12s" data-name="Cetirizine Allergy Relief 10 mg" data-brand="Zyrtec" data-price="3.20" data-img="https://picsum.photos/seed/med-cetirizine/600/450" data-desc="Non-drowsy 24-hour relief from sneezing, itch and hay fever." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-cetirizine/600/450" width="600" height="450" alt="Cetirizine allergy tablets" loading="lazy">
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Zyrtec</span><h3 class="p-name">Cetirizine Allergy Relief</h3><p class="p-desc">Non-drowsy 24-hour allergy protection.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.7 <span>(980)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · BATCH VERIFIED</div>
+          <div class="p-foot"><span class="price">$3.20</span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 4 -->
+      <article class="prod" data-reveal style="transition-delay:.18s" data-name="Metformin SR 500 mg" data-brand="Glucophage" data-price="4.10" data-img="https://picsum.photos/seed/med-metformin/600/450" data-desc="Sustained-release blood sugar management. Valid prescription required." data-rx="true">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-metformin/600/450" width="600" height="450" alt="Metformin tablets" loading="lazy"><span class="tag rx">℞ REQUIRED</span>
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Glucophage</span><h3 class="p-name">Metformin SR 500 mg</h3><p class="p-desc">Sustained-release diabetes management.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.8 <span>(1,204)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · PHARMACIST REVIEWED</div>
+          <div class="p-foot"><span class="price">$4.10 <s>$4.55</s></span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 5 -->
+      <article class="prod" data-reveal data-name="Omega-3 Fish Oil 1000 mg" data-brand="Seven Seas" data-price="12.99" data-img="https://picsum.photos/seed/med-omega3/600/450" data-desc="High-strength EPA &amp; DHA for heart, brain and joint health. 60 softgels." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-omega3/600/450" width="600" height="450" alt="Omega-3 fish oil softgels" loading="lazy"><span class="tag deal">FLASH -25%</span>
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Seven Seas</span><h3 class="p-name">Omega-3 Fish Oil 1000 mg</h3><p class="p-desc">High-strength EPA &amp; DHA for heart health.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.8 <span>(2,077)</span></div>
+          <div class="p-stock low"><i></i>ONLY 8 LEFT · ORDER SOON</div>
+          <div class="p-foot"><span class="price">$12.99 <s>$17.30</s></span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 6 -->
+      <article class="prod" data-reveal style="transition-delay:.06s" data-name="Digital Thermometer FlexiTip" data-brand="Omron" data-price="8.50" data-img="https://picsum.photos/seed/med-thermometer/600/450" data-desc="10-second flexible-tip digital thermometer with fever alarm and memory recall." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-thermometer/600/450" width="600" height="450" alt="Digital thermometer" loading="lazy">
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Omron</span><h3 class="p-name">Digital Thermometer FlexiTip</h3><p class="p-desc">10-second reads, fever alarm, memory recall.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.6 <span>(645)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · 2-YEAR WARRANTY</div>
+          <div class="p-foot"><span class="price">$8.50</span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 7 -->
+      <article class="prod" data-reveal style="transition-delay:.12s" data-name="Cough Syrup Honey & Tulsi" data-brand="Benadryl" data-price="4.75" data-img="https://picsum.photos/seed/med-cough-syrup/600/450" data-desc="Soothing herbal cough relief for the whole family. Alcohol-free, 150 ml." data-rx="false">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-cough-syrup/600/450" width="600" height="450" alt="Cough syrup bottle" loading="lazy">
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Benadryl</span><h3 class="p-name">Cough Syrup Honey &amp; Tulsi</h3><p class="p-desc">Soothing family cough relief, alcohol-free.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.7 <span>(812)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · BATCH VERIFIED</div>
+          <div class="p-foot"><span class="price">$4.75 <s>$5.20</s></span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+      <!-- Product 8 -->
+      <article class="prod" data-reveal style="transition-delay:.18s" data-name="Atorvastatin 20 mg" data-brand="Lipitor" data-price="6.30" data-img="https://picsum.photos/seed/med-atorvastatin/600/450" data-desc="Cholesterol management tablets. Valid prescription required for purchase." data-rx="true">
+        <div class="prod-media"><img src="https://picsum.photos/seed/med-atorvastatin/600/450" width="600" height="450" alt="Atorvastatin tablets" loading="lazy"><span class="tag rx">℞ REQUIRED</span>
+          <div class="prod-acts"><button class="pa-btn wish" aria-label="Add to wishlist"><svg class="icon"><use href="#i-heart"/></svg></button><button class="pa-btn qv" aria-label="Quick view"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+        </div>
+        <div class="prod-body"><span class="p-brand">Lipitor</span><h3 class="p-name">Atorvastatin 20 mg</h3><p class="p-desc">Trusted daily cholesterol management.</p>
+          <div class="p-rate"><span class="stars">★★★★★</span>4.9 <span>(1,533)</span></div>
+          <div class="p-stock"><i></i>IN STOCK · PHARMACIST REVIEWED</div>
+          <div class="p-foot"><span class="price">$6.30</span><button class="add-cart rip"><svg class="icon"><use href="#i-cart"/></svg>Add</button></div>
+        </div>
+      </article>
+    </div>
+    <div class="recent-strip" id="recentStrip"><span>Recently viewed</span><div id="recentChips" style="display:flex;gap:10px;flex-wrap:wrap"></div></div>
+  </div>
+</section>
+
+<!-- ============ WHY CHOOSE US ============ -->
+<section class="why" id="why">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div><span class="eyebrow">Why Sanara</span><h2 class="h2">Built like a hospital. <em>Loved like family.</em></h2></div>
+      <p>Eight promises we make on every single order — and keep with systems, audits and people who care.</p>
+    </div>
+    <div class="bento">
+      <div class="b-card b-3 b-genuine" data-reveal>
+        <span class="b-ic"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <h3>100% Genuine Medicines</h3>
+        <p>Sourced directly from licensed manufacturers and WHO-GMP certified distributors. Every batch is QR-scanned and logged before it enters our shelves — and you can verify yours too.</p>
+        <div class="scan"><span class="qr"></span><div><b>SCAN LOT 2049-A · PARACETAMOL 500MG</b><span><svg class="icon" style="width:14px;height:14px"><use href="#i-check"/></svg>Authenticity confirmed · Mfg: Cipla Ltd.</span></div></div>
+      </div>
+      <div class="b-card b-3 b-pharm" data-reveal style="transition-delay:.08s">
+        <span class="b-ic"><svg class="icon"><use href="#i-user"/></svg></span>
+        <h3>Licensed Pharmacists On Every Order</h3>
+        <p>Real pharmacists — not algorithms — review every prescription, check interactions and confirm dosages before anything ships. Ask them anything, anytime.</p>
+        <div class="faces"><img src="https://picsum.photos/seed/pharmacist-one/90/90" alt="Pharmacist"><img src="https://picsum.photos/seed/pharmacist-two/90/90" alt="Pharmacist"><img src="https://picsum.photos/seed/pharmacist-three/90/90" alt="Pharmacist"><span>+24</span></div>
+      </div>
+      <div class="b-card b-2" data-reveal>
+        <span class="b-ic"><svg class="icon"><use href="#i-lock"/></svg></span>
+        <h3>Secure Payments</h3>
+        <p>PCI-DSS compliant checkout with 256-bit encryption. UPI, cards, wallets &amp; cash on delivery.</p>
+      </div>
+      <div class="b-card b-2" data-reveal style="transition-delay:.06s">
+        <span class="b-ic"><svg class="icon"><use href="#i-truck"/></svg></span>
+        <h3>Fast, Gentle Delivery</h3>
+        <p>Same-day in the city (avg. 4.2 hrs), 24–48h nationwide. Tamper-sealed, temperature-monitored.</p>
+      </div>
+      <div class="b-card b-2 b-cold" data-reveal style="transition-delay:.12s">
+        <span class="b-ic"><svg class="icon"><use href="#i-snow"/></svg></span>
+        <h3>Cold Chain Storage</h3>
+        <p>Insulin &amp; vaccines kept within range, door to door.</p>
+        <div class="cold-live"><b id="coldTemp">4.2°C</b><span>LIVE COLD-ROOM<br>READING</span><i></i></div>
+      </div>
+      <div class="b-card b-2" data-reveal>
+        <span class="b-ic"><svg class="icon"><use href="#i-upload"/></svg></span>
+        <h3>Effortless Rx Upload</h3>
+        <p>Snap, upload, done. We verify within 15 minutes and auto-refill your monthly medicines.</p>
+      </div>
+      <div class="b-card b-2" data-reveal style="transition-delay:.06s">
+        <span class="b-ic"><svg class="icon"><use href="#i-chat"/></svg></span>
+        <h3>24/7 Human Support</h3>
+        <p>A real person answers — day, night, weekends and 3 AM fevers included.</p>
+      </div>
+      <div class="b-card b-2" data-reveal style="transition-delay:.12s">
+        <span class="b-ic"><svg class="icon"><use href="#i-return"/></svg></span>
+        <h3>Easy Returns</h3>
+        <p>7-day no-quibble returns on eligible, unopened items wherever legally applicable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="how" id="how">
+  <div class="container how-grid">
+    <div class="how-sticky" data-reveal="left">
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2" style="margin-top:14px">From our shelf to your table in <em>four gentle steps</em></h2>
+      <p>No queues, no confusion, no second-guessing. Just the medicine your family needs, handled with clinical care.</p>
+      <div class="how-screen grain">
+        <div class="h-panel on" data-screen="0">
+          <div class="mini-card"><h4>Search 12,000+ medicines</h4><small>By name, brand, symptom or generic</small>
+            <div class="bar" style="margin-top:16px"><svg class="icon" style="width:16px;height:16px;color:var(--royal)"><use href="#i-search"/></svg><span class="type">vitamin d3</span><span class="caret"></span></div>
+          </div>
+        </div>
+        <div class="h-panel" data-screen="1">
+          <div class="mini-card"><h4>Upload prescription</h4><small>Photo or PDF — we handle the rest</small>
+            <div class="dropzone"><svg class="icon" style="width:20px;height:20px;vertical-align:-4px;margin-right:6px"><use href="#i-upload"/></svg>Drop Rx here</div>
+          </div>
+        </div>
+        <div class="h-panel" data-screen="2">
+          <div class="mini-card"><h4>Pay securely</h4>
+            <div class="pay-row" style="margin-top:12px">Order total <span>$18.40</span></div>
+            <div class="pay-row">Pharmacist check <span style="color:var(--success)">✓ Passed</span></div>
+            <div class="mini-lock"><svg class="icon" style="width:15px;height:15px"><use href="#i-lock"/></svg>256-bit SSL encrypted</div>
+          </div>
+        </div>
+        <div class="h-panel" data-screen="3">
+          <div class="mini-card"><h4>Delivered with care</h4><small>Live tracking · tamper-sealed</small>
+            <div class="route"><svg viewBox="0 0 260 70" preserveAspectRatio="none"><path class="dash" d="M8 55 C 70 5, 190 85, 252 20"/></svg><span class="van"><svg class="icon" style="width:16px;height:16px"><use href="#i-truck"/></svg></span></div>
+            <small style="font-family:var(--mono);letter-spacing:.08em">ETA 22 MIN · COURIER ARJUN ★4.9</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="how-steps" id="howSteps">
+      <div class="how-line"><i id="howFill"></i></div>
+      <div class="step on" data-step="0"><span class="step-num"><b>1</b>STEP 01</span><h3>Search your medicines</h3><p>Type a name, a symptom, or snap a strip. Our smart search understands all of them and shows genuine stock with live pricing.</p><div class="chips"><span class="chip">Smart match</span><span class="chip">Generic alternatives</span></div></div>
+      <div class="step" data-step="1"><span class="step-num"><b>2</b>STEP 02</span><h3>Upload prescription (if needed)</h3><p>Only for Rx medicines. A licensed pharmacist verifies it within 15 minutes and saves it to your family profile for easy refills.</p><div class="chips"><span class="chip">Verified in 15 min</span><span class="chip">Auto-refill</span></div></div>
+      <div class="step" data-step="2"><span class="step-num"><b>3</b>STEP 03</span><h3>Place your order securely</h3><p>Encrypted checkout, multiple payment options, and a pharmacist interaction-check on every cart before it's packed.</p><div class="chips"><span class="chip">SSL secured</span><span class="chip">Interaction check</span></div></div>
+      <div class="step" data-step="3"><span class="step-num"><b>4</b>STEP 04</span><h3>Fast home delivery</h3><p>Tamper-sealed packages, live tracking, cold-chain for sensitive items — and a delivery partner who waits while you check the order.</p><div class="chips"><span class="chip">Same-day city</span><span class="chip">Cold chain ready</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCTORS ============ -->
+<section class="docs" id="doctors">
+  <div class="container docs-grid">
+    <div class="docs-copy" data-reveal="left">
+      <span class="eyebrow">Doctor &amp; pharmacist support</span>
+      <h2 class="h2" style="margin-top:14px">Real clinicians behind <em>every order</em></h2>
+      <ul>
+        <li><span class="b-ic"><svg class="icon"><use href="#i-shield"/></svg></span><div><b>Verified healthcare professionals</b><span>Every doctor and pharmacist is license-checked and re-credentialed annually.</span></div></li>
+        <li><span class="b-ic"><svg class="icon"><use href="#i-chat"/></svg></span><div><b>Free online consultations</b><span>Video or chat with physicians across 14 specialities — included with your account.</span></div></li>
+        <li><span class="b-ic"><svg class="icon"><use href="#i-rx"/></svg></span><div><b>Prescription verification</b><span>Dosage, interactions and suitability reviewed by a pharmacist before dispatch.</span></div></li>
+        <li><span class="b-ic"><svg class="icon"><use href="#i-clock"/></svg></span><div><b>Medicine guidance, anytime</b><span>Confused about timing or side effects? Call our 24/7 pharmacist line.</span></div></li>
+      </ul>
+      <button class="btn btn-primary rip">Book a Free Consultation <svg class="icon arr"><use href="#i-arrow"/></svg></button>
+      <span class="slot-chip"><i></i>Next slot today · 4:30 PM</span>
+    </div>
+    <div class="docs-visual" data-reveal="right">
+      <div class="docs-img kenburns"><img src="https://picsum.photos/seed/doctor-consultation/760/900" width="760" height="900" alt="A friendly doctor consulting with a patient" loading="lazy"></div>
+      <div class="doc-card dc1">
+        <img src="https://picsum.photos/seed/doctor-family-med/100/100" alt="">
+        <div><b>Dr. Alan Reyes</b><span><i><svg class="icon"><use href="#i-check"/></svg></i>Family Medicine · 12 yrs</span></div>
+      </div>
+      <div class="doc-card dc2">
+        <img src="https://picsum.photos/seed/pharmacist-meera/100/100" alt="">
+        <div><b>Dr. Meera Vyas</b><span><i><svg class="icon"><use href="#i-check"/></svg></i>Chief Pharmacist · Lic. #PH-2941</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTICLES ============ -->
+<section class="arts" id="articles">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div><span class="eyebrow">Health awareness</span><h2 class="h2">Read well, <em>live well</em></h2></div>
+      <p>Practical, pharmacist-reviewed guidance — no fear-mongering, no jargon, just clarity.</p>
+    </div>
+    <div class="art-grid">
+      <article class="art art-feat" data-reveal>
+        <div class="art-img"><img src="https://picsum.photos/seed/family-medicine-cabinet/1000/640" width="1000" height="640" alt="A tidy family medicine cabinet" loading="lazy"></div>
+        <div class="art-body"><span class="art-tag"><i></i>Medicine Safety · 6 min read</span><h3>The family medicine cabinet: what to keep, what to toss, and how to store it safely</h3><p>Expired syrups, mystery strips, and the wrong shelf can quietly undo good care. Here's a room-by-room audit you can finish this weekend.</p><span class="read">Read article <svg class="icon"><use href="#i-arrow"/></svg></span></div>
+      </article>
+      <article class="art" data-reveal style="transition-delay:.08s">
+        <div class="art-img"><img src="https://picsum.photos/seed/monsoon-season-care/600/380" width="600" height="380" alt="Rain on a window during monsoon" loading="lazy"></div>
+        <div class="art-body"><span class="art-tag"><i></i>Seasonal Care · 4 min</span><h3>Monsoon season: 7 preventive habits that actually work</h3><span class="read">Read article <svg class="icon"><use href="#i-arrow"/></svg></span></div>
+      </article>
+      <article class="art" data-reveal style="transition-delay:.14s">
+        <div class="art-img"><img src="https://picsum.photos/seed/prescription-label/600/380" width="600" height="380" alt="Close-up of a prescription label" loading="lazy"></div>
+        <div class="art-body"><span class="art-tag"><i></i>Medicine Safety · 5 min</span><h3>Understanding your prescription label, decoded line by line</h3><span class="read">Read article <svg class="icon"><use href="#i-arrow"/></svg></span></div>
+      </article>
+      <article class="art" data-reveal style="transition-delay:.2s">
+        <div class="art-img"><img src="https://picsum.photos/seed/morning-walk-heart/600/380" width="600" height="380" alt="A couple walking in morning light" loading="lazy"></div>
+        <div class="art-body"><span class="art-tag"><i></i>Healthy Living · 5 min</span><h3>Five gentle habits for heart health after 50</h3><span class="read">Read article <svg class="icon"><use href="#i-arrow"/></svg></span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="reviews grain" id="reviews">
+  <div class="container">
+    <span class="eyebrow" data-reveal>Stories from real families</span>
+    <h2 class="h2" data-reveal style="margin-top:14px;max-width:18ch">Trusted at the most <em style="color:var(--mint)">personal</em> moments</h2>
+    <div class="rev-stats" data-reveal>
+      <div><b><span class="count" data-count="32400">0</span>+</b><span>Verified reviews</span></div>
+      <div><b><span class="count" data-count="92" data-suffix="%">0</span></b><span>Repeat families</span></div>
+      <div><b><span class="count" data-count="2400000" data-compact="1">0</span>+</b><span>Orders delivered</span></div>
+    </div>
+    <div class="t-slider" data-reveal id="tSlider">
+      <div class="t-window"><div class="t-track" id="tTrack">
+        <div class="t-slide"><div class="t-card"><p class="q">My mother's thyroid medicines arrive every month before she even remembers to ask. The packaging has her dosage printed large because they noticed she squints. That's not a store — that's someone paying attention.</p>
+          <div class="t-foot"><img src="https://picsum.photos/seed/customer-priya/96/96" alt=""><div><b>Priya Sharma</b><span>Caring for her parents · Member since 2019</span></div><span class="t-stars">★★★★★</span><span class="t-verif"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg>VERIFIED</span></div>
+        </div></div>
+        <div class="t-slide"><div class="t-card"><p class="q">As a first-time dad, I called at 1 AM about infant drops. The pharmacist stayed on the line, walked me through the dosage, and had a courier at our door by 7 AM. I've never recommended anywhere else since.</p>
+          <div class="t-foot"><img src="https://picsum.photos/seed/customer-daniel/96/96" alt=""><div><b>Daniel Rhodes</b><span>New dad · Member since 2023</span></div><span class="t-stars">★★★★★</span><span class="t-verif"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg>VERIFIED</span></div>
+        </div></div>
+        <div class="t-slide"><div class="t-card"><p class="q">A pharmacist actually called me back to double-check my son's allergy dosage against his age. Other places just ship the box. Sanara checked the child. That phone call made me a customer for life.</p>
+          <div class="t-foot"><img src="https://picsum.photos/seed/customer-amira/96/96" alt=""><div><b>Amira Hassan</b><span>Mother of two · Member since 2021</span></div><span class="t-stars">★★★★★</span><span class="t-verif"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg>VERIFIED</span></div>
+        </div></div>
+        <div class="t-slide"><div class="t-card"><p class="q">Insulin delivered cold, on time, every single time for three years — with a temperature log I can actually see. When your health depends on the cold chain, you learn quickly who to trust. It's Sanara.</p>
+          <div class="t-foot"><img src="https://picsum.photos/seed/customer-joseph/96/96" alt=""><div><b>Joseph Kim</b><span>Diabetes care · Member since 2020</span></div><span class="t-stars">★★★★★</span><span class="t-verif"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg>VERIFIED</span></div>
+        </div></div>
+      </div></div>
+      <div class="t-ctrl">
+        <button class="t-btn" id="tPrev" aria-label="Previous review"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow"/></svg></button>
+        <button class="t-btn" id="tNext" aria-label="Next review"><svg class="icon"><use href="#i-arrow"/></svg></button>
+        <div class="t-dots" id="tDots"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<section class="app-sec" id="app">
+  <div class="container app-grid">
+    <div data-reveal="left">
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="ph-head"><small>GOOD EVENING, PRIYA</small><b>Your family's pharmacy</b></div>
+          <div class="ph-search"><svg class="icon" style="width:13px;height:13px"><use href="#i-search"/></svg>Search medicines…</div>
+          <div class="ph-body">
+            <div class="ph-remind"><svg class="icon"><use href="#i-bell"/></svg><div><b>Mom's BP medicine · 8:00 PM</b><span>Reminder set ✓ · 3-day streak</span></div></div>
+            <div class="ph-ord"><b>Order #48210 — en route</b><div class="ph-bar"><i></i></div><small>ARRIVING IN 22 MIN · ARJUN ★4.9</small></div>
+            <div class="ph-grid4">
+              <div><svg class="icon"><use href="#i-rx"/></svg></div><div><svg class="icon"><use href="#i-upload"/></svg></div><div><svg class="icon"><use href="#i-chat"/></svg></div><div><svg class="icon"><use href="#i-heart"/></svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="ph-notif"><svg class="icon"><use href="#i-check"/></svg><div><b>Refill reminder</b><span>Thyronorm runs out in 4 days — reorder?</span></div></div>
+      </div>
+    </div>
+    <div data-reveal="right">
+      <span class="eyebrow">The Sanara app</span>
+      <h2 class="h2" style="margin-top:14px">Your family's pharmacy, <em>in your pocket</em></h2>
+      <div class="app-feats">
+        <div class="app-feat"><span class="b-ic"><svg class="icon"><use href="#i-bell"/></svg></span><div><b>Smart refill reminders</b><span>Never miss a dose — reminders synced to every family member's schedule.</span></div></div>
+        <div class="app-feat"><span class="b-ic"><svg class="icon"><use href="#i-upload"/></svg></span><div><b>Upload &amp; save prescriptions</b><span>One photo, stored securely, refillable in two taps forever.</span></div></div>
+        <div class="app-feat"><span class="b-ic"><svg class="icon"><use href="#i-truck"/></svg></span><div><b>Live order tracking</b><span>Watch your courier in real time, right down to the minute.</span></div></div>
+        <div class="app-feat"><span class="b-ic"><svg class="icon"><use href="#i-chat"/></svg></span><div><b>Talk to a pharmacist</b><span>Free, unlimited, human — chat or call from the app 24/7.</span></div></div>
+      </div>
+      <div class="store-row">
+        <a class="store-btn rip" href="#app"><svg class="icon" style="width:22px;height:22px"><use href="#i-device"/></svg><span><small>DOWNLOAD ON THE</small><b>App Store</b></span></a>
+        <a class="store-btn rip" href="#app"><svg class="icon" style="width:22px;height:22px"><use href="#i-bolt"/></svg><span><small>GET IT ON</small><b>Google Play</b></span></a>
+        <div class="qr-box"><svg id="qrSvg" viewBox="0 0 25 25" role="img" aria-label="QR code to download the app"></svg><span>Scan to download instantly</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="container faq-grid">
+    <div class="faq-side" data-reveal="left">
+      <span class="eyebrow">Good questions</span>
+      <h2 class="h2" style="margin-top:14px">Answers, <em>before you worry</em></h2>
+      <p>Everything families ask us most — answered plainly. Still unsure? A real pharmacist is one tap away.</p>
+      <div class="help-card grain">
+        <b>Still have questions?</b>
+        <p>Chat with a licensed pharmacist now — average response under 40 seconds.</p>
+        <button class="btn btn-sm rip"><svg class="icon"><use href="#i-chat"/></svg>Chat 24/7</button>
+      </div>
+    </div>
+    <div id="faqList" data-reveal="right">
+      <div class="faq-item open"><button class="faq-q" aria-expanded="true">Are your medicines really 100% genuine?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Yes — and you can verify it yourself. We source only from licensed manufacturers and WHO-GMP certified distributors, QR-log every batch on arrival, and include the batch number on your invoice. Scan any pack against the manufacturer's database; if anything ever fails, we replace it and pay you for the trouble.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I upload a prescription, and how long does verification take?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Snap a photo or upload a PDF during checkout or from the Upload Prescription button. A licensed pharmacist reviews it within 15 minutes (9 AM–11 PM). It's stored encrypted on your family profile, so refills never need re-uploading.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How fast is delivery?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Same-day within the city — average 4.2 hours for orders placed before 6 PM. Nationwide orders arrive in 24–48 hours with live tracking. Emergency essentials get priority dispatch around the clock.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do you handle insulin and other cold-chain items?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Cold-chain items travel in validated 2–8°C packaging with a temperature logger. You receive the temperature history with your order, and if the range was ever breached, we replace the item free — no questions asked.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is my payment and health data secure?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Payments run through a PCI-DSS compliant gateway with 256-bit encryption — we never store card details. Health records are encrypted at rest, access-logged, and never sold or shared. Full details in our Privacy Policy.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is your return policy?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Where legally applicable, unopened non-prescription items can be returned within 7 days for a full refund. Damaged, incorrect or compromised items are always replaced immediately at our cost, including pickup.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I talk to a pharmacist before buying?<span class="fi"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Absolutely — we encourage it. Call 1800 726 272 or use in-app chat any hour of the day. For doctor consultations across 14 specialities, book a free video slot from the Doctors section.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="news" id="newsletter">
+  <div class="container">
+    <div class="news-card" data-reveal>
+      <span class="eyebrow" style="justify-content:center">The Sanara letter</span>
+      <h2 class="h2">Stay updated with health tips &amp; <em>exclusive offers</em></h2>
+      <p>Two thoughtful emails a month — seasonal care advice, medicine safety notes, and member-only savings. Never spam, ever.</p>
+      <form class="news-form" id="newsForm" novalidate>
+        <input type="email" id="newsEmail" placeholder="Your email address" aria-label="Email address" required>
+        <button class="btn btn-primary rip" type="submit">Subscribe</button>
+      </form>
+      <div class="news-done" id="newsDone"><svg class="icon"><use href="#i-check"/></svg>Welcome to the family — check your inbox for a hello.</div>
+      <p class="news-note">JOIN 48,000+ SUBSCRIBERS · UNSUBSCRIBE ANYTIME</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contact">
+  <div class="container">
+    <div class="f-top">
+      <div class="f-brand">
+        <a class="logo" href="#home" aria-label="Sanara Pharmacy">
+          <svg class="logo-mark" viewBox="0 0 42 42" aria-hidden="true"><rect width="42" height="42" rx="13" fill="#123FA8"/><path d="M21 11v20M11 21h20" stroke="#fff" stroke-width="5.4" stroke-linecap="round"/><circle cx="32" cy="10" r="5" fill="#38C793" stroke="#0A2440" stroke-width="2.4"/></svg>
+          <span class="logo-word" style="color:#fff">Sanara<small style="color:var(--mint)">PHARMACY</small></span>
+        </a>
+        <p>A licensed pharmacy with a simple belief: your family's health deserves the same care we'd demand for ours.</p>
+        <div class="f-social">
+          <a href="#" aria-label="Facebook"><svg class="icon"><use href="#i-user"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg class="icon"><use href="#i-sparkle"/></svg></a>
+          <a href="#" aria-label="X"><svg class="icon"><use href="#i-chat"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg class="icon"><use href="#i-pulse"/></svg></a>
+        </div>
+      </div>
+      <div class="f-col"><h4>Categories</h4><a href="#categories">Prescription Medicines</a><a href="#categories">OTC Medicines</a><a href="#categories">Vitamins &amp; Supplements</a><a href="#categories">Diabetes Care</a><a href="#categories">Medical Devices</a><a href="#categories">Baby &amp; Mother</a></div>
+      <div class="f-col"><h4>Company</h4><a href="#why">About Sanara</a><a href="#doctors">Our Pharmacists</a><a href="#articles">Health Library</a><a href="#app">Mobile App</a><a href="#faq">Help Center</a><a href="#">Careers</a></div>
+      <div><h4>Contact &amp; Policies</h4>
+        <ul class="f-contact">
+          <li><svg class="icon"><use href="#i-phone"/></svg>1800 726 272 (24/7)</li>
+          <li><svg class="icon"><use href="#i-chat"/></svg>care@sanara.pharmacy</li>
+          <li><svg class="icon"><use href="#i-cross"/></svg>14 Wellness Avenue, Med District</li>
+        </ul>
+        <div style="margin-top:14px"><a href="#" style="font-size:.8rem;color:#8FA9C9;display:block;padding:3px 0">Terms · Privacy · Refund Policy · Prescription Policy</a></div>
+      </div>
+    </div>
+    <div class="f-mid">
+      <div class="pay-chips" aria-label="Accepted payment methods">
+        <span class="pay-chip" style="color:#8AB4FF;font-style:italic;font-weight:700">VISA</span>
+        <span class="pay-chip"><span class="mc"><i></i><i></i></span>Mastercard</span>
+        <span class="pay-chip">AMEX</span>
+        <span class="pay-chip">PayPal</span>
+        <span class="pay-chip">G Pay</span>
+        <span class="pay-chip">COD</span>
+      </div>
+      <div class="sec-chips" aria-label="Security certifications">
+        <span class="sec-chip"><svg class="icon"><use href="#i-lock"/></svg>SSL SECURED</span>
+        <span class="sec-chip"><svg class="icon"><use href="#i-shield"/></svg>PCI DSS</span>
+        <span class="sec-chip"><svg class="icon"><use href="#i-check"/></svg>LIC. #PH-2941</span>
+      </div>
+    </div>
+    <p class="f-disc">Sanara Pharmacy is a licensed retail pharmacy. All prescription medicines are dispensed only against a valid prescription from a registered medical practitioner. Content on this site is for informational purposes and is not a substitute for professional medical advice, diagnosis or treatment. Always consult your physician before starting any medication.</p>
+    <div class="f-bottom">
+      <span>© <span id="year">2025</span> Sanara Pharmacy. All rights reserved.</span>
+      <span class="mono" style="letter-spacing:.14em;font-size:.62rem">MADE WITH CARE · BATCH-VERIFIED ALWAYS</span>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart">
+  <div class="dr-head"><b>Your Cart <span id="drCount" style="color:var(--royal);font-size:1rem">(0)</span></b><button class="icon-btn" id="drClose" aria-label="Close cart"><svg class="icon"><use href="#i-x"/></svg></button></div>
+  <div class="dr-ship"><small id="shipMsg">Add <em>$35.00</em> more for free delivery</small><div class="dr-bar"><i id="shipBar"></i></div></div>
+  <div class="dr-items" id="drItems"></div>
+  <div class="dr-foot"><div class="dr-total"><span>Subtotal</span><span id="drTotal">$0.00</span></div><button class="btn btn-primary rip" id="checkoutBtn" style="width:100%">Secure Checkout <svg class="icon"><use href="#i-lock"/></svg></button></div>
+</aside>
+
+<!-- QUICK VIEW MODAL -->
+<div class="modal" id="qvModal" role="dialog" aria-modal="true" aria-label="Quick view">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-panel"><button class="m-close" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button>
+    <div class="qv-grid">
+      <div class="qv-img kenburns"><img id="qvImg" src="" alt=""></div>
+      <div class="qv-info">
+        <span class="p-brand" id="qvBrand"></span>
+        <h3 id="qvName"></h3>
+        <div class="p-rate"><span class="stars">★★★★★</span><span id="qvRate">4.8 · In stock</span></div>
+        <p class="desc" id="qvDesc"></p>
+        <div class="qv-price" id="qvPrice"></div>
+        <ul class="qv-trust">
+          <li><svg class="icon"><use href="#i-check"/></svg>Batch-verified genuine product</li>
+          <li><svg class="icon"><use href="#i-check"/></svg>Pharmacist-reviewed before dispatch</li>
+          <li><svg class="icon"><use href="#i-truck"/></svg>Same-day city delivery available</li>
+        </ul>
+        <div class="qv-buy">
+          <div class="qty"><button id="qvMinus" aria-label="Decrease">−</button><span id="qvQty">1</span><button id="qvPlus" aria-label="Increase">+</button></div>
+          <button class="btn btn-primary rip" id="qvAdd" style="flex:1"><svg class="icon"><use href="#i-cart"/></svg>Add to Cart</button>
+        </div>
+        <p id="qvRxNote" style="display:none;margin-top:14px;font-size:.78rem;background:var(--royal-soft);color:var(--royal-deep);border-radius:10px;padding:10px 14px;font-weight:700">℞ A valid prescription is required — upload takes 30 seconds.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RX UPLOAD MODAL -->
+<div class="modal" id="rxModal" role="dialog" aria-modal="true" aria-label="Upload prescription">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-panel" style="max-width:600px"><button class="m-close" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button>
+    <div class="rx-panel">
+      <span class="eyebrow" style="justify-content:center">Prescription upload</span>
+      <h3 style="margin-top:12px">We'll take it from here</h3>
+      <p>A licensed pharmacist verifies every prescription within 15 minutes — then your medicines are packed and on their way.</p>
+      <div class="rx-zone" id="rxZone" tabindex="0" role="button" aria-label="Upload prescription file">
+        <svg class="icon"><use href="#i-upload"/></svg>
+        <b>Drag &amp; drop, or click to browse</b>
+        <span>Photo or PDF · JPG, PNG, HEIC up to 10 MB</span>
+      </div>
+      <div class="rx-file" id="rxFile"><b id="rxFileName">prescription.jpg</b><div class="rx-prog"><i id="rxProg"></i></div></div>
+      <div class="rx-done" id="rxDone"><svg class="icon"><use href="#i-check"/></svg>Uploaded ✓ — our pharmacist will verify within 15 minutes.</div>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+<button id="toTop" aria-label="Back to top"><svg class="icon"><use href="#i-up"/></svg></button>
+
+<script>
+(function(){
+'use strict';
+const $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+$('#year').textContent=new Date().getFullYear();
+
+/* ---------- Toast ---------- */
+function toast(msg,err=false){
+  const t=document.createElement('div');t.className='toast'+(err?' err':'');
+  t.innerHTML='<svg class="icon"><use href="#i-'+(err?'x':'check')+'"/></svg><span>'+msg+'</span>';
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),420)},3200);
+}
+
+/* ---------- Ripple ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.rip');if(!b||REDUCED)return;
+  const r=b.getBoundingClientRect(),s=document.createElement('span');
+  const dark=getComputedStyle(b).backgroundColor.includes('255')||getComputedStyle(b).backgroundColor.includes('250');
+  s.className='ripple'+(getComputedStyle(b).color.includes('29')?'':'');
+  const sz=Math.max(r.width,r.height);
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-r.left-sz/2}px;top:${e.clientY-r.top-sz/2}px`;
+  b.appendChild(s);setTimeout(()=>s.remove(),650);
+});
+
+/* ---------- Header / progress / toTop ---------- */
+const head=$('#siteHead'),prog=$('#progress'),toTop=$('#toTop');
+addEventListener('scroll',()=>{
+  const y=scrollY;head.classList.toggle('scrolled',y>60);
+  const h=document.documentElement.scrollHeight-innerHeight;
+  prog.style.width=(h>0?y/h*100:0)+'%';
+  toTop.classList.toggle('show',y>700);
+},{passive:true});
+toTop.addEventListener('click',()=>scrollTo({top:0,behavior:REDUCED?'auto':'smooth'}));
+
+/* ---------- Mobile menu ---------- */
+const mm=$('#mobileMenu');
+$('#burger').addEventListener('click',()=>{mm.classList.add('open');mm.setAttribute('aria-hidden','false')});
+const closeMM=()=>{mm.classList.remove('open');mm.setAttribute('aria-hidden','true')};
+$('#mmClose').addEventListener('click',closeMM);
+$$('.mm-panel a').forEach(a=>a.addEventListener('click',closeMM));
+
+/* ---------- Reveal on scroll ---------- */
+const ro=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');ro.unobserve(en.target)}}),{threshold:.14});
+$$('[data-reveal]').forEach(el=>ro.observe(el));
+
+/* ---------- Counters ---------- */
+function fmt(v,d,compact){
+  if(compact&&v>=1e6)return (v/1e6).toFixed(1)+'M';
+  return d?v.toFixed(d):Math.round(v).toLocaleString('en-US');
+}
+const co=new IntersectionObserver(es=>es.forEach(en=>{
+  if(!en.isIntersecting)return;co.unobserve(en.target);
+  const el=en.target,target=parseFloat(el.dataset.count),d=+(el.dataset.decimals||0),cp=el.dataset.compact,suf=el.dataset.suffix||'';
+  if(REDUCED){el.textContent=fmt(target,d,cp)+suf;return}
+  const t0=performance.now(),dur=1600;
+  (function tick(t){const p=Math.min((t-t0)/dur,1),e=1-Math.pow(1-p,3);
+    el.textContent=fmt(target*e,d,cp)+suf;
+    if(p<1)requestAnimationFrame(tick)})(t0);
+}),{threshold:.5});
+$$('.count').forEach(el=>co.observe(el));
+
+/* ---------- Fly to cart ---------- */
+function fly(from){
+  if(REDUCED)return;
+  const f=from.getBoundingClientRect(),c=$('#cartBtn').getBoundingClientRect();
+  const d=document.createElement('span');d.className='fly';
+  d.style.left=(f.left+f.width/2)+'px';d.style.top=(f.top+f.height/2)+'px';
+  document.body.appendChild(d);
+  requestAnimationFrame(()=>{d.style.transform=`translate(${c.left+c.width/2-(f.left+f.width/2)}px,${c.top+c.height/2-(f.top+f.height/2)}px) scale(.25)`;d.style.opacity='.3'});
+  setTimeout(()=>d.remove(),800);
+}
+
+/* ---------- Cart ---------- */
+const cart=new Map();
+const FREE_AT=35;
+function cartQty(){let n=0;cart.forEach(i=>n+=i.qty);return n}
+function updateCartUI(){
+  const cc=$('#cartCount');cc.textContent=cartQty();
+  cc.classList.remove('bump');void cc.offsetWidth;cc.classList.add('bump');
+  $('#drCount').textContent='('+cartQty()+')';
+  const box=$('#drItems');
+  if(!cart.size){box.innerHTML='<div class="dr-empty"><svg class="icon"><use href="#i-cart"/></svg><b>Your cart is empty</b><p style="font-size:.85rem;margin-top:6px">Genuine medicines are one search away.</p></div>';}
+  else{
+    box.innerHTML='';
+    cart.forEach((it,k)=>{
+      const r=document.createElement('div');r.className='dr-item';
+      r.innerHTML=`<img src="${it.img}" alt=""><div class="di-info"><b>${it.name}</b><span class="di-price">$${(it.price*it.qty).toFixed(2)}</span>
+        <div class="qty"><button data-a="dec" aria-label="Decrease quantity">−</button><span>${it.qty}</span><button data-a="inc" aria-label="Increase quantity">+</button></div></div>
+        <button class="dr-rm" data-a="rm" aria-label="Remove item"><svg class="icon" style="width:16px;height:16px"><use href="#i-x"/></svg></button>`;
+      r.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+        const a=b.dataset.a;
+        if(a==='inc')it.qty++;else if(a==='dec'){it.qty--;if(it.qty<1)cart.delete(k)}else cart.delete(k);
+        updateCartUI();
+      }));
+      box.appendChild(r);
+    });
+  }
+  let sub=0;cart.forEach(i=>sub+=i.price*i.qty);
+  $('#drTotal').textContent='$'+sub.toFixed(2);
+  $('#shipBar').style.width=Math.min(sub/FREE_AT*100,100)+'%';
+  $('#shipMsg').innerHTML=sub>=FREE_AT?'<em>✓ You\'ve unlocked FREE delivery</em>':'Add <em>$'+(FREE_AT-sub).toFixed(2)+'</em> more for free delivery';
+}
+function addToCart(name,price,img,btn){
+  const it=cart.get(name)||{name,price:+price,img,qty:0};
+  it.qty++;cart.set(name,it);updateCartUI();
+  if(btn)fly(btn);
+  toast('Added '+name+' to cart');
+}
+updateCartUI();
+const drawer=$('#drawer'),overlay=$('#overlay');
+function openDrawer(){drawer.classList.add('open');overlay.classList.add('show');document.body.style.overflow='hidden';$('#drClose').focus()}
+function closeAll(){drawer.classList.remove('open');overlay.classList.remove('show');$$('.modal.show').forEach(m=>m.classList.remove('show'));document.body.style.overflow=''}
+$('#cartBtn').addEventListener('click',openDrawer);
+$('#drClose').addEventListener('click',closeAll);
+overlay.addEventListener('click',closeAll);
+$('#checkoutBtn').addEventListener('click',()=>toast(cart.size?'Demo checkout — securely sealed for real orders':'Your cart is empty — add something first',!cart.size));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();closeMM()}});
+
+/* ---------- Product card wiring ---------- */
+$$('.prod').forEach(card=>{
+  const d=card.dataset;
+  $('.add-cart',card).addEventListener('click',e=>addToCart(d.name,d.price,d.img,e.currentTarget));
+  $('.wish',card).addEventListener('click',function(){
+    this.classList.toggle('on');
+    const on=this.classList.contains('on');
+    $('#wishCount').textContent=+$('#wishCount').textContent+(on?1:-1);
+    toast(on?'Saved '+d.name+' to wishlist ♥':'Removed from wishlist');
+  });
+  $('.qv',card).addEventListener('click',()=>openQV(card));
+});
+$('#wishBtn').addEventListener('click',()=>toast('Wishlist — sign in to sync across devices'));
+
+/* ---------- Quick view ---------- */
+let qvQty=1,qvData=null;
+function openQV(card){
+  const d=card.dataset;qvData=d;qvQty=1;$('#qvQty').textContent=1;
+  $('#qvImg').src=d.img;$('#qvImg').alt=d.name;
+  $('#qvBrand').textContent=d.brand.toUpperCase();
+  $('#qvName').textContent=d.name;$('#qvDesc').innerHTML=d.desc;
+  $('#qvPrice').innerHTML='$'+(+d.price).toFixed(2);
+  $('#qvRate').textContent='4.8 · '+(d.rx==='true'?'Prescription required':'In stock');
+  $('#qvRxNote').style.display=d.rx==='true'?'block':'none';
+  addRecent(d);
+  const m=$('#qvModal');m.classList.add('show');document.body.style.overflow='hidden';
+  $('.m-close',m).focus();
+}
+$('#qvPlus').addEventListener('click',()=>{qvQty++;$('#qvQty').textContent=qvQty});
+$('#qvMinus').addEventListener('click',()=>{if(qvQty>1){qvQty--;$('#qvQty').textContent=qvQty}});
+$('#qvAdd').addEventListener('click',e=>{if(qvData){for(let i=0;i<qvQty;i++)addToCart(qvData.name,qvData.price,qvData.img,e.currentTarget);}closeAll()});
+$$('[data-close]').forEach(el=>el.addEventListener('click',closeAll));
+
+/* ---------- Recently viewed ---------- */
+const recent=[];
+function addRecent(d){
+  const i=recent.findIndex(r=>r.name===d.name);if(i>-1)recent.splice(i,1);
+  recent.unshift({name:d.name,img:d.img});if(recent.length>4)recent.pop();
+  const wrap=$('#recentChips');wrap.innerHTML='';
+  recent.forEach(r=>{
+    const c=document.createElement('button');c.className='recent-chip';
+    c.innerHTML='<img src="'+r.img+'" alt="">'+r.name;
+    c.addEventListener('click',()=>toast(r.name+' — open its card above to order'));
+    wrap.appendChild(c);
+  });
+  $('#recentStrip').classList.add('show');
+}
+
+/* ---------- Smart search ---------- */
+const DB=[
+ {n:'Paracetamol 500 mg',b:'Crocin',g:'Acetaminophen',t:'fever pain headache',p:2.49,rx:false},
+ {n:'Amoxicillin 500 mg',b:'Novamox',g:'Amoxicillin',t:'infection antibiotic throat',p:6.80,rx:true},
+ {n:'Cetirizine 10 mg',b:'Zyrtec',g:'Cetirizine HCl',t:'allergy hay fever sneezing',p:3.20,rx:false},
+ {n:'Vitamin D3 60,000 IU',b:'Calcirol',g:'Cholecalciferol',t:'bones immunity deficiency',p:5.90,rx:false},
+ {n:'Metformin SR 500 mg',b:'Glucophage',g:'Metformin',t:'diabetes blood sugar',p:4.10,rx:true},
+ {n:'Atorvastatin 20 mg',b:'Lipitor',g:'Atorvastatin',t:'cholesterol heart',p:6.30,rx:true},
+ {n:'Omeprazole 20 mg',b:'Prilosec',g:'Omeprazole',t:'acidity reflux gas',p:4.55,rx:false},
+ {n:'Azithromycin 500 mg',b:'Zithromax',g:'Azithromycin',t:'antibiotic infection',p:8.20,rx:true},
+ {n:'Ibuprofen 400 mg',b:'Brufen',g:'Ibuprofen',t:'pain inflammation swelling',p:2.95,rx:false},
+ {n:'Multivitamin Daily + Zinc',b:'Supradyn',g:'Multivitamins',t:'immunity energy daily',p:9.40,rx:false},
+ {n:'ORS Electrolyte Sachet',b:'Electral',g:'Oral Rehydration Salts',t:'dehydration diarrhea rehydration',p:1.20,rx:false},
+ {n:'Salbutamol Inhaler',b:'Ventolin',g:'Albuterol',t:'asthma breathing wheeze',p:7.75,rx:true},
+ {n:'Insulin Glargine 100U',b:'Lantus',g:'Insulin glargine',t:'diabetes cold chain',p:24.90,rx:true},
+ {n:'Amlodipine 5 mg',b:'Norvasc',g:'Amlodipine',t:'blood pressure heart',p:3.85,rx:true},
+ {n:'Iron + Folic Acid',b:'Livogen',g:'Ferrous fumarate',t:'anemia pregnancy iron',p:3.10,rx:false},
+ {n:'Cough Syrup Honey-Tulsi',b:'Benadryl',g:'Diphenhydramine',t:'cough throat cold',p:4.75,rx:false}
+];
+let mode='n',sIdx=-1,sResults=[];
+const sInput=$('#sInput'),sDrop=$('#sDrop');
+const PH={n:'Try “paracetamol”, “allergy”, or “vitamin D”…',b:'Try “Zyrtec”, “Lipitor” or “Crocin”…',t:'Try “fever”, “allergy” or “diabetes”…',g:'Try “metformin” or “ibuprofen”…'};
+$$('.s-tab').forEach(t=>t.addEventListener('click',()=>{
+  $$('.s-tab').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-selected','false')});
+  t.classList.add('on');t.setAttribute('aria-selected','true');mode=t.dataset.mode;
+  sInput.placeholder=PH[mode];renderSearch();sInput.focus();
+}));
+function hl(txt,q){const i=txt.toLowerCase().indexOf(q.toLowerCase());if(i<0||!q)return txt;return txt.slice(0,i)+'<mark>'+txt.slice(i,i+q.length)+'</mark>'+txt.slice(i+q.length)}
+function renderSearch(){
+  const q=sInput.value.trim();sIdx=-1;
+  if(q.length<2){sDrop.classList.remove('show');sInput.setAttribute('aria-expanded','false');return}
+  sResults=DB.filter(r=>r[mode].toLowerCase().includes(q.toLowerCase())||Object.values(r).join(' ').toLowerCase().includes(q.toLowerCase())).slice(0,7);
+  if(!sResults.length){sDrop.innerHTML='<div class="s-empty">No matches for “'+q+'” — our pharmacists can still source it. <b style="color:var(--royal)">Call 1800 726 272</b></div>';}
+  else{
+    sDrop.innerHTML=sResults.map((r,i)=>`
+      <div class="s-row" role="option" data-i="${i}">
+        <span class="pill-ic"><svg class="icon" style="width:18px;height:18px"><use href="#${r.rx?'i-rx':'i-pill'}"/></svg></span>
+        <span class="info"><b>${hl(r.n,mode==='n'?q:'')}</b><span>${r.b} · ${r.g} · ${r.t.split(' ').slice(0,2).join(', ')}</span></span>
+        ${r.rx?'<span class="rx-chip">℞ RX</span>':''}
+        <span class="price">$${r.p.toFixed(2)}</span>
+        <button class="add-mini" aria-label="Add ${r.n} to cart"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg></button>
+      </div>`).join('');
+    $$('.s-row',sDrop).forEach(row=>{
+      row.addEventListener('click',e=>{
+        const r=sResults[+row.dataset.i];
+        if(e.target.closest('.add-mini')){addToCart(r.n,r.p,'https://picsum.photos/seed/med-'+r.g.split(' ')[0].toLowerCase()+'/300/300',e.target.closest('.add-mini'));}
+        else{sInput.value=r.n;renderSearch();}
+      });
+      row.addEventListener('mouseenter',()=>{sIdx=+row.dataset.i;paintRows()});
+    });
+  }
+  sDrop.classList.add('show');sInput.setAttribute('aria-expanded','true');
+}
+function paintRows(){$$('.s-row',sDrop).forEach(r=>r.classList.toggle('act',+r.dataset.i===sIdx))}
+sInput.addEventListener('input',renderSearch);
+sInput.addEventListener('keydown',e=>{
+  if(!sDrop.classList.contains('show')||!sResults.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();sIdx=(sIdx+1)%sResults.length;paintRows()}
+  else if(e.key==='ArrowUp'){e.preventDefault();sIdx=(sIdx-1+sResults.length)%sResults.length;paintRows()}
+  else if(e.key==='Enter'){e.preventDefault();const r=sResults[sIdx<0?0:sIdx];addToCart(r.n,r.p,'https://picsum.photos/seed/med-'+r.g.split(' ')[0].toLowerCase()+'/300/300',sInput)}
+  else if(e.key==='Escape'){sDrop.classList.remove('show')}
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.s-box'))sDrop.classList.remove('show')});
+$$('.s-chip').forEach(c=>c.addEventListener('click',()=>{sInput.value=c.textContent;mode='n';renderSearch();sInput.focus()}));
+$('.s-go').addEventListener('click',renderSearch);
+$('#navSearch').addEventListener('click',()=>{$('#search').scrollIntoView({behavior:REDUCED?'auto':'smooth'});setTimeout(()=>sInput.focus(),500)});
+
+/* ---------- Flash timer ---------- */
+function tickTimer(){
+  const now=new Date(),end=new Date(now);end.setHours(23,59,59,999);
+  let s=Math.max(0,Math.floor((end-now)/1000));
+  $('#ftH').textContent=String(Math.floor(s/3600)).padStart(2,'0');
+  $('#ftM').textContent=String(Math.floor(s%3600/60)).padStart(2,'0');
+  $('#ftS').textContent=String(s%60).padStart(2,'0');
+}
+tickTimer();setInterval(tickTimer,1000);
+
+/* ---------- Cold chain ---------- */
+setInterval(()=>{$('#coldTemp').textContent=(3.4+Math.random()*2.2).toFixed(1)+'°C'},2400);
+
+/* ---------- How it works ---------- */
+const steps=$$('.step'),panels=$$('.h-panel'),fill=$('#howFill');
+const so=new IntersectionObserver(es=>es.forEach(en=>{
+  if(!en.isIntersecting)return;
+  const i=+en.target.dataset.step;
+  steps.forEach((s,j)=>s.classList.toggle('on',j===i));
+  panels.forEach((p,j)=>p.classList.toggle('on',j===i));
+  fill.style.setProperty('--p','0');fill.style.height=((i+1)/steps.length*100)+'%';
+}),{threshold:.55});
+steps.forEach(s=>so.observe(s));
+fill.style.height='25%';
+
+/* ---------- Testimonials ---------- */
+const track=$('#tTrack'),slides=$$('.t-slide'),dots=$('#tDots');let tI=0,tAuto;
+slides.forEach((_,i)=>{const d=document.createElement('i');if(!i)d.className='on';d.setAttribute('role','button');d.setAttribute('aria-label','Review '+(i+1));d.addEventListener('click',()=>goT(i));dots.appendChild(d)});
+function goT(i){tI=(i+slides.length)%slides.length;track.style.transform='translateX(-'+tI*100+'%)';$$('#tDots i').forEach((d,j)=>d.classList.toggle('on',j===tI));resetT()}
+function resetT(){clearInterval(tAuto);if(!REDUCED)tAuto=setInterval(()=>goT(tI+1),6500)}
+$('#tNext').addEventListener('click',()=>goT(tI+1));
+$('#tPrev').addEventListener('click',()=>goT(tI-1));
+$('#tSlider').addEventListener('mouseenter',()=>clearInterval(tAuto));
+$('#tSlider').addEventListener('mouseleave',resetT);
+resetT();
+
+/* ---------- FAQ ---------- */
+$$('.faq-item').forEach(item=>{
+  $('.faq-q',item).addEventListener('click',()=>{
+    const open=item.classList.contains('open');
+    $$('.faq-item').forEach(i=>{i.classList.remove('open');$('.faq-q',i).setAttribute('aria-expanded','false')});
+    if(!open){item.classList.add('open');$('.faq-q',item).setAttribute('aria-expanded','true')}
+  });
+});
+
+/* ---------- Rx modal ---------- */
+$$('[data-open-rx]').forEach(b=>b.addEventListener('click',()=>{
+  $('#rxModal').classList.add('show');document.body.style.overflow='hidden';
+  $('#rxFile').classList.remove('show');$('#rxDone').classList.remove('show');$('#rxProg').style.width='0';
+}));
+const rxZone=$('#rxZone');
+function startRxUpload(name){
+  $('#rxFileName').textContent=name||'prescription.jpg';
+  $('#rxFile').classList.add('show');$('#rxDone').classList.remove('show');
+  let p=0;const bar=$('#rxProg');
+  const iv=setInterval(()=>{p+=Math.random()*16;if(p>=100){p=100;clearInterval(iv);setTimeout(()=>$('#rxDone').classList.add('show'),250);toast('Prescription received — verification started ✓')}bar.style.width=p+'%'},140);
+}
+rxZone.addEventListener('click',()=>startRxUpload('family-prescription.jpg'));
+rxZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();startRxUpload()}});
+rxZone.addEventListener('dragover',e=>{e.preventDefault();rxZone.classList.add('drag')});
+rxZone.addEventListener('dragleave',()=>rxZone.classList.remove('drag'));
+rxZone.addEventListener('drop',e=>{e.preventDefault();rxZone.classList.remove('drag');const f=e.dataTransfer.files[0];startRxUpload(f?f.name:'prescription.jpg')});
+
+/* ---------- Newsletter ---------- */
+$('#newsForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const em=$('#newsEmail').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){toast('Please enter a valid email address',true);$('#newsEmail').focus();return}
+  $('#newsForm').style.display='none';$('#newsDone').style.display='flex';toast('Subscribed — welcome to the Sanara family');
+});
+
+/* ---------- QR code (decorative deterministic pattern) ---------- */
+(function(){
+  const svg=$('#qrSvg');if(!svg)return;let seed=42;
+  const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  let cells='';
+  const inFinder=(x,y)=>(x<8&&y<8)||(x>16&&y<8)||(x<8&&y>16);
+  for(let y=0;y<25;y++)for(let x=0;x<25;x++){
+    if(inFinder(x,y))continue;
+    if(x===6||y===6){if((x+y)%2===0)cells+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>';continue}
+    if(rnd()>.52)cells+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>';
+  }
+  const finder=(fx,fy)=>'<path fill-rule="evenodd" d="M'+fx+' '+fy+'h7v7h-7z M'+(fx+1)+' '+(fy+1)+'v5h5v-5z"/><rect x="'+(fx+2)+'" y="'+(fy+2)+'" width="3" height="3"/>';
+  svg.innerHTML='<g fill="#0A2440">'+cells+finder(0,0)+finder(18,0)+finder(0,18)+'</g>';
+})();
+
+/* ---------- Marquees: duplicate for seamless loop ---------- */
+['tickTrack','certTrack'].forEach(id=>{const t=document.getElementById(id);t.innerHTML+=t.innerHTML});
+})();
+</script>
+</body>
+</html>
