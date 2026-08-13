@@ -53,3 +53,6 @@ next-env.d.ts
 
 # freebuff desktop app internal data (sqlite dbs, etc.)
 .freebuff/
+
+# runtime admin database (generated)
+/data/
