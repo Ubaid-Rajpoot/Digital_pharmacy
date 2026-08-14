@@ -10,7 +10,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AuthProvider, useAuth, api } from "./api";
+import { AuthProvider, useAuth, api, qstring } from "./api";
+import { initials } from "./format";
 import { Icon, type IconName } from "./icons";
 import { Dropdown, MenuItem, TimeAgo } from "./ui";
 import { ToastProvider, useToast } from "./ui";
@@ -19,66 +20,69 @@ import { ToastProvider, useToast } from "./ui";
 // Navigation config
 // ------------------------------------------------------------
 
+type NavColor = "blue" | "green" | "violet" | "orange" | "red";
+
 type NavItem = {
   href: string;
   label: string;
   icon: IconName;
   module: string;
+  color: NavColor;
   badge?: "pendingOrders" | "lowStock" | "dealerPending" | "reviewsPending" | "supportOpen" | "unread";
 };
 
 const NAV: { label: string; items: NavItem[] }[] = [
-  { label: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: "dashboard", module: "dashboard" }] },
+  { label: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: "dashboard", module: "dashboard", color: "blue" }] },
   {
     label: "Catalogue",
     items: [
-      { href: "/admin/products", label: "Products", icon: "products", module: "products" },
-      { href: "/admin/categories", label: "Categories", icon: "categories", module: "categories" },
-      { href: "/admin/brands", label: "Brands", icon: "brands", module: "brands" },
-      { href: "/admin/inventory", label: "Inventory", icon: "inventory", module: "inventory", badge: "lowStock" },
+      { href: "/admin/products", label: "Products", icon: "products", module: "products", color: "violet" },
+      { href: "/admin/categories", label: "Categories", icon: "categories", module: "categories", color: "orange" },
+      { href: "/admin/brands", label: "Brands", icon: "brands", module: "brands", color: "red" },
+      { href: "/admin/inventory", label: "Inventory", icon: "inventory", module: "inventory", color: "green", badge: "lowStock" },
     ],
   },
   {
     label: "Sales",
     items: [
-      { href: "/admin/orders", label: "Orders", icon: "orders", module: "orders", badge: "pendingOrders" },
-      { href: "/admin/coupons", label: "Coupons & Promos", icon: "coupons", module: "coupons" },
+      { href: "/admin/orders", label: "Orders", icon: "orders", module: "orders", color: "blue", badge: "pendingOrders" },
+      { href: "/admin/coupons", label: "Coupons & Promos", icon: "coupons", module: "coupons", color: "orange" },
     ],
   },
   {
     label: "People",
     items: [
-      { href: "/admin/customers", label: "Customers", icon: "customers", module: "customers" },
-      { href: "/admin/reviews", label: "Reviews", icon: "reviews", module: "reviews", badge: "reviewsPending" },
-      { href: "/admin/dealers", label: "Dealers", icon: "dealers", module: "dealers", badge: "dealerPending" },
+      { href: "/admin/customers", label: "Customers", icon: "customers", module: "customers", color: "green" },
+      { href: "/admin/reviews", label: "Reviews", icon: "reviews", module: "reviews", color: "violet", badge: "reviewsPending" },
+      { href: "/admin/dealers", label: "Dealers", icon: "dealers", module: "dealers", color: "blue", badge: "dealerPending" },
     ],
   },
   {
     label: "Content",
     items: [
-      { href: "/admin/content", label: "Content Manager", icon: "content", module: "content" },
-      { href: "/admin/media", label: "Media Library", icon: "media", module: "media" },
+      { href: "/admin/content", label: "Content Manager", icon: "content", module: "content", color: "violet" },
+      { href: "/admin/media", label: "Media Library", icon: "media", module: "media", color: "orange" },
     ],
   },
   {
     label: "Growth",
     items: [
-      { href: "/admin/newsletter", label: "Newsletter", icon: "newsletter", module: "newsletter" },
-      { href: "/admin/reports", label: "Reports", icon: "reports", module: "reports" },
+      { href: "/admin/newsletter", label: "Newsletter", icon: "newsletter", module: "newsletter", color: "red" },
+      { href: "/admin/reports", label: "Reports", icon: "reports", module: "reports", color: "green" },
     ],
   },
   {
     label: "Service",
-    items: [{ href: "/admin/support", label: "Support Center", icon: "support", module: "support", badge: "supportOpen" }],
+    items: [{ href: "/admin/support", label: "Support Center", icon: "support", module: "support", color: "green", badge: "supportOpen" }],
   },
   {
     label: "System",
     items: [
-      { href: "/admin/users", label: "Users & Roles", icon: "users", module: "users" },
-      { href: "/admin/settings", label: "Settings", icon: "settings", module: "settings" },
-      { href: "/admin/notifications", label: "Notifications", icon: "notifications", module: "notifications", badge: "unread" },
-      { href: "/admin/audit", label: "Audit Logs", icon: "audit", module: "audit" },
-      { href: "/admin/security", label: "Security", icon: "security", module: "security" },
+      { href: "/admin/users", label: "Users & Roles", icon: "users", module: "users", color: "violet" },
+      { href: "/admin/settings", label: "Settings", icon: "settings", module: "settings", color: "blue" },
+      { href: "/admin/notifications", label: "Notifications", icon: "notifications", module: "notifications", color: "orange", badge: "unread" },
+      { href: "/admin/audit", label: "Audit Logs", icon: "audit", module: "audit", color: "violet" },
+      { href: "/admin/security", label: "Security", icon: "security", module: "security", color: "red" },
     ],
   },
 ];
@@ -117,53 +121,71 @@ function GlobalSearch() {
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const toast = useToast();
 
   useEffect(() => {
-    if (!q.trim()) {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  useEffect(() => {
+    const term = q.trim();
+    if (!term) {
       setHits([]);
+      setLoading(false);
       return;
     }
+
     let alive = true;
     setLoading(true);
-    const qs = encodeURIComponent(JSON.stringify({ search: q, pageSize: 4 }));
-    Promise.all([
-      api<{ items: { id: number; name: string; sku: string }[] }>(`/api/admin/products?${qs}`),
-      api<{ items: { id: number; number: string; customerName: string }[] }>(`/api/admin/orders?${qs}`),
-      api<{ items: { id: number; name: string; email: string }[] }>(`/api/admin/customers?${qs}`),
-    ])
-      .then(([p, o, c]) => {
-        if (!alive) return;
-        const out: SearchHit[] = [
-          ...p.items.map((x) => ({ label: x.name, sub: `SKU ${x.sku}`, href: "/admin/products", icon: "products" as IconName })),
-          ...o.items.map((x) => ({ label: x.number, sub: x.customerName, href: "/admin/orders", icon: "orders" as IconName })),
-          ...c.items.map((x) => ({ label: x.name, sub: x.email, href: "/admin/customers", icon: "customers" as IconName })),
-        ];
-        setHits(out);
-      })
-      .catch(() => alive && toast("Search failed", "error"))
-      .finally(() => alive && setLoading(false));
+    setHits([]);
+    const timer = window.setTimeout(() => {
+      const query = qstring({ search: term, pageSize: 4 });
+      Promise.all([
+        api<{ items: { id: number; name: string; sku: string }[] }>(`/api/admin/products${query}`),
+        api<{ items: { id: number; number: string; customerName: string }[] }>(`/api/admin/orders${query}`),
+        api<{ items: { id: number; name: string; email: string }[] }>(`/api/admin/customers${query}`),
+      ])
+        .then(([p, o, c]) => {
+          if (!alive) return;
+          const out: SearchHit[] = [
+            ...p.items.map((x) => ({ label: x.name, sub: `SKU ${x.sku}`, href: "/admin/products", icon: "products" as IconName })),
+            ...o.items.map((x) => ({ label: x.number, sub: x.customerName, href: "/admin/orders", icon: "orders" as IconName })),
+            ...c.items.map((x) => ({ label: x.name, sub: x.email, href: "/admin/customers", icon: "customers" as IconName })),
+          ];
+          setHits(out);
+        })
+        .catch(() => alive && toast("Search failed", "error"))
+        .finally(() => alive && setLoading(false));
+    }, 180);
+
     return () => {
       alive = false;
+      window.clearTimeout(timer);
     };
   }, [q, toast]);
 
   return (
-    <div className="admin-global-search" onFocus={() => setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 150)}>
+    <div ref={ref} className="admin-global-search" onFocus={() => setOpen(true)}>
       <Icon name="search" size={15} />
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products, orders, customers…" />
       {open && q.trim() && (
-        <div className="admin-global-results">
-          {loading && <p>Searching…</p>}
-          {!loading && hits.length === 0 && <p>No results for “{q}”</p>}
+        <div className="admin-global-results" role="listbox" aria-label="Search results">
+          {loading && <p aria-live="polite">Searching…</p>}
+          {!loading && hits.length === 0 && <p aria-live="polite">No results for “{q.trim()}”</p>}
           {hits.map((h, i) => (
-            <button key={i} onClick={() => (window.location.href = h.href)}>
-              <span>
+            <button type="button" key={`${h.href}-${h.label}-${i}`} onClick={() => { setOpen(false); window.location.href = h.href; }}>
+              <span className="admin-search-result-icon">
                 <Icon name={h.icon} size={14} />
               </span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{h.label}</span>
-                <small style={{ color: "var(--admin-muted)", fontSize: 9, fontWeight: 600 }}>{h.sub}</small>
+              <span className="admin-search-result-copy">
+                <b>{h.label}</b>
+                <small>{h.sub}</small>
               </span>
               <Icon name="arrowRight" size={12} />
             </button>
@@ -253,6 +275,138 @@ function NotificationBell() {
 }
 
 // ------------------------------------------------------------
+// Date range picker
+// ------------------------------------------------------------
+
+const DATE_PRESETS = [
+  { id: "today", label: "Today", helper: "Current day" },
+  { id: "yesterday", label: "Yesterday", helper: "Previous day" },
+  { id: "last7", label: "Last 7 days", helper: "Rolling week" },
+  { id: "last30", label: "Last 30 days", helper: "Rolling month" },
+  { id: "thisMonth", label: "This month", helper: "Since the 1st" },
+  { id: "allTime", label: "All time", helper: "Complete history" },
+] as const;
+
+type DatePreset = (typeof DATE_PRESETS)[number]["id"] | "custom";
+type CustomRange = { start: string; end: string };
+
+function formatDateInput(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+}
+
+function DateRangePicker() {
+  const [open, setOpen] = useState(false);
+  const [preset, setPreset] = useState<DatePreset>("today");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
+  const [error, setError] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const selectedLabel = preset === "custom" && customRange
+    ? `${formatDateInput(customRange.start)} – ${formatDateInput(customRange.end)}`
+    : preset === "today"
+      ? new Date().toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" })
+      : DATE_PRESETS.find((item) => item.id === preset)?.label ?? "Choose dates";
+
+  const choosePreset = (next: DatePreset) => {
+    setPreset(next);
+    setError("");
+    if (next !== "custom") {
+      setCustomRange(null);
+      setOpen(false);
+    }
+  };
+
+  const applyCustomRange = () => {
+    if (!start || !end) {
+      setError("Select both dates first.");
+      return;
+    }
+    if (start > end) {
+      setError("The end date must be after the start date.");
+      return;
+    }
+    setCustomRange({ start, end });
+    setPreset("custom");
+    setError("");
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="admin-date-picker">
+      <button
+        type="button"
+        className="admin-date-btn"
+        title="Choose date range"
+        aria-label={`Date range: ${selectedLabel}`}
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <Icon name="calendar" size={14} />
+        <span className="admin-date-label">{selectedLabel}</span>
+        <Icon name="chevronDown" size={12} />
+      </button>
+      {open && (
+        <div className="admin-date-popover" role="dialog" aria-label="Choose date range">
+          <div className="admin-date-popover-head">
+            <b>Date range</b>
+            <small>Choose a reporting period</small>
+          </div>
+          <div className="admin-date-options">
+            {DATE_PRESETS.map((item) => (
+              <button
+                type="button"
+                key={item.id}
+                className={preset === item.id ? "active" : ""}
+                aria-pressed={preset === item.id}
+                onClick={() => choosePreset(item.id)}
+              >
+                <span>
+                  <b>{item.label}</b>
+                  <small>{item.helper}</small>
+                </span>
+                {preset === item.id && <Icon name="check" size={14} />}
+              </button>
+            ))}
+          </div>
+          <div className={`admin-date-custom ${preset === "custom" ? "active" : ""}`}>
+            <b>Custom range</b>
+            <div className="admin-date-inputs">
+              <label>
+                <span>From</span>
+                <input type="date" value={start} onChange={(e) => { setStart(e.target.value); setError(""); }} />
+              </label>
+              <label>
+                <span>To</span>
+                <input type="date" value={end} onChange={(e) => { setEnd(e.target.value); setError(""); }} />
+              </label>
+            </div>
+            {error && <small className="admin-date-error">{error}</small>}
+            <button type="button" className="admin-date-apply" onClick={applyCustomRange}>Apply dates</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
 // Profile menu
 // ------------------------------------------------------------
 
@@ -261,11 +415,15 @@ function ProfileMenu() {
   return (
     <Dropdown
       trigger={
-        <button className="admin-profile">
-          <span className="admin-avatar">{user?.name}</span>
-          <span>
-            <b>{user?.name}</b>
-            <small>{user?.role}</small>
+        <button
+          type="button"
+          className="admin-profile"
+          aria-label={`Open profile menu for ${user?.name ?? "Admin"}`}
+        >
+          <span className="admin-avatar" aria-hidden="true">{initials(user?.name ?? "Admin")}</span>
+          <span className="admin-profile-copy">
+            <b>{user?.name ?? "Admin"}</b>
+            <small>{user?.role ?? "Administrator"}</small>
           </span>
           <Icon name="chevronDown" size={13} />
         </button>
@@ -328,7 +486,7 @@ function Sidebar({ path, collapsed, open, onNavigate }: { path: string; collapse
                   <Link
                     key={it.href}
                     href={it.href}
-                    className={`admin-nav-item ${active ? "active" : ""}`}
+                    className={`admin-nav-item c-${it.color} ${active ? "active" : ""}`}
                     title={collapsed ? it.label : undefined}
                     onClick={onNavigate}
                   >
@@ -432,11 +590,7 @@ function ShellInner({ children }: { children: ReactNode }) {
           </div>
           <div className="admin-topbar-actions">
             <GlobalSearch />
-            <button className="admin-date-btn" title="Today">
-              <Icon name="calendar" size={14} />
-              {new Date().toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short" })}
-              <Icon name="chevronDown" size={12} />
-            </button>
+            <DateRangePicker />
             <button className="admin-theme-toggle" onClick={() => setDark((v) => !v)} aria-label="Toggle theme" title="Toggle theme">
               <Icon name={dark ? "sun" : "moon"} size={15} />
             </button>

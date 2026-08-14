@@ -45,8 +45,8 @@ export default function CouponsPage() {
           { label: "Avg discount", value: "18%", icon: "percent" as const, tone: "violet" },
           { label: "Live flash sales", value: (flash?.items ?? []).filter((f) => f.status === "live").length, icon: "zap" as const, tone: "orange" },
         ].map((k) => (
-          <div key={k.label} className="admin-kpi">
-            <div className="admin-kpi-top"><span>{k.label}</span><span className="admin-kpi-icon" style={{ color: `var(--admin-${k.tone})` }}><Icon name={k.icon} size={15} /></span></div>
+          <div key={k.label} className={`admin-kpi ${k.tone}`}>
+            <div className="admin-kpi-top"><span>{k.label}</span><span className="admin-kpi-icon"><Icon name={k.icon} size={15} /></span></div>
             <strong>{k.value}</strong>
           </div>
         ))}

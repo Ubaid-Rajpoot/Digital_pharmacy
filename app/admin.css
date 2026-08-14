@@ -91,6 +91,8 @@
   --admin-line:#1d2c40;--admin-line-strong:#2b3e58;
   --admin-blue-soft:#122a4a;--admin-green-soft:#0f2c22;--admin-violet-soft:#241f42;
   --admin-orange-soft:#33240f;--admin-red-soft:#381a1a;
+  --admin-chart-blue:#56d7d0;--admin-chart-green:#67d8ab;--admin-chart-violet:#b9adff;--admin-chart-orange:#ffc178;--admin-chart-red:#ff9a9a;
+  --admin-scroll-track:rgba(255,255,255,.07);--admin-scroll-thumb:#567da9;
   --admin-shadow:0 20px 55px -32px rgba(0,0,0,.6);
   background:#0b1522;color:var(--admin-ink)
 }
@@ -112,7 +114,7 @@
 .admin-shell.dark .admin-collapse-btn,.admin-shell.dark .admin-theme-toggle,.admin-shell.dark .admin-notification-btn,
 .admin-shell.dark .admin-search-field,.admin-shell.dark .admin-select,.admin-shell.dark .admin-field input,
 .admin-shell.dark .admin-field select,.admin-shell.dark .admin-field textarea,
-.admin-shell.dark .admin-quick-grid>button,.admin-shell.dark .admin-login-roles button{border-color:var(--admin-line);background:#0f1c2c;color:var(--admin-ink-soft)}
+.admin-shell.dark .admin-quick-grid>a,.admin-shell.dark .admin-quick-grid>button,.admin-shell.dark .admin-login-roles button{border-color:var(--admin-line);background:#0f1c2c;color:var(--admin-ink-soft)}
 .admin-shell.dark .admin-btn.secondary{background:#0f1c2c;border-color:var(--admin-line-strong);color:var(--admin-ink-soft)}
 .admin-shell.dark .admin-btn.secondary:hover{border-color:var(--admin-blue);color:var(--admin-blue)}
 .admin-shell.dark .admin-health-card{background:linear-gradient(145deg,#0f1c2c,#0e241d)}
@@ -132,6 +134,11 @@
 .admin-shell.dark .admin-menu-pop{background:#0f1c2c}
 .admin-shell.dark .admin-menu-item{color:var(--admin-ink-soft)}
 .admin-shell.dark .admin-kpi::after{opacity:.05}
+.admin-shell.dark .admin-kpi.blue .admin-kpi-icon{background:var(--admin-chart-blue)}
+.admin-shell.dark .admin-kpi.green .admin-kpi-icon{background:var(--admin-chart-green)}
+.admin-shell.dark .admin-kpi.violet .admin-kpi-icon{background:var(--admin-chart-violet)}
+.admin-shell.dark .admin-kpi.orange .admin-kpi-icon{background:var(--admin-chart-orange)}
+.admin-shell.dark .admin-kpi.red .admin-kpi-icon{background:var(--admin-chart-red)}
 .admin-shell.dark .admin-drawer-backdrop{background:rgba(0,0,0,.55)}
 .admin-shell.dark .admin-modal-backdrop{background:rgba(0,0,0,.6)}
 .admin-shell.dark .admin-sidebar-scrim{background:rgba(0,0,0,.5)}
@@ -152,6 +159,15 @@
 .admin-shell.dark .admin-category-summary>div,.admin-shell.dark .admin-customer-summary>div,
 .admin-shell.dark .admin-stat-strip>div,.admin-shell.dark .admin-order-metrics>div{background:#0f1c2c;border-color:var(--admin-line)}
 .admin-shell.dark .admin-workspace-switch,.admin-shell.dark .admin-profile-stats{background:#0d1a29;border-color:var(--admin-line)}
+.admin-shell.dark .admin-global-search,.admin-shell.dark .admin-date-btn{background:#0f1c2c;border-color:var(--admin-line);color:var(--admin-ink-soft)}
+.admin-shell.dark .admin-global-search input{color:var(--admin-ink)}
+.admin-shell.dark .admin-global-search input::placeholder{color:var(--admin-muted)}
+.admin-shell.dark .admin-date-popover{background:#0f1c2c;border-color:var(--admin-line)}
+.admin-shell.dark .admin-date-popover-head,.admin-shell.dark .admin-date-custom{border-color:var(--admin-line)}
+.admin-shell.dark .admin-date-inputs input{background:#0d1a29;border-color:var(--admin-line);color:var(--admin-ink)}
+.admin-shell.dark .admin-date-options button small{color:var(--admin-muted)}
+.admin-shell.dark .admin-date-options button.active small{color:var(--admin-blue)}
+.admin-shell.dark .admin-search-result-icon{background:#16283c}
 .admin-shell.dark .admin-workspace-switch b{color:var(--admin-ink)}
 .admin-shell.dark .admin-editor-callout{background:linear-gradient(110deg,#0f2c22,#0f1c2c);border-color:#1d3a33}
 .admin-shell.dark .admin-prescription-banner,.admin-shell.dark .admin-security-banner{background:linear-gradient(110deg,#0f2c22,#0f1c2c);border-color:#1d3a33}
@@ -175,3 +191,119 @@
 .admin-shell.dark .admin-upload-icon{background:var(--admin-blue-soft)}
 .admin-shell.dark .admin-empty-icon{background:#16283c;color:#5d7290}
 .admin-shell.dark .admin-toast{box-shadow:0 20px 45px -20px rgba(0,0,0,.7)}
+
+/* ================================================================
+   DASHBOARD — enterprise typography + Recharts styling
+   Scoped to the dashboard tab (.admin-dashboard).
+   ================================================================ */
+
+/* ---------- enterprise font treatment ---------- */
+.admin-dashboard{
+  --ff-d:"Inter","Manrope",system-ui,sans-serif;
+  --ff-b:"Inter","Manrope",system-ui,sans-serif;
+  font-family:var(--ff-b);
+  font-feature-settings:"cv02","cv03","cv04","cv11";
+  -webkit-font-smoothing:antialiased;
+}
+.admin-dashboard .admin-welcome-row h1{font-weight:700;letter-spacing:-.02em}
+.admin-dashboard .admin-welcome-row h1 em{font-style:italic;font-weight:600}
+.admin-dashboard .admin-kpi strong{font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.admin-dashboard .admin-card-head h3{font-weight:700;letter-spacing:-.01em}
+.admin-dashboard .admin-health-score strong{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.admin-dashboard .admin-stat-strip b{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.admin-dashboard .admin-order-metrics b,.admin-dashboard .admin-mini-value{font-weight:700;letter-spacing:-.02em}
+
+/* ---------- chart card header controls ---------- */
+.admin-chart-total{font-size:10.5px;font-weight:700;color:var(--admin-muted);white-space:nowrap}
+.admin-series-toggle{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--admin-line);border-radius:9px;padding:3px;background:#fafcfe}
+.admin-series-toggle button{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:6px;font-size:10px;font-weight:800;color:var(--admin-muted);transition:.18s}
+.admin-series-toggle button:hover{color:var(--admin-ink-soft)}
+.admin-series-toggle button.on{background:#fff;color:var(--admin-ink-soft);box-shadow:0 2px 6px -4px rgba(13,43,82,.45)}
+.admin-series-toggle button.off{opacity:.55}
+.admin-series-toggle button.off .dot{background:#c3cedb!important;box-shadow:none}
+.admin-series-toggle .dot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 2px rgba(19,95,201,.12);flex:none}
+.admin-chart-switch{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:800;color:var(--admin-muted);white-space:nowrap}
+
+/* ---------- recharts canvas ---------- */
+.admin-recharts-wrap{height:238px;width:100%;position:relative;margin-top:2px}
+.admin-recharts-wrap .recharts-wrapper:focus,.admin-recharts-wrap .recharts-surface:focus{outline:none}
+
+/* ---------- custom tooltip ---------- */
+.admin-rt-tip{background:#fff;border:1px solid var(--admin-line);border-radius:11px;box-shadow:var(--admin-shadow);padding:10px 12px;min-width:148px}
+.admin-rt-tip b{display:block;font-family:var(--ff-m);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--admin-muted);font-weight:700;margin-bottom:7px}
+.admin-rt-tip div{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;color:var(--admin-ink-soft);padding:2px 0;font-variant-numeric:tabular-nums}
+.admin-rt-tip i{width:7px;height:7px;border-radius:50%;flex:none}
+.admin-rt-tip strong{margin-left:auto;color:var(--admin-ink);font-size:11px;font-weight:800}
+
+/* ---------- chart off / no-series states ---------- */
+.admin-chart-off{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:238px;border:1.5px dashed var(--admin-line-strong);border-radius:13px;background:#fafcfe;text-align:center;padding:18px}
+.admin-chart-off-ic{width:40px;height:40px;border-radius:12px;background:var(--admin-blue-soft);color:var(--admin-blue);display:grid;place-items:center;margin-bottom:5px}
+.admin-chart-off b{font-size:12.5px;color:var(--admin-ink);font-weight:800}
+.admin-chart-off p{font-size:10.5px;color:var(--admin-muted);margin:0;max-width:260px;line-height:1.5}
+.admin-chart-off.compact{height:238px;border-style:dashed}
+
+/* ---------- dark mode ---------- */
+.admin-shell.dark .admin-series-toggle{background:#0d1a29;border-color:var(--admin-line)}
+.admin-shell.dark .admin-series-toggle button.on{background:#16283c;color:var(--admin-ink-soft);box-shadow:0 2px 6px -4px rgba(0,0,0,.7)}
+.admin-shell.dark .admin-series-toggle button:hover{color:var(--admin-ink)}
+.admin-shell.dark .admin-rt-tip{background:#0f1c2c;border-color:var(--admin-line-strong);box-shadow:0 20px 45px -20px rgba(0,0,0,.7)}
+.admin-shell.dark .admin-rt-tip strong{color:var(--admin-ink)}
+.admin-shell.dark .admin-rt-tip div{color:var(--admin-ink-soft)}
+.admin-shell.dark .admin-chart-off{background:#0d1a29;border-color:var(--admin-line-strong)}
+.admin-shell.dark .admin-chart-off-ic{background:var(--admin-blue-soft)}
+.admin-shell.dark .admin-chart-off b{color:var(--admin-ink)}
+
+/* ---------- dashboard health + horizontal bar charts ---------- */
+.admin-health-layout{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.admin-health-donut-slot{width:154px;height:168px;display:grid;place-items:center;flex:none}
+.admin-health-donut-wrap{width:154px;height:154px}
+.admin-health-donut-off{width:126px;height:126px;border:1.5px dashed var(--admin-line-strong);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--admin-muted);font-size:10px;font-weight:800}
+.admin-health-donut-off svg{color:var(--admin-blue)}
+.admin-health-details{flex:1;min-width:210px}
+.admin-horizontal-recharts-wrap{height:238px;width:100%;position:relative;margin-top:2px}
+.admin-horizontal-recharts-wrap .recharts-wrapper:focus,.admin-horizontal-recharts-wrap .recharts-surface:focus{outline:none}
+.admin-rt-tip small{display:block;color:var(--admin-muted);font-family:var(--ff-m);font-size:8px;letter-spacing:.06em;margin-top:7px;padding-top:6px;border-top:1px solid var(--admin-line)}
+
+.admin-shell.dark .admin-health-donut-off{background:#0d1a29;border-color:var(--admin-line-strong)}
+
+@media(max-width:620px){
+  .admin-health-layout{align-items:flex-start}
+  .admin-health-donut-slot{margin-inline:auto}
+  .admin-health-details{min-width:100%}
+  .admin-horizontal-recharts-wrap{height:232px}
+}
+
+/* ---------- modern overflow treatment ---------- */
+.admin-shell,.admin-shell *{
+  scrollbar-color:var(--admin-scroll-thumb) var(--admin-scroll-track);
+  scrollbar-width:thin;
+}
+.admin-shell *::-webkit-scrollbar{width:9px;height:9px}
+.admin-shell *::-webkit-scrollbar-track{background:var(--admin-scroll-track);border-radius:999px}
+.admin-shell *::-webkit-scrollbar-thumb{background:linear-gradient(135deg,var(--admin-scroll-thumb),var(--admin-chart-blue, var(--admin-blue)));border:2px solid transparent;background-clip:padding-box;border-radius:999px;min-height:34px}
+.admin-shell *::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg,var(--admin-chart-blue, var(--admin-blue)),var(--admin-scroll-thumb));background-clip:padding-box}
+.admin-table-scroll,.admin-global-results,.admin-sidebar,.admin-modal,.admin-drawer-body{scroll-behavior:smooth}
+
+/* ---------- dark-mode contrast + hover states ---------- */
+.admin-shell.dark .admin-global-search:hover,.admin-shell.dark .admin-date-btn:hover,
+.admin-shell.dark .admin-notification-btn:hover,.admin-shell.dark .admin-collapse-btn:hover,
+.admin-shell.dark .admin-theme-toggle:hover,.admin-shell.dark .admin-profile:hover{
+  background:#16283c;border-color:#5f8fc4;color:#eef6ff;
+}
+.admin-shell.dark .admin-global-search:focus-within{border-color:#56d7d0;box-shadow:0 0 0 4px rgba(86,215,208,.18)}
+.admin-shell.dark .admin-global-results button:hover{background:#193553;color:#b9d8ff}
+.admin-shell.dark .admin-date-options button:hover,.admin-shell.dark .admin-date-options button.active{background:#193553;color:#b9d8ff}
+.admin-shell.dark .admin-date-options button.active small{color:#9bc7ff}
+.admin-shell.dark .admin-menu-item:hover{background:#193553;color:#b9d8ff}
+.admin-shell.dark .admin-icon-btn:hover,.admin-shell.dark .admin-filter-btn:hover,
+.admin-shell.dark .admin-page-btn:hover{background:#193553;border-color:#5f8fc4;color:#b9d8ff}
+.admin-shell.dark .admin-quick-grid>a:hover,.admin-shell.dark .admin-quick-grid>button:hover{background:#132840;border-color:#5f8fc4;box-shadow:0 18px 40px -24px rgba(0,0,0,.9)}
+.admin-shell.dark .admin-table tbody tr:hover{background:#182d46}
+.admin-shell.dark .admin-btn:hover{background:#2d75d2;border-color:#4d93ec;box-shadow:0 12px 25px -14px rgba(120,183,255,.55)}
+.admin-shell.dark .admin-chart-off-ic{color:var(--admin-chart-blue)}
+.admin-shell.dark .admin-health-donut-off svg{color:var(--admin-chart-blue)}
+.admin-dashboard .blue-dot{background:var(--admin-chart-blue)}
+.admin-dashboard .green-dot{background:var(--admin-chart-green)}
+.admin-dashboard .violet-dot{background:var(--admin-chart-violet)}
+.admin-dashboard .orange-dot{background:var(--admin-chart-orange)}
+.admin-dashboard .red-dot{background:var(--admin-chart-red)}

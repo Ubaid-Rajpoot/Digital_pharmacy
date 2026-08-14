@@ -23,7 +23,7 @@ export async function GET(_request: NextRequest) {
       const pendingOrders = db.orders.filter((o) => o.status === "pending").length;
       const deliveredOrders = db.orders.filter((o) => o.status === "delivered").length;
       const cancelledOrders = db.orders.filter((o) => o.status === "cancelled").length;
-      const refundRequests = db.orders.filter((o) => o.status === "returned" || o.refund).length;
+      const refundRequests = db.orders.filter((o) => o.status === "returned" || (o.refund && o.status !== "refunded")).length;
       const totalProducts = db.products.length;
       const activeProducts = db.products.filter((p) => p.status === "active" && !p.deletedAt).length;
       const outOfStock = db.products.filter((p) => p.stock === 0 && !p.deletedAt).length;

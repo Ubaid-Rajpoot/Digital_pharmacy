@@ -2,22 +2,30 @@
 
 import Link from "next/link";
 import { useAuth, useStats } from "@/components/admin/api";
-import { BarChart, DonutChart, LineChart, MiniBars } from "@/components/admin/charts";
+import {
+  CustomerGrowthChartCard,
+  OrdersByDayChartCard,
+  RevenueChartCard,
+  SalesChartCard,
+  StoreHealthChartCard,
+  TopCategoriesChartCard,
+  TopProductsChartCard,
+} from "@/components/admin/dashboardCharts";
 import { Icon } from "@/components/admin/icons";
 import {
-  Btn, Card, EmptyState, ErrorState, Kpi, PageHeader, Skeleton, StatStrip, Status, TimeAgo,
+  Btn, Card, EmptyState, ErrorState, Kpi, Skeleton, Status, TimeAgo,
 } from "@/components/admin/ui";
-import { compactMoney, compactNum, money } from "@/components/admin/format";
+import { compactMoney, money } from "@/components/admin/format";
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "var(--admin-orange)",
-  processing: "var(--admin-blue)",
-  packed: "var(--admin-violet)",
-  shipped: "var(--admin-blue)",
-  delivered: "var(--admin-green)",
-  cancelled: "var(--admin-red)",
-  returned: "var(--admin-orange)",
-  refunded: "var(--admin-red)",
+  pending: "var(--admin-chart-orange, var(--admin-orange))",
+  processing: "var(--admin-chart-blue, var(--admin-blue))",
+  packed: "var(--admin-chart-violet, var(--admin-violet))",
+  shipped: "var(--admin-chart-blue, var(--admin-blue))",
+  delivered: "var(--admin-chart-green, var(--admin-green))",
+  cancelled: "var(--admin-chart-red, var(--admin-red))",
+  returned: "var(--admin-chart-orange, var(--admin-orange))",
+  refunded: "var(--admin-chart-red, var(--admin-red))",
 };
 
 export default function DashboardPage() {
@@ -34,7 +42,7 @@ export default function DashboardPage() {
     .map(([s, v]) => ({ label: s, value: v, color: STATUS_COLORS[s] ?? "var(--admin-muted)" }));
 
   return (
-    <>
+    <div className="admin-dashboard">
       <div className="admin-welcome-row">
         <div>
           <div className="admin-eyebrow">Good to see you{user ? `, ${user.name.split(" ")[0]}` : ""} — {today}</div>
@@ -57,114 +65,29 @@ export default function DashboardPage() {
       </div>
 
       <div className="admin-overview-grid">
-        <Card className="admin-chart-card" kicker="Revenue analytics" title="Revenue vs target" actions={<span className="admin-chart-legend" style={{ margin: 0 }}><span><i className="blue-dot" /> Actual</span><span><i className="green-dot" /> Target</span><b className="muted">{compactMoney(data.charts.revenue.reduce((s, m) => s + m.actual, 0))} total</b></span>}>
-          <div className="admin-chart-wrap">
-            <div className="admin-chart-y" />
-            <LineChart
-              points={data.charts.revenue.map((m) => ({ label: m.label, value: m.actual, secondary: m.target }))}
-              showSecondary
-              formatValue={(n) => (n >= 100000 ? compactMoney(n) : String(n))}
-            />
-            <div className="admin-chart-x" />
-          </div>
-        </Card>
+        <RevenueChartCard data={data.charts.revenue} />
 
-        <Card className="admin-chart-card" kicker="Sales analytics" title="Sales by month" actions={<span className="admin-chart-legend" style={{ margin: 0 }}><b className="muted">{data.charts.salesByMonth.reduce((s, m) => s + m.orders, 0)} orders · 12 mo</b></span>}>
-          <div className="admin-chart-wrap">
-            <div className="admin-chart-y" />
-            <BarChart points={data.charts.salesByMonth.map((m) => ({ label: m.label, value: m.revenue }))} formatValue={(n) => (n >= 100000 ? compactMoney(n) : String(n))} />
-            <div className="admin-chart-x" />
-          </div>
-        </Card>
+        <SalesChartCard data={data.charts.salesByMonth} />
 
-        <Card className="admin-chart-card" kicker="Order volume" title="Orders by day · last 14 days" actions={<span className="admin-chart-legend" style={{ margin: 0 }}><b className="muted">{data.charts.ordersByDay.reduce((s, d) => s + d.orders, 0)} orders</b></span>}>
-          <div className="admin-chart-wrap">
-            <div className="admin-chart-y" />
-            <BarChart points={data.charts.ordersByDay.map((d) => ({ label: d.label, value: d.orders }))} color="var(--admin-green)" formatValue={(n) => String(n)} />
-            <div className="admin-chart-x" />
-          </div>
-        </Card>
+        <OrdersByDayChartCard data={data.charts.ordersByDay} />
 
-        <Card className="admin-health-card" kicker="Store health" title="Fulfilment & quality">
-          <div style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap" }}>
-            <DonutChart
-              data={statusDonut.length ? statusDonut : [{ label: "No orders", value: 1, color: "#eef3f8" }]}
-              size={150}
-              centerValue={String(data.charts.ordersByDay.slice(-1)[0]?.orders ?? 0)}
-              centerLabel="today"
-            />
-            <div style={{ flex: 1, minWidth: 220 }}>
-              <div className="admin-health-score">
-                <strong>{(k.deliveredOrders / Math.max(1, k.deliveredOrders + k.cancelledOrders) * 100).toFixed(0)}%</strong>
-                <span>delivery success rate</span>
-              </div>
-              <p className="admin-health-copy">Order status distribution, {k.totalCustomers} customers served and {k.totalBrands} brands on the platform.</p>
-              <div className="admin-health-list">
-                <div><span><i className="green-dot" /> Delivered</span><b>{k.deliveredOrders}</b></div>
-                <div><span><i className="orange-dot" /> Pending / processing</span><b>{k.pendingOrders}</b></div>
-                <div><span><i className="red-dot" /> Cancelled + refunds</span><b>{k.cancelledOrders + k.refundRequests}</b></div>
-                <div><span><i className="violet-dot" /> Reviews awaiting approval</span><b>{k.reviewsPending}</b></div>
-              </div>
-            </div>
-          </div>
-        </Card>
+        <StoreHealthChartCard
+          data={statusDonut}
+          todayOrders={data.charts.ordersByDay.slice(-1)[0]?.orders ?? 0}
+          deliveredOrders={k.deliveredOrders}
+          pendingOrders={k.pendingOrders}
+          cancelledOrders={k.cancelledOrders}
+          refundRequests={k.refundRequests}
+          reviewsPending={k.reviewsPending}
+          totalCustomers={k.totalCustomers}
+          totalBrands={k.totalBrands}
+        />
 
-        <Card className="admin-span-2" kicker="Best sellers" title="Top selling products" actions={<Link href="/admin/products" className="admin-text-link">All products <Icon name="arrowRight" size={12} /></Link>}>
-          <div className="admin-top-products">
-            {data.charts.topProducts.map((p, i) => {
-              const max = data.charts.topProducts[0]?.revenue ?? 1;
-              return (
-                <div className="admin-top-product" key={p.id}>
-                  <span className="admin-rank">#{i + 1}</span>
-                  <div className="admin-product-mini">
-                    <img src={p.image} alt="" />
-                    <div>
-                      <b>{p.name}</b>
-                      <small>{p.sku} · {compactNum(p.sold)} sold</small>
-                    </div>
-                  </div>
-                  <div className="admin-product-bar">
-                    <i style={{ width: `${(p.revenue / max) * 100}%` }} />
-                  </div>
-                  <strong>{compactMoney(p.revenue)}</strong>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+        <TopProductsChartCard data={data.charts.topProducts} />
 
-        <Card className="admin-span-2" kicker="Category performance" title="Top categories" actions={<Link href="/admin/categories" className="admin-text-link">Manage categories <Icon name="arrowRight" size={12} /></Link>}>
-          <div className="admin-category-perf">
-            {data.charts.topCategories.map((c, i) => {
-              const max = data.charts.topCategories[0]?.revenue ?? 1;
-              return (
-                <div className="admin-category-row" key={c.id}>
-                  <i className={`admin-category-dot ${["blue", "green", "violet", "orange", "red"][i % 5]}`} />
-                  <b>{c.name}</b>
-                  <div className="admin-category-track">
-                    <i style={{ width: `${(c.revenue / max) * 100}%` }} />
-                  </div>
-                  <strong>{compactMoney(c.revenue)}</strong>
-                  <small>{c.orders} orders</small>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+        <TopCategoriesChartCard data={data.charts.topCategories} />
 
-        <Card className="admin-span-2" kicker="Customer growth" title="Customers over the last 12 months" actions={<span className="admin-chart-legend" style={{ margin: 0 }}><span><i className="blue-dot" /> New / month</span><span><i className="green-dot" /> Cumulative</span></span>}>
-          <div className="admin-chart-wrap">
-            <div className="admin-chart-y" />
-            <LineChart
-              points={data.charts.customerGrowth.map((m) => ({ label: m.label, value: m.total, secondary: m.newCustomers }))}
-              showSecondary
-              color="var(--admin-violet)"
-              secondaryColor="var(--admin-green)"
-              formatValue={(n) => (n >= 1000 ? compactNum(n) : String(n))}
-            />
-            <div className="admin-chart-x" />
-          </div>
-        </Card>
+        <CustomerGrowthChartCard data={data.charts.customerGrowth} />
 
         <Card className="admin-span-2 admin-orders-card" kicker="Recent activity" title="Latest orders" actions={<Link href="/admin/orders" className="admin-text-link">View all orders <Icon name="arrowRight" size={12} /></Link>} pad={false}>
           <div className="admin-table-scroll" style={{ padding: "0 20px" }}>
@@ -190,7 +113,7 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <Card kicker="Inventory" title="Low stock alerts" actions={<Link href="/admin/inventory" className="admin-text-link">Inventory <Icon name="arrowRight" size={12} /></Link>}>
+        <Card className="admin-span-2" kicker="Inventory" title="Low stock alerts" actions={<Link href="/admin/inventory" className="admin-text-link">Inventory <Icon name="arrowRight" size={12} /></Link>}>
           {data.alerts.stockAlerts.length === 0 ? (
             <EmptyState icon="checkCircle" title="Stock levels healthy" body="No products below their low-stock threshold." />
           ) : (
@@ -202,14 +125,14 @@ export default function DashboardPage() {
                     <b style={{ fontSize: 11, display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</b>
                     <small style={{ color: "var(--admin-muted)", fontSize: 9.5 }}>{p.sku}</small>
                   </div>
-                  <span className={`admin-stock ${p.stock === 0 ? "out" : "low"}`}><i /> {p.stock} left</span>
+                  <span className={`admin-stock ${p.stock === 0 ? "out" : "low"}`} style={{ flex: "none" }}><i /> {p.stock} left</span>
                 </div>
               ))}
             </div>
           )}
         </Card>
 
-        <Card kicker="Attention" title="Needs your action">
+        <Card className="admin-span-2" kicker="Attention" title="Needs your action">
           <div style={{ display: "grid", gap: 10 }}>
             {[
               { label: "Orders pending", value: k.pendingOrders, href: "/admin/orders", icon: "orders" as const, tone: "orange" },
@@ -220,10 +143,10 @@ export default function DashboardPage() {
               { label: "Unread notifications", value: data.alerts.unreadNotifications, href: "/admin/notifications", icon: "bell" as const, tone: "blue" },
             ].map((it) => (
               <Link key={it.label} href={it.href} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 10px", borderRadius: 11, border: "1px solid var(--admin-line)", transition: ".2s" }} className="admin-needs-action">
-                <span className={`admin-quick-icon ${it.tone}`}><Icon name={it.icon} size={15} /></span>
-                <span style={{ flex: 1, fontSize: 11.5, fontWeight: 800 }}>{it.label}</span>
-                <b style={{ fontFamily: "var(--ff-d)", fontSize: 17 }}>{it.value}</b>
-                <span style={{ color: "var(--admin-muted)", display: "inline-flex" }}><Icon name="chevronRight" size={14} /></span>
+                <span className={`admin-quick-icon ${it.tone}`} style={{ flex: "none" }}><Icon name={it.icon} size={15} /></span>
+                <span style={{ flex: 1, minWidth: 0, fontSize: 11.5, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                <b style={{ fontFamily: "var(--ff-d)", fontSize: 17, flex: "none" }}>{it.value}</b>
+                <span style={{ color: "var(--admin-muted)", display: "inline-flex", flex: "none" }}><Icon name="chevronRight" size={14} /></span>
               </Link>
             ))}
           </div>
@@ -256,13 +179,13 @@ export default function DashboardPage() {
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <>
+    <div className="admin-dashboard">
       <div className="admin-welcome-row">
         <div>
           <div className="admin-eyebrow">Loading workspace…</div>
@@ -278,6 +201,6 @@ function DashboardSkeleton() {
         <div className="admin-skeleton admin-span-2" style={{ height: 356, borderRadius: 17 }} />
       </div>
       <Skeleton rows={4} />
-    </>
+    </div>
   );
 }
