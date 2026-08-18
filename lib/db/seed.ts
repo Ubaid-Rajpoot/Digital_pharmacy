@@ -218,6 +218,8 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
     featured: chance(0.35),
     bestSeller: sold > 2500,
     newArrival: i > 32,
+    rx: categoryId === 1, // Prescription category = Rx-only
+
     seoTitle: `Buy ${name} Online at Best Price`,
     seoDescription: `${name} — genuine product, verified pharmacy, doorstep delivery. Order now at Medora.`,
     metaKeywords: `${name}, ${brandName}, buy online, medora`,

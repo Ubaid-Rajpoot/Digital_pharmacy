@@ -81,7 +81,7 @@ export default function NewsletterPage() {
                       <span><b>{s.email}</b><small>{s.name ?? "—"}</small></span>
                     </div>
                   </Td>
-                  <Td><span className="admin-category-tag">{s.source}</span></Td>
+                  <Td><span className="admin-category-tag dark:!bg-[#1a293c] dark:!text-(--admin-muted)">{s.source}</span></Td>
                   <Td><Status value={s.status} /></Td>
                   <Td>{s.campaigns} emails</Td>
                   <Td className="admin-muted-cell"><TimeAgo iso={s.joinedAt} /></Td>

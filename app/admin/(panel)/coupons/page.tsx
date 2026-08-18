@@ -72,7 +72,7 @@ export default function CouponsPage() {
               {data.items.map((c) => (
                 <tr key={c.id}>
                   <Td><span className={`admin-coupon-code ${TYPE_META[c.type].tone}`}>{c.code}</span><span className="admin-payment">{c.description}</span></Td>
-                  <Td><span className="admin-category-tag">{TYPE_META[c.type].label}</span></Td>
+                  <Td><span className="admin-category-tag dark:!bg-[#1a293c] dark:!text-(--admin-muted)">{TYPE_META[c.type].label}</span></Td>
                   <Td><b>{c.type === "percent" ? `${c.value}%` : c.type === "fixed" ? `Rs ${c.value}` : c.type === "bogo" ? "BOGO" : "Free"}</b>{c.maxDiscount ? <span className="admin-payment">up to Rs {c.maxDiscount}</span> : null}</Td>
                   <Td>{c.minOrder ? `Rs ${c.minOrder}` : "Any"}</Td>
                   <Td><b>{c.uses}</b><span className="admin-payment">of {c.maxUses} · {c.perCustomer}/customer</span></Td>

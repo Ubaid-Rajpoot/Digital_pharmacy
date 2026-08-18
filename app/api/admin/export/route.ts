@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { applyQuery, fail, handleError, parseQuery } from "@/lib/api";
+import { applyQuery, fail, handleError, parseQuery, productsSortValue } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
 import { read } from "@/lib/db/store";
 
@@ -42,7 +42,9 @@ export async function GET(request: NextRequest) {
     const data = await read((db) => {
       let rows = db[resource as keyof typeof db] as unknown as Record<string, unknown>[];
       if (resource === "products") rows = rows.filter((r) => !r.deletedAt);
-      return applyQuery(rows, q, resource).items;
+      return applyQuery(rows, q, resource, (key, row) =>
+        resource === "products" ? productsSortValue(db, key, row) : (row[key] as string | number | null | undefined)
+      ).items;
     });
 
     const cols = DEFAULT_COLUMNS[resource];

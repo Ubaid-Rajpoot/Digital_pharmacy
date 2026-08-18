@@ -262,7 +262,7 @@ function OrderDetail({
         <div className="admin-eyebrow">Items ({order.items.reduce((s, it) => s + it.qty, 0)})</div>
         {order.items.map((it, i) => (
           <div className="admin-order-item" key={i}>
-            <img src={it.image} alt="" />
+            <img src={it.image} alt="" className="dark:!mix-blend-normal" />
             <span><b>{it.name}</b><small>Qty {it.qty}</small></span>
             <strong>{money(it.price * it.qty)}</strong>
           </div>

@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow, IconSearch } from "@/components/icons";
-import { CATNAME, isInStock, pic, rupees } from "@/lib/products";
+import { CATNAME, CATSUBS, isInStock, pic, rupees } from "@/lib/products";
 
 const TABS = [
   { f: "all", label: "All" },
@@ -18,11 +18,17 @@ const TABS = [
   { f: "skin", label: "Skin" },
   { f: "baby", label: "Baby" },
   { f: "devices", label: "Devices" },
+  { f: "personal", label: "Personal Care" },
 ];
 
 export default function ProductToolbar() {
-  const { products, search, setSearch, cat, setCat, openQuick } = useStore();
+  const { products, search, setSearch, cat, setCat, sub, setSub, openQuick } = useStore();
   const [suggestOpen, setSuggestOpen] = useState(false);
+
+  const subs = useMemo(
+    () => (cat === "all" ? [] : (CATSUBS[cat] ?? []).filter((s) => products.some((p) => p.cat === cat && p.sub === s))),
+    [cat, products]
+  );
 
   const suggestions = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -138,6 +144,26 @@ export default function ProductToolbar() {
           </button>
         ))}
       </div>
+
+      {subs.length > 0 && (
+        <div className="sub-tabs" aria-label="Filter by subcategory">
+          <button
+            className={`sub-tab${sub === "" ? " active" : ""}`}
+            onClick={() => setSub("")}
+          >
+            All {CATNAME[cat]}
+          </button>
+          {subs.map((s) => (
+            <button
+              key={s}
+              className={`sub-tab${sub === s ? " active" : ""}`}
+              onClick={() => setSub(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -219,7 +219,7 @@ function CustomerProfile({ customer, onClose, onBan, onPoints }: { customer: Cus
             <div className="admin-form-stack">
               {customer.wishlist.map((w) => (
                 <div key={w.productId} className="admin-order-item">
-                  <img src={w.image} alt="" />
+                  <img src={w.image} alt="" className="dark:!mix-blend-normal" />
                   <span><b>{w.name}</b><small>In wishlist</small></span>
                   <strong>{money(w.price)}</strong>
                 </div>

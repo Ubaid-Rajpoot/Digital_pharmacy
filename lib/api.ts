@@ -40,6 +40,26 @@ export async function parseBody<T>(request: Request): Promise<T> {
   }
 }
 
+/** Filter keys that need computed logic instead of an exact match on the row. */
+const RESOURCE_FILTERS: Record<
+  string,
+  (out: Record<string, unknown>[], key: string, value: unknown) => Record<string, unknown>[] | null
+> = {
+  // products / inventory have no literal `stockState` field — derive it from stock + alert.
+  products: (out, key, value) => {
+    if (key !== "stockState") return null;
+    return out.filter((it) => {
+      const stock = Number(it.stock ?? 0);
+      const alert = Number(it.lowStockAlert ?? 0);
+      if (value === "in") return stock > 0 && stock > alert;
+      if (value === "low") return stock > 0 && stock <= alert;
+      if (value === "out") return stock === 0;
+      return true;
+    });
+  },
+  inventory: (out, key, value) => RESOURCE_FILTERS.products(out, key, value),
+};
+
 /** Fields searched by the generic `search` term, per resource. */
 const SEARCH_FIELDS: Record<string, string[]> = {
   products: ["name", "sku", "barcode", "tags"],
@@ -67,7 +87,8 @@ const SEARCH_FIELDS: Record<string, string[]> = {
 export function applyQuery<T extends Record<string, unknown>>(
   items: T[],
   q: ListQuery,
-  resource: string
+  resource: string,
+  getSortValue?: (key: string, row: T) => string | number | null | undefined
 ): { items: T[]; total: number; page: number; pageSize: number; totalPages: number } {
   let out = items;
 
@@ -87,6 +108,11 @@ export function applyQuery<T extends Record<string, unknown>>(
       out = out.filter((it) => (wantDeleted ? Boolean(it.deletedAt) : !it.deletedAt));
       continue;
     }
+    const handled = RESOURCE_FILTERS[resource]?.(out, key, value);
+    if (handled) {
+      out = handled as T[];
+      continue;
+    }
     if (Array.isArray(value)) {
       const arr = value.map(String);
       out = out.filter((it) => arr.includes(String((it as Record<string, unknown>)[key])));
@@ -98,8 +124,8 @@ export function applyQuery<T extends Record<string, unknown>>(
   if (q.sort) {
     const dir = q.dir === "asc" ? 1 : -1;
     out = [...out].sort((a, b) => {
-      const av = (a as Record<string, unknown>)[q.sort!];
-      const bv = (b as Record<string, unknown>)[q.sort!];
+      const av = getSortValue ? getSortValue(q.sort!, a) : (a as Record<string, unknown>)[q.sort!];
+      const bv = getSortValue ? getSortValue(q.sort!, b) : (b as Record<string, unknown>)[q.sort!];
       if (typeof av === "number" && typeof bv === "number") return (av - bv) * dir;
       return String(av ?? "").localeCompare(String(bv ?? "")) * dir;
     });
@@ -115,6 +141,34 @@ export function applyQuery<T extends Record<string, unknown>>(
     pageSize,
     totalPages: Math.max(1, Math.ceil(total / pageSize)),
   };
+}
+
+/**
+ * Resolves product sort keys that don't exist as raw row fields:
+ * `categoryName` / `brandName` sort by the displayed name, `flags` sorts by
+ * the badge set (featured > bestSeller > newArrival > rx).
+ */
+export function productsSortValue(
+  db: DbShape,
+  key: string,
+  row: Record<string, unknown>
+): string | number | null | undefined {
+  if (key === "categoryName") {
+    const cat = db.categories.find((c) => c.id === Number(row.categoryId));
+    if (!cat) return "";
+    if (cat.parentId) {
+      const parent = db.categories.find((c) => c.id === cat.parentId);
+      return parent ? `${parent.name} / ${cat.name}` : cat.name;
+    }
+    return cat.name;
+  }
+  if (key === "brandName") {
+    return db.brands.find((b) => b.id === Number(row.brandId))?.name ?? "";
+  }
+  if (key === "flags") {
+    return `${row.featured ? "1" : "0"}${row.bestSeller ? "1" : "0"}${row.newArrival ? "1" : "0"}${row.rx ? "1" : "0"}`;
+  }
+  return row[key] as string | number | null | undefined;
 }
 
 export function ok(data: unknown, init?: ResponseInit) {

@@ -26,6 +26,8 @@ type StoreValue = {
   // product filter (shared between Hero, Categories and Products)
   cat: string;
   setCat: (c: string) => void;
+  sub: string; // subcategory filter — only meaningful when a category is active
+  setSub: (s: string) => void;
   search: string;
   setSearch: (s: string) => void;
 
@@ -94,7 +96,8 @@ function flyToCart(fromEl: HTMLElement) {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [cat, setCat] = useState("all");
+  const [cat, setCatState] = useState("all");
+  const [sub, setSub] = useState("");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<Record<number, number>>({});
   const [wishlist, setWishlist] = useState<number[]>([]);
@@ -175,6 +178,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ?.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
   }, []);
 
+  // Switching category clears any active subcategory filter.
+  const setCat = useCallback((c: string) => {
+    setCatState(c);
+    setSub("");
+  }, []);
+
   // Escape closes any open overlay
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -202,6 +211,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     products: PRODUCTS,
     cat,
     setCat,
+    sub,
+    setSub,
     search,
     setSearch,
     cart,

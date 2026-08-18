@@ -296,7 +296,7 @@ export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boo
       role="switch"
       aria-checked={on}
       aria-label={label}
-      className={`admin-toggle ${on ? "on" : ""}`}
+      className={`admin-toggle !p-[2px] !rounded-full ${on ? "on" : ""}`}
       onClick={() => onChange(!on)}
     >
       <span />
@@ -608,6 +608,38 @@ export function Table({
 
 export function Th({ children, align }: { children?: ReactNode; align?: "right" | "left" }) {
   return <th style={align === "right" ? { textAlign: "right" } : undefined}>{children}</th>;
+}
+
+export function SortableTh({
+  children,
+  align,
+  sortKey,
+  sort,
+  onSort,
+}: {
+  children?: ReactNode;
+  align?: "right" | "left";
+  sortKey: string;
+  sort?: { key: string; dir: "asc" | "desc" } | null;
+  onSort: (key: string) => void;
+}) {
+  const active = sort?.key === sortKey;
+  return (
+    <th
+      className={`admin-th-sortable ${active ? "active" : ""}`}
+      onClick={() => onSort(sortKey)}
+      aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+      style={align === "right" ? { textAlign: "right" } : undefined}
+    >
+      <span className="admin-th-inner">
+        {children}
+        <span className="admin-th-arrows">
+          <i className={active && sort.dir === "asc" ? "up on" : "up"}>▲</i>
+          <i className={active && sort.dir === "desc" ? "down on" : "down"}>▼</i>
+        </span>
+      </span>
+    </th>
+  );
 }
 
 export function Td({ children, align, className = "" }: { children?: ReactNode; align?: "right" | "left"; className?: string }) {

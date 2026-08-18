@@ -11,7 +11,7 @@ import { Icon } from "@/components/admin/icons";
 import {
   Btn, Card, Checkbox, Confirm, Drawer, Dropdown, EmptyState, ErrorState, Field,
   FilterBtn, MenuItem, Modal, PageHeader, Pagination, SearchInput, Select, Skeleton,
-  Status, StockBadge, Table, Td, Th, TextArea, TextInput, Toggle, useToast, IconBtn,
+  SortableTh, Status, StockBadge, Table, Td, Th, TextArea, TextInput, Toggle, useToast, IconBtn,
 } from "@/components/admin/ui";
 import { compactNum, dateShort, money } from "@/components/admin/format";
 import type { Product } from "@/lib/db/types";
@@ -123,6 +123,16 @@ export default function ProductsPage() {
     refetch();
   };
 
+  const sort = params.sort ? { key: params.sort, dir: params.dir ?? ("asc" as const) } : null;
+
+  const toggleSort = (key: string) =>
+    setParams((p) => ({
+      ...p,
+      sort: key,
+      dir: p.sort === key ? (p.dir === "asc" ? "desc" : "asc") : "asc",
+      page: 1,
+    }));
+
   const changePage = (page: number) => setParams((p) => ({ ...p, page }));
 
   const headerRight = useMemo(
@@ -218,7 +228,7 @@ export default function ProductsPage() {
                 </Dropdown>
               </>
             )}
-            <FilterBtn onClick={() => setParams({ page: 1, pageSize: 10 })}><Icon name="refresh" size={13} /> Reset</FilterBtn>
+            <FilterBtn onClick={() => { setParams({ page: 1, pageSize: 10 }); setTrash(false); }}><Icon name="refresh" size={13} /> Reset</FilterBtn>
           </div>
         </div>
 
@@ -240,7 +250,14 @@ export default function ProductsPage() {
               head={
                 <>
                   <Th><Checkbox checked={allChecked} onChange={toggleAll} /></Th>
-                  <Th>Product</Th><Th>Category</Th><Th>Brand</Th><Th>Price</Th><Th>Stock</Th><Th>Status</Th><Th>Flags</Th><Th />
+                  <SortableTh sortKey="name" sort={sort} onSort={toggleSort}>Product</SortableTh>
+                  <SortableTh sortKey="categoryName" sort={sort} onSort={toggleSort}>Category</SortableTh>
+                  <SortableTh sortKey="brandName" sort={sort} onSort={toggleSort}>Brand</SortableTh>
+                  <SortableTh sortKey="price" sort={sort} onSort={toggleSort}>Price</SortableTh>
+                  <SortableTh sortKey="stock" sort={sort} onSort={toggleSort}>Stock</SortableTh>
+                  <SortableTh sortKey="status" sort={sort} onSort={toggleSort}>Status</SortableTh>
+                  <SortableTh sortKey="flags" sort={sort} onSort={toggleSort}>Flags</SortableTh>
+                  <Th />
                 </>
               }
             >
@@ -256,7 +273,7 @@ export default function ProductsPage() {
                       </span>
                     </div>
                   </Td>
-                  <Td><span className="admin-category-tag">{catName(p.categoryId)}</span></Td>
+                  <Td><span className="admin-category-tag dark:!bg-[#1a293c] dark:!text-(--admin-muted)">{catName(p.categoryId)}</span></Td>
                   <Td><b>{brands.find((b) => b.id === p.brandId)?.name ?? "—"}</b></Td>
                   <Td>
                     <b>{money(p.price)}</b>
@@ -266,6 +283,7 @@ export default function ProductsPage() {
                   <Td><Status value={p.status} /></Td>
                   <Td>
                     <span style={{ display: "inline-flex", gap: 4, alignItems: "center" }}>
+                      {p.rx && <span className="admin-coupon-code red" title="Prescription required"><Icon name="shieldCheck" size={11} /></span>}
                       {p.featured && <span className="admin-coupon-code violet" title="Featured"><Icon name="starFill" size={11} /></span>}
                       {p.bestSeller && <span className="admin-coupon-code green" title="Best seller"><Icon name="spark" size={11} /></span>}
                       {p.newArrival && <span className="admin-coupon-code blue" title="New arrival"><Icon name="plus" size={11} /></span>}
@@ -364,6 +382,7 @@ function ProductPreview({ product, onClose, onEdit }: { product: Product; onClos
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <Status value={product.status} />
             <StockBadge stock={product.stock} alert={product.lowStockAlert} />
+            {product.rx && <span className="admin-coupon-code red">℞ Prescription required</span>}
             {product.featured && <span className="admin-coupon-code violet">Featured</span>}
             {product.bestSeller && <span className="admin-coupon-code green">Best seller</span>}
           </div>
@@ -442,6 +461,11 @@ function ProductForm({
     featured: product?.featured ?? false,
     bestSeller: product?.bestSeller ?? false,
     newArrival: product?.newArrival ?? false,
+    rx: product?.rx ?? false,
+    rating: product?.rating ?? 0,
+    reviews: product?.reviews ?? 0,
+    sold: product?.sold ?? 0,
+    composition: (product?.specifications ?? []).find((s) => s.label === "Salt / composition")?.value ?? "",
     seoTitle: product?.seoTitle ?? "",
     seoDescription: product?.seoDescription ?? "",
     metaKeywords: product?.metaKeywords ?? "",
@@ -472,7 +496,16 @@ function ProductForm({
       return;
     }
     const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
-    const payload: Record<string, unknown> = { ...form, tags };
+    // Salt / composition lives inside the specifications list — keep any other
+    // specs (pack size, manufacturer, storage…) untouched.
+    const { composition, ...rest } = form;
+    const specs = [...((form.specifications as { label: string; value: string }[]) ?? [])].filter(
+      (s) => s.label !== "Salt / composition"
+    );
+    if (String(composition).trim()) {
+      specs.push({ label: "Salt / composition", value: String(composition).trim() });
+    }
+    const payload: Record<string, unknown> = { ...rest, tags, specifications: specs };
     const res = product
       ? await mutate.update(product.id, payload)
       : await mutate.create(payload);
@@ -499,18 +532,18 @@ function ProductForm({
             <Field label="Product name" required error={errors.name} className="full">
               <TextInput value={form.name as string} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Paracetamol 500mg · 15 tablets" />
             </Field>
-            <Field label="SKU" required error={errors.sku}>
+            <Field label="SKU (product code)" hint="Your internal code to identify this product, e.g. MED-1041" required error={errors.sku}>
               <TextInput value={form.sku as string} onChange={(e) => set("sku", e.target.value)} placeholder="MED-1041" />
             </Field>
-            <Field label="Barcode">
+            <Field label="Barcode (scan code)" hint="The number printed under the barcode on the packaging">
               <TextInput value={form.barcode as string} onChange={(e) => set("barcode", e.target.value)} placeholder="8901234567890" />
             </Field>
-            <Field label="Brand" required>
+            <Field label="Brand" hint="Company that makes this product">
               <Select value={form.brandId as number} onChange={(e) => set("brandId", Number(e.target.value))}>
                 {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </Select>
             </Field>
-            <Field label="Category" required error={errors.categoryId}>
+            <Field label="Category" hint="Main department this product belongs to" required error={errors.categoryId}>
               <Select value={form.categoryId as number} onChange={(e) => { set("categoryId", Number(e.target.value)); set("subcategoryId", undefined); }}>
                 {rootCats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
@@ -521,100 +554,138 @@ function ProductForm({
                 {subCats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
             </Field>
-            <Field label="Dealer / vendor" hint="Optional — links this product to a dealer">
+            <Field label="Dealer / supplier" hint="Optional — who supplies this product to you">
               <Select value={(form.dealerId as number) ?? ""} onChange={(e) => set("dealerId", e.target.value ? Number(e.target.value) : undefined)}>
                 <option value="">No dealer</option>
                 {dealers.map((d) => <option key={d.id} value={d.id}>{d.company}</option>)}
               </Select>
             </Field>
-            <Field label="Status">
+            <Field label="Status" hint="Draft = hidden from the store, Active = visible, Archived = removed">
               <Select value={form.status as string} onChange={(e) => set("status", e.target.value)}>
                 <option value="active">Active</option>
                 <option value="draft">Draft</option>
                 <option value="archived">Archived</option>
               </Select>
             </Field>
-            <Field label="Description" className="full">
-              <TextArea rows={4} value={form.description as string} onChange={(e) => set("description", e.target.value)} placeholder="Short product description shown to customers…" />
+          </div>
+        </div>
+
+        <div className="admin-form-section">
+          <h3>What customers see</h3>
+          <p className="-mt-1.5 mb-1 text-[11px] text-(--admin-muted)">
+            Everything shown on the product page for this item.
+          </p>
+          <div className="admin-form-grid">
+            <Field label="Salt / composition" hint="The medicine composition shown with a ℞ on the product page, e.g. Paracetamol 500mg · 15 tablets" className="full">
+              <TextInput value={form.composition as string} onChange={(e) => set("composition", e.target.value)} placeholder="Paracetamol 500mg · 15 tablets" />
             </Field>
+            <Field label="Rating (out of 5)" hint="Average customer rating shown as ★ 4.8">
+              <TextInput type="number" min={0} max={5} step={0.1} value={form.rating as number} onChange={(e) => set("rating", Number(e.target.value))} />
+            </Field>
+            <Field label="Reviews count" hint="Total number of customer reviews">
+              <TextInput type="number" min={0} value={form.reviews as number} onChange={(e) => set("reviews", Number(e.target.value))} />
+            </Field>
+            <Field label="Units sold" hint="How many units have been sold so far">
+              <TextInput type="number" min={0} value={form.sold as number} onChange={(e) => set("sold", Number(e.target.value))} />
+            </Field>
+            <Field label="Description" hint="Short description customers read on the product page" className="full">
+              <TextArea rows={4} value={form.description as string} onChange={(e) => set("description", e.target.value)} placeholder="Fast-acting relief from fever, headache and body ache…" />
+            </Field>
+            <div className="admin-choice col-span-full mb-0.5">
+              <span>Prescription required (Rx)</span>
+              <Toggle
+                on={form.rx as boolean}
+                onChange={(v) => set("rx", v)}
+                label="Prescription required"
+              />
+              <small className="basis-full mt-2 text-[10px] text-(--admin-muted)">
+                On = customers see a “Prescription required” badge and must upload an Rx before buying.
+              </small>
+            </div>
           </div>
         </div>
 
         <div className="admin-form-section">
           <h3>Pricing & inventory</h3>
           <div className="admin-form-grid">
-            <Field label="Cost price (Rs)" error={errors.price}>
+            <Field label="Cost price (Rs)" hint="What you pay to buy this product — not shown to customers">
               <TextInput type="number" min={0} value={form.costPrice as number} onChange={(e) => set("costPrice", Number(e.target.value))} />
             </Field>
-            <Field label="Selling price (Rs)" required error={errors.price}>
+            <Field label="Selling price (Rs)" hint="The final price customers pay" required error={errors.price}>
               <TextInput type="number" min={0} value={form.price as number} onChange={(e) => set("price", Number(e.target.value))} />
             </Field>
-            <Field label="MRP (Rs)" error={errors.mrp}>
+            <Field label="MRP (original price) (Rs)" hint="Price printed on the pack — shown with a strikethrough on the site">
               <TextInput type="number" min={0} value={form.mrp as number} onChange={(e) => set("mrp", Number(e.target.value))} />
             </Field>
-            <Field label="Tax (%)">
+            <Field label="Tax % (GST)">
               <TextInput type="number" min={0} max={28} value={form.tax as number} onChange={(e) => set("tax", Number(e.target.value))} />
             </Field>
-            <Field label="Stock quantity">
+            <Field label="Stock quantity" hint="0 = shows as Out of stock on the site">
               <TextInput type="number" min={0} value={form.stock as number} onChange={(e) => set("stock", Number(e.target.value))} />
             </Field>
-            <Field label="Low stock alert">
+            <Field label="Low stock alert" hint="Get a warning when stock falls below this number">
               <TextInput type="number" min={0} value={form.lowStockAlert as number} onChange={(e) => set("lowStockAlert", Number(e.target.value))} />
             </Field>
-            <Field label="Weight">
+            <Field label="Weight" hint="Parcel weight for shipping, e.g. 0.05 kg">
               <TextInput value={form.weight as string} onChange={(e) => set("weight", e.target.value)} placeholder="0.05 kg" />
             </Field>
-            <Field label="Dimensions">
+            <Field label="Dimensions" hint="Pack dimensions for shipping">
               <TextInput value={form.dimensions as string} onChange={(e) => set("dimensions", e.target.value)} placeholder="10 × 5 × 3 cm" />
             </Field>
           </div>
         </div>
 
         <div className="admin-form-section">
-          <h3>Media</h3>
+          <h3>Photos & videos</h3>
           <div className="admin-form-grid">
-            <Field label="Main image URL" className="full">
+            <Field label="Main photo URL" hint="The photo shown on the product card and product page" className="full">
               <TextInput value={form.image as string} onChange={(e) => set("image", e.target.value)} placeholder="https://…" />
             </Field>
-            <Field label="Gallery URLs (comma separated)" className="full">
+            <Field label="More photos (comma separated)" hint="Extra photos shown in the product gallery" className="full">
               <TextInput value={(form.gallery as string[]).join(", ")} onChange={(e) => set("gallery", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="https://…, https://…" />
             </Field>
-            <Field label="Video URLs (comma separated)" className="full">
+            <Field label="Videos (comma separated)" className="full">
               <TextInput value={(form.videos as string[]).join(", ")} onChange={(e) => set("videos", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="https://…" />
             </Field>
           </div>
         </div>
 
         <div className="admin-form-section">
-          <h3>Flags & tags</h3>
+          <h3>Badges & tags</h3>
+          <p className="-mt-1.5 mb-1 text-[11px] text-(--admin-muted)">
+            Badges highlight the product on the store; tags help customers find it in search.
+          </p>
           <div className="admin-choice" style={{ marginBottom: 12 }}>
-            <span>Featured</span>
+            <span>Featured — shown in the spotlight section</span>
             <Toggle on={form.featured as boolean} onChange={(v) => set("featured", v)} />
           </div>
           <div className="admin-choice" style={{ marginBottom: 12 }}>
-            <span>Best seller</span>
+            <span>Best seller — “bestseller” badge</span>
             <Toggle on={form.bestSeller as boolean} onChange={(v) => set("bestSeller", v)} />
           </div>
           <div className="admin-choice" style={{ marginBottom: 12 }}>
-            <span>New arrival</span>
+            <span>New arrival — “new” badge</span>
             <Toggle on={form.newArrival as boolean} onChange={(v) => set("newArrival", v)} />
           </div>
-          <Field label="Tags (comma separated)" hint="Used for search and filtering">
+          <Field label="Tags (comma separated)" hint="Search keywords, e.g. bestseller, otc, fever">
             <TextInput value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder="bestseller, otc, fever" />
           </Field>
         </div>
 
         <div className="admin-form-section">
-          <h3>Search engine optimisation</h3>
+          <h3>Search engine (Google) settings</h3>
+          <p className="-mt-1.5 mb-1 text-[11px] text-(--admin-muted)">
+            Optional — helps people find this product on Google.
+          </p>
           <div className="admin-form-grid">
-            <Field label="SEO title" className="full">
-              <TextInput value={form.seoTitle as string} onChange={(e) => set("seoTitle", e.target.value)} />
+            <Field label="Page title" hint="The title shown in the browser tab and Google results" className="full">
+              <TextInput value={form.seoTitle as string} onChange={(e) => set("seoTitle", e.target.value)} placeholder={`Buy ${(form.name as string) || "product"} Online at Best Price`} />
             </Field>
-            <Field label="SEO description" className="full">
+            <Field label="Page description" hint="The short summary shown under the title in Google results" className="full">
               <TextArea rows={2} value={form.seoDescription as string} onChange={(e) => set("seoDescription", e.target.value)} />
             </Field>
-            <Field label="Meta keywords" className="full">
-              <TextInput value={form.metaKeywords as string} onChange={(e) => set("metaKeywords", e.target.value)} />
+            <Field label="Search keywords" hint="Words customers might type to find this product" className="full">
+              <TextInput value={form.metaKeywords as string} onChange={(e) => set("metaKeywords", e.target.value)} placeholder="paracetamol, fever tablets, buy online" />
             </Field>
           </div>
         </div>

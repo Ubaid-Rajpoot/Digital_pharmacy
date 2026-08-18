@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Reveal from "@/components/Reveal";
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow } from "@/components/icons";
-import { pic } from "@/lib/products";
+import { CATSUBS, pic } from "@/lib/products";
 
 type Cat = {
   cat: string;
@@ -122,8 +122,9 @@ const CATS: Cat[] = [
 ];
 
 function CatCard({ c, delay }: { c: Cat; delay?: string }) {
-  const { setCat, setSearch, scrollToSection } = useStore();
+  const { setCat, setSub, setSearch, scrollToSection } = useStore();
   const ref = useRef<HTMLButtonElement>(null);
+  const subs = CATSUBS[c.cat] ?? [];
 
   useEffect(() => {
     const el = ref.current;
@@ -158,6 +159,37 @@ function CatCard({ c, delay }: { c: Cat; delay?: string }) {
       <img className="cat-thumb" src={pic(c.thumb, 120, 120)} alt="" loading="lazy" />
       <b>{c.name}</b>
       <small>{c.count}</small>
+      {subs.length > 0 && (
+        <span className="cat-subs">
+          {subs.map((s) => (
+            <span
+              key={s}
+              className="cat-sub"
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCat(c.cat);
+                setSub(s);
+                setSearch("");
+                scrollToSection("medicines");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCat(c.cat);
+                  setSub(s);
+                  setSearch("");
+                  scrollToSection("medicines");
+                }
+              }}
+            >
+              {s}
+            </span>
+          ))}
+        </span>
+      )}
       <span className="cat-arrow">
         <IconArrow size={15} strokeWidth={2.4} />
       </span>

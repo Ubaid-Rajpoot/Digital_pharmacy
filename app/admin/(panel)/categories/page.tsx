@@ -75,7 +75,7 @@ export default function CategoriesPage() {
                   <p>{c.description}</p>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap", minHeight: 24 }}>
                     {c.featured && <span className="admin-coupon-code violet">★ Featured</span>}
-                    {kids.length > 0 && <span className="admin-category-tag">{kids.length} children</span>}
+                    {kids.length > 0 && <span className="admin-category-tag dark:!bg-[#1a293c] dark:!text-(--admin-muted)">{kids.length} children</span>}
                     <Status value={c.status} />
                   </div>
                   <div className="admin-category-meta">

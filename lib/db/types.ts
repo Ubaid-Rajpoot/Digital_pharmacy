@@ -47,6 +47,8 @@ export interface Product {
   featured: boolean;
   bestSeller: boolean;
   newArrival: boolean;
+  /** Prescription-only medicine — requires an Rx to be sold. */
+  rx: boolean;
   seoTitle: string;
   seoDescription: string;
   metaKeywords: string;

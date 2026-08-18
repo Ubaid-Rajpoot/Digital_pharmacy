@@ -8,7 +8,7 @@ type Row = Record<string, unknown> & { id: number };
 
 const RESOURCES = [
   "products", "categories", "brands", "dealers", "orders", "customers",
-  "reviews", "inventory", "coupons", "content", "media", "support",
+  "reviews", "inventory", "warehouses", "coupons", "content", "media", "support",
   "subscribers", "users", "notifications", "faqs", "menu",
   "purchaseOrders", "stockAdjustments", "flashSales", "socials", "settings",
 ] as const;
@@ -26,6 +26,9 @@ function isResource(r: string): r is Resource {
   return (RESOURCES as readonly string[]).includes(r);
 }
 
+/** warehouses & purchase orders live under the inventory module's permission. */
+const permissionFor = (r: string) => (r === "warehouses" ? "inventory" : r);
+
 function collection(db: DbShape, r: Resource): Row[] {
   return (r === "settings" ? [db.settings as unknown as Row] : (db[r] as unknown as Row[]));
 }
@@ -39,7 +42,7 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ resourc
   try {
     const { resource, id } = await ctx.params;
     if (!isResource(resource)) return fail("Unknown resource.", 404);
-    await requireAuth(resource);
+    await requireAuth(permissionFor(resource));
     return read((db) => {
       if (resource === "settings") return ok(db.settings);
       const row = collection(db, resource).find((r) => r.id === Number(id));
@@ -55,7 +58,7 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ resou
   try {
     const { resource, id } = await ctx.params;
     if (!isResource(resource)) return fail("Unknown resource.", 404);
-    const user = await requireAuth(`${resource}.edit`);
+    const user = await requireAuth(`${permissionFor(resource)}.edit`);
     const body = await parseBody<Record<string, unknown>>(request);
     const ip = clientIp(request);
     const changes: { field: string; from: unknown; to: unknown }[] = [];
@@ -151,7 +154,7 @@ export async function DELETE(request: NextRequest, ctx: { params: Promise<{ reso
   try {
     const { resource, id } = await ctx.params;
     if (!isResource(resource)) return fail("Unknown resource.", 404);
-    const user = await requireAuth(`${resource}.delete`);
+    const user = await requireAuth(`${permissionFor(resource)}.delete`);
     const numId = Number(id);
     const ip = clientIp(request);
     return write((db) => {

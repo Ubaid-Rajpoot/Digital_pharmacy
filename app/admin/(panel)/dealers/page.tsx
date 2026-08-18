@@ -207,7 +207,7 @@ function DealerDetail({
             <div className="admin-form-stack">
               {dealerProducts.slice(0, 10).map((p) => (
                 <div key={p.id} className="admin-order-item">
-                  <img src={p.image} alt="" />
+                  <img src={p.image} alt="" className="dark:!mix-blend-normal" />
                   <span><b>{p.name}</b><small>{p.sku} · stock {p.stock}</small></span>
                   <strong>{money(p.price)}</strong>
                 </div>

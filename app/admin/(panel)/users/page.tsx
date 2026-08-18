@@ -47,7 +47,7 @@ export default function UsersPage() {
                       <span><b>{u.name}</b><small>{u.email}</small></span>
                     </div>
                   </Td>
-                  <Td><span className="admin-category-tag">{u.role}</span></Td>
+                  <Td><span className="admin-category-tag dark:!bg-[#1a293c] dark:!text-(--admin-muted)">{u.role}</span></Td>
                   <Td>{u.twoFactor ? <span className="admin-coupon-code green"><Icon name="shieldCheck" size={11} /> On</span> : <span className="admin-coupon-code">Off</span>}</Td>
                   <Td className="admin-muted-cell">{u.lastLogin ? <TimeAgo iso={u.lastLogin} /> : "Never"}</Td>
                   <Td><Status value={u.status} /></Td>

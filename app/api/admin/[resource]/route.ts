@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { applyQuery, audit, clientIp, fail, handleError, ok, parseBody, parseQuery } from "@/lib/api";
+import { applyQuery, audit, clientIp, fail, handleError, ok, parseBody, parseQuery, productsSortValue } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
 import { nextId, read, write } from "@/lib/db/store";
 import type { DbShape } from "@/lib/db/types";
@@ -8,7 +8,7 @@ type Row = Record<string, unknown> & { id: number };
 
 const RESOURCES = [
   "products", "categories", "brands", "dealers", "orders", "customers",
-  "reviews", "inventory", "coupons", "content", "media", "support",
+  "reviews", "inventory", "warehouses", "coupons", "content", "media", "support",
   "subscribers", "users", "notifications", "audit", "faqs", "menu",
   "purchaseOrders", "stockAdjustments", "flashSales", "socials", "roles",
 ] as const;
@@ -34,7 +34,8 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ resourc
   try {
     const { resource } = await ctx.params;
     if (!isResource(resource)) return fail("Unknown resource.", 404);
-    await requireAuth(resource);
+    // warehouses & purchase orders belong to the inventory module
+    await requireAuth(resource === "warehouses" ? "inventory" : resource);
     const q = parseQuery(request.nextUrl);
     return read((db) => {
       let rows = collection(db, resource);
@@ -44,7 +45,9 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ resourc
       if (resource === "orders" && !q.sort) {
         rows = [...rows].sort((a, b) => +new Date(String(b.createdAt)) - +new Date(String(a.createdAt)));
       }
-      const result = applyQuery(rows, q, resource);
+      const result = applyQuery(rows, q, resource, (key, row) =>
+        resource === "products" ? productsSortValue(db, key, row) : (row[key] as string | number | null | undefined)
+      );
       return ok(result);
     });
   } catch (e) {
@@ -56,7 +59,7 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ resour
   try {
     const { resource } = await ctx.params;
     if (!isResource(resource)) return fail("Unknown resource.", 404);
-    const user = await requireAuth(`${resource}.create`);
+    const user = await requireAuth(`${resource === "warehouses" ? "inventory" : resource}.create`);
     const body = await parseBody<Record<string, unknown>>(request);
     return write(async (db) => {
       const rows = collection(db, resource);

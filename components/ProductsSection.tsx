@@ -8,17 +8,18 @@ import ProductToolbar from "@/components/ProductToolbar";
 import { CATNAME } from "@/lib/products";
 
 export default function ProductsSection() {
-  const { products, cat, search } = useStore();
+  const { products, cat, sub, search } = useStore();
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
     return products.filter(
       (p) =>
         (cat === "all" || p.cat === cat) &&
+        (sub === "" || p.sub === sub) &&
         (q === "" ||
-          (p.name + " " + p.brand + " " + (CATNAME[p.cat] || "")).toLowerCase().includes(q))
+          (p.name + " " + p.brand + " " + (CATNAME[p.cat] || "") + " " + (p.sub || "")).toLowerCase().includes(q))
     );
-  }, [products, cat, search]);
+  }, [products, cat, sub, search]);
 
   return (
     <section className="sec" id="medicines">
