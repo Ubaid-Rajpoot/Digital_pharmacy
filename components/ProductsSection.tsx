@@ -8,7 +8,7 @@ import ProductToolbar from "@/components/ProductToolbar";
 import { CATNAME } from "@/lib/products";
 
 export default function ProductsSection() {
-  const { products, categories, catalogReady, cat, sub, search } = useStore();
+  const { products, categories, catalogReady, catalogError, retryCatalog, cat, sub, search } = useStore();
   const categoryNames = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.cat, c.name])) as Record<string, string>,
     [categories]
@@ -40,7 +40,16 @@ export default function ProductsSection() {
           <ProductToolbar />
         </Reveal>
         <div className="prod-grid">
-          {!catalogReady ? (
+          {catalogError ? (
+            <div className="prod-empty">
+              <p style={{ fontSize: 40 }}>🩺</p>
+              <p style={{ fontWeight: 800, margin: "8px 0 4px" }}>Catalogue unavailable</p>
+              <p>{catalogError}</p>
+              <button type="button" className="btn btn-primary" style={{ marginTop: 14 }} onClick={retryCatalog}>
+                Try again
+              </button>
+            </div>
+          ) : !catalogReady ? (
             <div className="prod-empty">
               <p style={{ fontSize: 40 }}>⏳</p>
               <p style={{ fontWeight: 800, margin: "8px 0 4px" }}>Loading live products…</p>

@@ -13,7 +13,9 @@ const COOKIE = "medora_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12h
 const secret = () => process.env.AUTH_SECRET || "medora-dev-secret-change-me";
 
-// Demo password — swap for bcrypt/argon2 in production.
+// Passwords are stored per-user as scrypt hashes (lib/password.ts). This is
+// only the fallback for accounts created before hashing existed — override it
+// by setting ADMIN_PASSWORD (used when seeding) in the environment.
 export const DEMO_PASSWORD = "demo1234";
 
 interface SessionPayload {

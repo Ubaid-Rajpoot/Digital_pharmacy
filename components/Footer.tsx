@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
 import { IconCheck, IconCross, IconMail, IconPhone, IconPin } from "@/components/icons";
 
@@ -39,24 +40,24 @@ export default function Footer() {
               </span>
             </div>
             <div className="socials">
-              <a href="#" aria-label="Instagram">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
                   <rect x="3" y="3" width="18" height="18" rx="5" />
                   <circle cx="12" cy="12" r="4" />
                   <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
                 </svg>
               </a>
-              <a href="#" aria-label="X">
+              <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.6 3H21l-7.4 8.5L22.2 21h-6.8l-5.3-6.4L4 21H.6l7.9-9.1L1.5 3h7l4.8 5.9L17.6 3Zm-1.2 16h1.9L6.6 4.9H4.6L16.4 19Z" />
                 </svg>
               </a>
-              <a href="#" aria-label="Facebook">
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M13.5 21v-7h2.6l.5-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6h1.6V4.8c-.8-.1-1.7-.2-2.5-.2-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.5v7h3.5Z" />
                 </svg>
               </a>
-              <a href="#" aria-label="YouTube">
+              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.3 5 12 5 12 5s-6.3 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12c0 1.6.1 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8c1.5.4 7.8.4 7.8.4s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.3-1.6.4-3.2.4-4.8s-.1-3.2-.4-4.8ZM10 15.2V8.8l5.5 3.2L10 15.2Z" />
                 </svg>
@@ -77,11 +78,10 @@ export default function Footer() {
             <a href="#" onClick={(e) => { e.preventDefault(); setRxOpen(true); }}>
               Upload Prescription
             </a>
-            <a href="#medicines">Track Your Order</a>
-            <a href="#">Delivery Policy</a>
-            <a href="#">Returns &amp; Refunds</a>
+            <Link href="/track">Track Your Order</Link>
+            <Link href="/policies/delivery">Delivery Policy</Link>
+            <Link href="/policies/returns">Returns &amp; Refunds</Link>
             <a href="#consult">Talk to a Pharmacist</a>
-            <a href="#app">Download the App</a>
           </div>
           <div className="foot-col">
             <h5>Contact</h5>
@@ -119,13 +119,13 @@ export default function Footer() {
         <div className="foot-bottom">
           <span>
             © {year} Medora Health Pvt. Ltd. ·{" "}
-            <a href="#" style={{ textDecoration: "underline" }}>
+            <Link href="/policies/privacy" style={{ textDecoration: "underline" }}>
               Privacy Policy
-            </a>{" "}
+            </Link>{" "}
             ·{" "}
-            <a href="#" style={{ textDecoration: "underline" }}>
+            <Link href="/policies/terms" style={{ textDecoration: "underline" }}>
               Terms &amp; Conditions
-            </a>
+            </Link>
           </span>
           <div className="pay-chips">
             <span>VISA</span>

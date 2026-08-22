@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { applyQuery, audit, clientIp, fail, handleError, ok, parseBody, parseQuery, productsSortValue } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
+import { DEFAULT_ADMIN_PASSWORD, hashPassword } from "@/lib/password";
 import { nextId, read, write } from "@/lib/db/store";
 import type { DbShape } from "@/lib/db/types";
 
@@ -48,6 +49,10 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ resourc
       const result = applyQuery(rows, q, resource, (key, row) =>
         resource === "products" ? productsSortValue(db, key, row) : (row[key] as string | number | null | undefined)
       );
+      // Never leak password hashes to the client.
+      if (resource === "users" || resource === "customers") {
+        result.items = result.items.map(({ passwordHash: _hidden, ...safe }) => safe);
+      }
       return ok(result);
     });
   } catch (e) {
@@ -73,6 +78,14 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ resour
           row.discount = Math.round((1 - row.price / row.mrp) * 100);
         }
         row.image = row.image || `https://picsum.photos/seed/prod-${row.id}/400/400`;
+      }
+      if (resource === "users") {
+        // Optional plaintext `password` in the payload; defaults to the
+        // seed default so every account can always sign in.
+        row.passwordHash = hashPassword(
+          typeof body.password === "string" && body.password ? body.password : DEFAULT_ADMIN_PASSWORD
+        );
+        delete row.password;
       }
       rows.unshift(row);
       if (resource === "brands") {

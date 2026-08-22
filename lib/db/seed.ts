@@ -7,6 +7,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { AdminUser, Brand, DbShape, Dealer, Product, Order, OrderStatus, Customer, Review } from "./types";
+import { hashPassword, DEFAULT_ADMIN_PASSWORD } from "@/lib/password";
 
 /** Deterministic PRNG (mulberry32) */
 export function mulberry32(seed: number) {
@@ -556,12 +557,12 @@ export const seedSubscribers = Array.from({ length: 30 }, (_, i) => {
 });
 
 export const seedUsers: AdminUser[] = [
-  { id: 1, name: "Aarav Mehta", email: "admin@medora.health", role: "Super Admin", status: "active", avatar: pic("admin-aarav", 120, 120), lastLogin: hoursAgo(1), twoFactor: true, createdAt: monthsAgo(18) },
-  { id: 2, name: "Sneha Kulkarni", email: "sneha@medora.health", role: "Manager", status: "active", avatar: pic("admin-sneha", 120, 120), lastLogin: hoursAgo(3), twoFactor: true, createdAt: monthsAgo(14) },
-  { id: 3, name: "Amit Bansal", email: "amit@medora.health", role: "Inventory Manager", status: "active", avatar: pic("admin-amit", 120, 120), lastLogin: daysAgo(1), twoFactor: false, createdAt: monthsAgo(11) },
-  { id: 4, name: "Priya Nair", email: "priya@medora.health", role: "Customer Support", status: "active", avatar: pic("admin-priya", 120, 120), lastLogin: hoursAgo(6), twoFactor: false, createdAt: monthsAgo(9) },
-  { id: 5, name: "Rohit Deshmukh", email: "rohit@medora.health", role: "Marketing", status: "active", avatar: pic("admin-rohit", 120, 120), lastLogin: daysAgo(2), twoFactor: false, createdAt: monthsAgo(7) },
-  { id: 6, name: "Neha Gupta", email: "neha@medora.health", role: "Admin", status: "disabled", avatar: pic("admin-neha", 120, 120), lastLogin: daysAgo(30), twoFactor: false, createdAt: monthsAgo(16) },
+  { id: 1, name: "Aarav Mehta", email: "admin@medora.health", role: "Super Admin", status: "active", avatar: pic("admin-aarav", 120, 120), lastLogin: hoursAgo(1), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: true, createdAt: monthsAgo(18) },
+  { id: 2, name: "Sneha Kulkarni", email: "sneha@medora.health", role: "Manager", status: "active", avatar: pic("admin-sneha", 120, 120), lastLogin: hoursAgo(3), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: true, createdAt: monthsAgo(14) },
+  { id: 3, name: "Amit Bansal", email: "amit@medora.health", role: "Inventory Manager", status: "active", avatar: pic("admin-amit", 120, 120), lastLogin: daysAgo(1), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: false, createdAt: monthsAgo(11) },
+  { id: 4, name: "Priya Nair", email: "priya@medora.health", role: "Customer Support", status: "active", avatar: pic("admin-priya", 120, 120), lastLogin: hoursAgo(6), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: false, createdAt: monthsAgo(9) },
+  { id: 5, name: "Rohit Deshmukh", email: "rohit@medora.health", role: "Marketing", status: "active", avatar: pic("admin-rohit", 120, 120), lastLogin: daysAgo(2), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: false, createdAt: monthsAgo(7) },
+  { id: 6, name: "Neha Gupta", email: "neha@medora.health", role: "Admin", status: "disabled", avatar: pic("admin-neha", 120, 120), lastLogin: daysAgo(30), passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD), twoFactor: false, createdAt: monthsAgo(16) },
 ];
 
 export const seedNotifications: any[] = INCLUDE_DEMO_SALES ? [
@@ -601,7 +602,7 @@ export const seedSettings: any = {
   store: {
     name: "Medora", tagline: "Your Health Deserves The Best Care", email: "care@medora.health", phone: "+91 1800 419 0990",
     address: "4th Floor, Sunrise Tower, Andheri East, Mumbai 400069", currency: "INR (Rs)", timezone: "Asia/Kolkata",
-    logo: pic("medora-logo", 240, 90), favicon: pic("medora-favicon", 64, 64),
+    logo: pic("medora-logo", 240, 90), favicon: pic("medora-favicon", 64, 64), revenueTarget: 850000,
   },
   email: { from: "Medora <care@medora.health>", replyTo: "care@medora.health", smtp: { host: "smtp.medora.health", port: 587, user: "care@medora.health", secure: true } },
   payments: {

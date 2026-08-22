@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { audit, clientIp, fail, handleError, ok, parseBody } from "@/lib/api";
-import { createSession, DEMO_PASSWORD } from "@/lib/auth";
+import { createSession } from "@/lib/auth";
+import { DEFAULT_ADMIN_PASSWORD, hashPassword, verifyPassword } from "@/lib/password";
 import { read, write } from "@/lib/db/store";
 
 const attempts = new Map<string, { n: number; reset: number }>();
@@ -23,7 +24,14 @@ export async function POST(request: NextRequest) {
       db.users.find((u) => u.email.toLowerCase() === email && u.status === "active")
     );
 
-    const valid = user !== undefined && password === DEMO_PASSWORD;
+    // Accounts with a scrypt hash verify against it; accounts seeded before
+    // hashing existed (missing/legacy hash) accept the default password and
+    // are upgraded below on first successful login.
+    const valid =
+      user !== undefined &&
+      (user.passwordHash?.startsWith("scrypt:")
+        ? verifyPassword(password, user.passwordHash)
+        : password === DEFAULT_ADMIN_PASSWORD);
     if (!valid) {
       const cur = attempts.get(ip) ?? { n: 0, reset: Date.now() + WINDOW_MS };
       cur.n += 1;
@@ -35,7 +43,11 @@ export async function POST(request: NextRequest) {
     await createSession(user!.id);
     await write((db) => {
       const u = db.users.find((x) => x.id === user!.id);
-      if (u) u.lastLogin = new Date().toISOString();
+      if (u) {
+        u.lastLogin = new Date().toISOString();
+        // Transparently upgrade pre-hashing accounts on first login.
+        if (!u.passwordHash?.startsWith("scrypt:")) u.passwordHash = hashPassword(password);
+      }
       audit(db, user!.name, "signed in", "Admin panel", [], ip);
     });
     return ok({

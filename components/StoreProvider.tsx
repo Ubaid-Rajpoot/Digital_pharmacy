@@ -35,6 +35,9 @@ type StoreValue = {
   catsubs: Record<string, string[]>;
   categories: StoreCategory[];
   catalogReady: boolean;
+  /** Non-null when the live catalogue failed to load (e.g. database down). */
+  catalogError: string | null;
+  retryCatalog: () => void;
 
   // product filter (shared between Hero, Categories and Products)
   cat: string;
@@ -49,6 +52,7 @@ type StoreValue = {
   addToCart: (id: number, qty?: number, fromEl?: HTMLElement | null) => void;
   changeQty: (id: number, delta: number) => void;
   removeItem: (id: number) => void;
+  clearCart: () => void;
   totals: Totals;
 
   // wishlist
@@ -115,11 +119,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [catsubs, setCatsubs] = useState<Record<string, string[]>>({});
   const [categories, setCategories] = useState<StoreCategory[]>([]);
   const [catalogReady, setCatalogReady] = useState(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [catalogTick, setCatalogTick] = useState(0);
   const [cat, setCatState] = useState("all");
   const [sub, setSub] = useState("");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<Record<number, number>>({});
   const [wishlist, setWishlist] = useState<number[]>([]);
+  // Cart/wishlist live in localStorage so they survive reloads; `hydrated`
+  // guards against the first client render clobbering stored values.
+  const [hydrated, setHydrated] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [qvId, setQvId] = useState<number | null>(null);
   const [rxOpen, setRxOpen] = useState(false);
@@ -175,6 +184,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const clearCart = useCallback(() => setCart({}), []);
+
   const toggleWish = useCallback(
     (id: number) => {
       setWishlist((w) => {
@@ -192,9 +203,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const closeQuick = useCallback(() => setQvId(null), []);
 
   const scrollToSection = useCallback((id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
+      return;
+    }
+    // Section lives on the home page — navigate there and land on the anchor.
+    window.location.href = `/#${id}`;
   }, []);
 
   // Switching category clears any active subcategory filter.
@@ -202,6 +217,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCatState(c);
     setSub("");
   }, []);
+
+  // Restore cart/wishlist from localStorage, then keep them in sync.
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem("medora-cart");
+      const savedWishlist = localStorage.getItem("medora-wishlist");
+      if (savedCart) setCart(JSON.parse(savedCart));
+      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+    } catch {
+      /* corrupted storage — start fresh */
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem("medora-cart", JSON.stringify(cart));
+  }, [cart, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem("medora-wishlist", JSON.stringify(wishlist));
+  }, [wishlist, hydrated]);
 
   // Escape closes any open overlay
   useEffect(() => {
@@ -227,8 +263,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [drawerOpen, qvId, rxOpen, chatOpen]);
 
   // Load the live catalogue from the backend (MongoDB via /api/store/catalog).
+  const retryCatalog = useCallback(() => setCatalogTick((t) => t + 1), []);
   useEffect(() => {
     let alive = true;
+    setCatalogError(null);
     fetch("/api/store/catalog", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((data: { products?: Product[]; catsubs?: Record<string, string[]>; categories?: StoreCategory[] }) => {
@@ -241,19 +279,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCatalogReady(true);
       })
       .catch(() => {
-        // Do not show stale/demo products when the live catalogue is down.
-        if (alive) setCatalogReady(true);
+        // Do not show stale/demo products when the live catalogue is down —
+        // surface the failure so the UI can offer a retry.
+        if (alive) {
+          setCatalogReady(true);
+          setCatalogError("We couldn't load the medicine catalogue. Please check your connection and try again.");
+        }
       });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [catalogTick]);
 
   const value: StoreValue = {
     products,
     catsubs,
     categories,
     catalogReady,
+    catalogError,
+    retryCatalog,
     cat,
     setCat,
     sub,
@@ -264,6 +308,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     addToCart,
     changeQty,
     removeItem,
+    clearCart,
     totals,
     wishlist,
     toggleWish,

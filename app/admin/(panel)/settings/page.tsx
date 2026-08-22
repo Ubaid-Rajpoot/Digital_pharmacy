@@ -73,6 +73,7 @@ export default function SettingsPage() {
                     <Field label="Address" className="full"><TextArea rows={2} defaultValue={data.store.address} onBlur={(e) => void save("store", { ...data.store, address: e.target.value })} /></Field>
                     <Field label="Currency"><Select defaultValue={data.store.currency} onChange={(e) => void save("store", { ...data.store, currency: e.target.value })}><option>INR (Rs)</option><option>USD ($)</option><option>EUR (€)</option><option>GBP (£)</option><option>PKR (Rs)</option></Select></Field>
                     <Field label="Timezone"><Select defaultValue={data.store.timezone} onChange={(e) => void save("store", { ...data.store, timezone: e.target.value })}><option>Asia/Kolkata</option><option>Asia/Karachi</option><option>UTC</option><option>America/New_York</option></Select></Field>
+                    <Field label="Monthly revenue target (Rs)"><TextInput type="number" defaultValue={data.store.revenueTarget ?? 0} onBlur={(e) => void save("store", { ...data.store, revenueTarget: Math.max(0, Number(e.target.value) || 0) })} /></Field>
                   </div>
                   <div className="admin-logo-upload">
                     <span className="admin-logo-preview"><Icon name="spark" size={20} /></span>

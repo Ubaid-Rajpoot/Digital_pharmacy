@@ -2,10 +2,33 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Medora — Your Health Deserves The Best Care",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Medora — Your Health Deserves The Best Care",
+    template: "%s — Medora",
+  },
   description:
     "Get genuine medicines delivered safely to your doorstep — with trusted quality, expert guidance, and care you can rely on.",
+  keywords: [
+    "online pharmacy", "medicine delivery", "prescription medicines",
+    "vitamins", "healthcare", "pharmacy", "Medora",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "Medora",
+    title: "Medora — Care, delivered",
+    description:
+      "Licensed online pharmacy — genuine medicines, pharmacist-verified orders and doorstep delivery.",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Medora — Care, delivered",
+    description: "Licensed online pharmacy — genuine medicines, delivered to your doorstep.",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

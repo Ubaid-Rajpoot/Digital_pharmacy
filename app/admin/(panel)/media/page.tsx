@@ -161,13 +161,14 @@ export default function MediaPage() {
 }
 
 function MediaDetail({ file, onClose }: { file: MediaFile; onClose: () => void }) {
+  const toast = useToast();
   return (
     <Drawer
       open
       onClose={onClose}
       title={file.name}
       sub={<>{file.folder} · uploaded <TimeAgo iso={file.createdAt} /></>}
-      footer={<><Btn variant="secondary" onClick={onClose}>Close</Btn><Btn icon="copy" onClick={() => void navigator.clipboard.writeText(file.url).then(() => alert("URL copied"))}>Copy URL</Btn></>}
+      footer={<><Btn variant="secondary" onClick={onClose}>Close</Btn><Btn icon="copy" onClick={() => void navigator.clipboard.writeText(file.url).then(() => toast("URL copied to clipboard"))}>Copy URL</Btn></>}
     >
       <div style={{ borderRadius: 14, overflow: "hidden", marginBottom: 18, background: "#f1f6fb" }}>
         {file.type === "image" ? (

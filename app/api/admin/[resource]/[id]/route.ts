@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { audit, clientIp, fail, handleError, ok, parseBody } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
+import { hashPassword } from "@/lib/password";
 import { read, write } from "@/lib/db/store";
 import type { DbShape, Order, OrderStatus } from "@/lib/db/types";
 
@@ -47,6 +48,11 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ resourc
       if (resource === "settings") return ok(db.settings);
       const row = collection(db, resource).find((r) => r.id === Number(id));
       if (!row) return fail("Record not found.", 404);
+      // Never leak password hashes to the client.
+      if (resource === "users" || resource === "customers") {
+        const { passwordHash: _hidden, ...safe } = row;
+        return ok(safe);
+      }
       return ok(row);
     });
   } catch (e) {
@@ -74,8 +80,14 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ resou
             : rows.find((r) => r.id === numId);
       if (!row) throw new Error("NOT_FOUND");
 
+      // A plaintext `password` on user edits is hashed, never stored as-is.
+      if (resource === "users" && typeof body.password === "string" && body.password) {
+        row.passwordHash = hashPassword(body.password);
+        delete body.password;
+      }
+
       for (const [k, v] of Object.entries(body)) {
-        if (k === "id" || k === "createdAt" || k === "deletedAt") continue;
+        if (k === "id" || k === "createdAt" || k === "deletedAt" || k === "passwordHash") continue;
         if (JSON.stringify(row[k]) !== JSON.stringify(v)) changes.push({ field: k, from: row[k], to: v });
         row[k] = v;
       }

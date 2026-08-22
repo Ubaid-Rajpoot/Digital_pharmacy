@@ -73,9 +73,7 @@ export async function GET() {
           label: MONTHS[d.getMonth()],
           revenue: monthRevenue,
           orders: monthSales.length,
-          // No target is stored in the database yet. Keep this zero rather
-          // than deriving a fictional target from the actual revenue.
-          target: 0,
+          target: db.settings.store?.revenueTarget ?? 0,
           customers: monthCustomers,
           cumulative: cumulativeCustomers,
         });

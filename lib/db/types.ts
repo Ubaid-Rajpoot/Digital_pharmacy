@@ -324,6 +324,8 @@ export interface AdminUser {
   lastLogin: string | null;
   twoFactor: boolean;
   createdAt: string;
+  /** scrypt hash (lib/password.ts). Never sent to the client. */
+  passwordHash: string;
 }
 
 export interface RoleDef {
@@ -365,6 +367,8 @@ export interface Settings {
     timezone: string;
     logo: string;
     favicon: string;
+    /** Monthly revenue goal (Rs) shown on the dashboard revenue chart. */
+    revenueTarget: number;
   };
   email: { from: string; replyTo: string; smtp: { host: string; port: number; user: string; secure: boolean } };
   payments: { methods: { id: string; label: string; enabled: boolean }[] };
