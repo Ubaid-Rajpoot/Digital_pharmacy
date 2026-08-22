@@ -4,13 +4,14 @@ import { useEffect, useRef } from "react";
 import Reveal from "@/components/Reveal";
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow } from "@/components/icons";
-import { CATSUBS, pic } from "@/lib/products";
+import { imageUrl } from "@/lib/products";
 
 type Cat = {
   cat: string;
   name: string;
   count: string;
   thumb: string;
+  image?: string;
   tint: string;
   icon: React.ReactNode;
 };
@@ -121,10 +122,9 @@ const CATS: Cat[] = [
   },
 ];
 
-function CatCard({ c, delay }: { c: Cat; delay?: string }) {
+function CatCard({ c, delay, subs }: { c: Cat; delay?: string; subs: string[] }) {
   const { setCat, setSub, setSearch, scrollToSection } = useStore();
   const ref = useRef<HTMLButtonElement>(null);
-  const subs = CATSUBS[c.cat] ?? [];
 
   useEffect(() => {
     const el = ref.current;
@@ -156,7 +156,7 @@ function CatCard({ c, delay }: { c: Cat; delay?: string }) {
       }}
     >
       <span className={`cat-ic ${c.tint}`}>{c.icon}</span>
-      <img className="cat-thumb" src={pic(c.thumb, 120, 120)} alt="" loading="lazy" />
+      <img className="cat-thumb" src={imageUrl(c.image ?? c.thumb, 120, 120)} alt="" loading="lazy" />
       <b>{c.name}</b>
       <small>{c.count}</small>
       {subs.length > 0 && (
@@ -198,6 +198,37 @@ function CatCard({ c, delay }: { c: Cat; delay?: string }) {
 }
 
 export default function CategoriesSection() {
+  // The live catalogue is authoritative after it loads. The curated card
+  // metadata only supplies artwork while the request is still in flight (or
+  // when the API is temporarily unavailable).
+  const { categories, catalogReady } = useStore();
+  const templates = new Map(CATS.map((c) => [c.cat, c]));
+
+  const cards: (Cat & { subs: string[] })[] = catalogReady
+    ? categories.map((real, index) => {
+        const template = templates.get(real.cat);
+        return {
+          ...(template ?? {
+            cat: real.cat,
+            name: real.name,
+            count: "",
+            thumb: `category-${real.cat}`,
+            tint: ["t-blue", "t-mint", "t-peach", "t-lav"][index % 4]!,
+            icon: <span aria-hidden="true">✚</span>,
+          }),
+          name: real.name,
+          count: `${real.count} product${real.count === 1 ? "" : "s"}`,
+          image: real.image,
+          icon: real.icon ? (
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d={real.icon} />
+            </svg>
+          ) : (template?.icon ?? <span aria-hidden="true">✚</span>),
+          subs: real.subs,
+        };
+      })
+    : [];
+
   return (
     <section className="sec cats" id="categories">
       <div className="wrap">
@@ -211,15 +242,19 @@ export default function CategoriesSection() {
           </Reveal>
           <Reveal delay=".15s">
             <p className="side">
-              Eight curated departments, each overseen by a specialist
-              pharmacist. Tap a category to see its range.
+              Departments from our licensed pharmacy, each with its own
+              curated range. Tap a category to see its products.
             </p>
           </Reveal>
         </div>
         <div className="cat-grid">
-          {CATS.map((c, i) => (
-            <CatCard key={c.cat} c={c} delay={i % 4 === 0 ? undefined : `${(i % 4) * 0.06}s`} />
-          ))}
+          {cards.length === 0 ? (
+            <p className="prod-empty">{catalogReady ? "No active categories yet." : "Loading live categories…"}</p>
+          ) : (
+            cards.map((c, i) => (
+              <CatCard key={c.cat} c={c} subs={c.subs} delay={i % 4 === 0 ? undefined : `${(i % 4) * 0.06}s`} />
+            ))
+          )}
         </div>
       </div>
     </section>

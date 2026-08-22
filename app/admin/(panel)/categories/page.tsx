@@ -4,7 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useList, useMutate, type ListParams } from "@/components/admin/api";
 import { Icon } from "@/components/admin/icons";
 import {
-  Btn, Card, Confirm, EmptyState, ErrorState, Field, IconBtn, Modal, PageHeader,
+  Btn, Card, Confirm, EmptyState, ErrorState, Field, IconBtn, ImageUpload, Modal, PageHeader,
   SearchInput, Select, Skeleton, Status, TextArea, TextInput, Toggle, useToast,
 } from "@/components/admin/ui";
 import { dateShort } from "@/components/admin/format";
@@ -13,7 +13,10 @@ import type { Category } from "@/lib/db/types";
 const TONE = ["blue", "green", "violet", "orange", "red"];
 
 export default function CategoriesPage() {
-  const [params, setParams] = useState<ListParams>({ page: 1, pageSize: 24 });
+  // Categories render as a tree (parents in the grid, children inline), so
+  // load the whole set in one page with parents first. The previous default
+  // (id desc, pageSize 24) put all child rows on page 1 and left `roots` empty.
+  const [params, setParams] = useState<ListParams>({ page: 1, pageSize: 100, sort: "parentId", dir: "asc" });
   const [editing, setEditing] = useState<Category | "new" | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Category | null>(null);
   const { data, loading, error, refetch } = useList<Category>("categories", params);
@@ -22,7 +25,10 @@ export default function CategoriesPage() {
 
   const roots = useMemo(() => (data?.items ?? []).filter((c) => !c.parentId), [data]);
   const children = useMemo(() => (data?.items ?? []).filter((c) => c.parentId), [data]);
-  const rootCount = roots.length;
+  // The storefront only publishes active categories, so the summary mirrors
+  // what customers actually see. Inactive rows still appear in the grid below.
+  const liveRoots = roots.filter((c) => c.status === "active");
+  const liveChildren = children.filter((c) => c.status === "active");
 
   const deleteCat = async (c: Category) => {
     const res = await mutate.remove(c.id, "Category deleted");
@@ -39,8 +45,8 @@ export default function CategoriesPage() {
       />
 
       <div className="admin-category-summary">
-        <div><span className="admin-summary-icon blue"><Icon name="categories" size={16} /></span><span><small>Parent categories</small><b>{rootCount}</b></span></div>
-        <div><span className="admin-summary-icon green"><Icon name="layers" size={16} /></span><span><small>Child categories</small><b>{children.length}</b></span></div>
+        <div><span className="admin-summary-icon blue"><Icon name="categories" size={16} /></span><span><small>Parent categories</small><b>{liveRoots.length}</b></span></div>
+        <div><span className="admin-summary-icon green"><Icon name="layers" size={16} /></span><span><small>Child categories</small><b>{liveChildren.length}</b></span></div>
         <div><span className="admin-summary-icon violet"><Icon name="star" size={16} /></span><span><small>Featured</small><b>{(data?.items ?? []).filter((c) => c.featured).length}</b></span></div>
       </div>
 
@@ -178,7 +184,10 @@ function CategoryForm({
           <TextInput value={form.icon as string} onChange={(e) => set("icon", e.target.value)} placeholder="M12 3v0l1.8 5.2…" />
         </Field>
         <Field label="Image URL" className="full">
-          <TextInput value={form.image as string} onChange={(e) => set("image", e.target.value)} placeholder="https://…" />
+          <div style={{ display: "flex", gap: 8 }}>
+            <TextInput value={form.image as string} onChange={(e) => set("image", e.target.value)} placeholder="https://… or /uploads/…" />
+            <ImageUpload onUploaded={(url) => set("image", url)} />
+          </div>
         </Field>
         <Field label="Banner URL" className="full">
           <TextInput value={form.banner as string} onChange={(e) => set("banner", e.target.value)} placeholder="https://…" />

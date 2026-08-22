@@ -181,7 +181,6 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
   const subcategory = seedCategories.find((c) => c.parentId === categoryId && c.name === subName);
   const stock = chance(0.12) ? 0 : chance(0.18) ? rint(2, 9) : rint(20, 480);
   const discount = Math.round((1 - price / mrp) * 100);
-  const sold = rint(120, 5400);
   const id = i + 1;
   const seed = `prod-${id}-${name.toLowerCase().replace(/[^a-z]+/g, "-").slice(0, 24)}`;
   return {
@@ -216,7 +215,7 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
     tags: [brandName, catName, chance(0.5) ? "bestseller" : "essential", chance(0.3) ? "rx" : "otc"],
     status: chance(0.1) ? "draft" : "active",
     featured: chance(0.35),
-    bestSeller: sold > 2500,
+    bestSeller: false,
     newArrival: i > 32,
     rx: categoryId === 1, // Prescription category = Rx-only
 
@@ -225,7 +224,9 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
     metaKeywords: `${name}, ${brandName}, buy online, medora`,
     rating: rfloat(3.8, 4.9, 1),
     reviews: rint(40, 3200),
-    sold,
+    // Sales are calculated from order line items; a fresh catalogue has no
+    // sales until a real order is recorded.
+    sold: 0,
     deletedAt: null,
     createdAt: monthsAgo(rint(1, 22)),
   };
@@ -234,7 +235,8 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
 // ---------- customers ----------
 const firstNames = ["Aarav", "Priya", "Rohan", "Ananya", "Vikram", "Sneha", "Arjun", "Ishita", "Kabir", "Meera", "Dev", "Kavya", "Rahul", "Nisha", "Aditya", "Pooja", "Sameer", "Tara", "Varun", "Zara", "Manish", "Riya", "Harsh", "Divya"];
 const lastNames = ["Sharma", "Patel", "Gupta", "Iyer", "Khan", "Reddy", "Mehta", "Joshi", "Nair", "Singh", "Verma", "Das", "Bose", "Chopra", "Malhotra", "Rao"];
-export const seedCustomers: Customer[] = Array.from({ length: 24 }, (_, i) => {
+const INCLUDE_DEMO_CUSTOMERS = false;
+export const seedCustomers: Customer[] = INCLUDE_DEMO_CUSTOMERS ? Array.from({ length: 24 }, (_, i) => {
   const name = `${pick(firstNames)} ${pick(lastNames)}`;
   const id = i + 1;
   const orders = rint(1, 14);
@@ -262,7 +264,7 @@ export const seedCustomers: Customer[] = Array.from({ length: 24 }, (_, i) => {
     }),
     passwordHash: "demo-only-hash",
   };
-});
+}) : [];
 
 // ---------- orders ----------
 const statusWeights: [OrderStatus, number][] = [
@@ -293,7 +295,8 @@ function statusSteps(status: OrderStatus): { label: string; note?: string }[] {
   return base.slice(0, idx + 1);
 }
 
-export const seedOrders: Order[] = Array.from({ length: 96 }, (_, i) => {
+const INCLUDE_DEMO_SALES = false;
+export const seedOrders: Order[] = INCLUDE_DEMO_SALES ? Array.from({ length: 96 }, (_, i) => {
   const id = i + 1;
   const cust = pick(seedCustomers);
   const nItems = rint(1, 4);
@@ -340,7 +343,7 @@ export const seedOrders: Order[] = Array.from({ length: 96 }, (_, i) => {
     refund: isRefunded ? { amount: total, reason: status === "cancelled" ? "Order cancelled by customer" : "Damaged item on arrival", at: new Date(new Date(created).getTime() + 48 * 3600_000).toISOString() } : null,
     createdAt: created,
   };
-}).sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+}).sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)) : [];
 
 // ---------- reviews ----------
 const reviewTexts = [
@@ -350,7 +353,7 @@ const reviewTexts = [
   ["Trustworthy pharmacy", "Been buying from Medora for months. Prices are better than local stores and always authentic."],
   ["Average experience", "Product is fine but delivery was a bit delayed. Support was responsive though."],
 ];
-export const seedReviews: Review[] = Array.from({ length: 42 }, (_, i) => {
+export const seedReviews: Review[] = Array.from({ length: INCLUDE_DEMO_CUSTOMERS ? 42 : 0 }, (_, i) => {
   const p = pick(seedProducts);
   const c = pick(seedCustomers);
   const [title, body] = pick(reviewTexts);
@@ -561,7 +564,7 @@ export const seedUsers: AdminUser[] = [
   { id: 6, name: "Neha Gupta", email: "neha@medora.health", role: "Admin", status: "disabled", avatar: pic("admin-neha", 120, 120), lastLogin: daysAgo(30), twoFactor: false, createdAt: monthsAgo(16) },
 ];
 
-export const seedNotifications: any[] = [
+export const seedNotifications: any[] = INCLUDE_DEMO_SALES ? [
   { type: "order", title: "New order received", body: "Order MD-24127 from Rohan Gupta — Rs 1,240. Awaiting processing.", at: hoursAgo(1), href: "/admin/orders", read: false },
   { type: "stock", title: "Low stock alert", body: "3 products are below their low-stock threshold. Review inventory.", at: hoursAgo(3), href: "/admin/inventory", read: false },
   { type: "dealer", title: "New dealer application", body: "HealthLine Traders applied to join as a dealer.", at: hoursAgo(7), href: "/admin/dealers", read: false },
@@ -572,7 +575,7 @@ export const seedNotifications: any[] = [
   { type: "order", title: "Order shipped", body: "12 orders were handed to courier partners today.", at: daysAgo(2), href: "/admin/orders", read: true },
   { type: "stock", title: "Purchase order received", body: "PO-2139 from Sun Pharma was received at Mumbai warehouse.", at: daysAgo(2), href: "/admin/inventory", read: true },
   { type: "system", title: "Security scan passed", body: "Weekly vulnerability scan completed — no critical findings.", at: daysAgo(3), href: "/admin/security", read: true },
-];
+] : [];
 
 export const seedRoles = [
   { name: "Super Admin", description: "Full access to every module, including security and user management.", permissions: ["*"], users: 1 },

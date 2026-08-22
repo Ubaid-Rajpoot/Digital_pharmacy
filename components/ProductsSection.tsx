@@ -8,7 +8,11 @@ import ProductToolbar from "@/components/ProductToolbar";
 import { CATNAME } from "@/lib/products";
 
 export default function ProductsSection() {
-  const { products, cat, sub, search } = useStore();
+  const { products, categories, catalogReady, cat, sub, search } = useStore();
+  const categoryNames = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.cat, c.name])) as Record<string, string>,
+    [categories]
+  );
 
   const list = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -17,9 +21,9 @@ export default function ProductsSection() {
         (cat === "all" || p.cat === cat) &&
         (sub === "" || p.sub === sub) &&
         (q === "" ||
-          (p.name + " " + p.brand + " " + (CATNAME[p.cat] || "") + " " + (p.sub || "")).toLowerCase().includes(q))
+          (p.name + " " + p.brand + " " + (categoryNames[p.cat] || CATNAME[p.cat] || "") + " " + (p.sub || "")).toLowerCase().includes(q))
     );
-  }, [products, cat, sub, search]);
+  }, [products, categoryNames, cat, sub, search]);
 
   return (
     <section className="sec" id="medicines">
@@ -36,11 +40,16 @@ export default function ProductsSection() {
           <ProductToolbar />
         </Reveal>
         <div className="prod-grid">
-          {list.length === 0 ? (
+          {!catalogReady ? (
+            <div className="prod-empty">
+              <p style={{ fontSize: 40 }}>⏳</p>
+              <p style={{ fontWeight: 800, margin: "8px 0 4px" }}>Loading live products…</p>
+            </div>
+          ) : list.length === 0 ? (
             <div className="prod-empty">
               <p style={{ fontSize: 40 }}>🌿</p>
-              <p style={{ fontWeight: 800, margin: "8px 0 4px" }}>No matches yet</p>
-              <p>Try a different search — or ask our pharmacist for guidance.</p>
+              <p style={{ fontWeight: 800, margin: "8px 0 4px" }}>No products match</p>
+              <p>Try a different search — or add an active product from the admin panel.</p>
             </div>
           ) : (
             list.map((p) => <ProductCard key={p.id} p={p} />)

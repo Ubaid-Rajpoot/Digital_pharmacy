@@ -795,3 +795,68 @@ export function StatStrip({ items }: { items: { label: string; value: ReactNode;
 export function TimeAgo({ iso }: { iso: string | null | undefined }) {
   return <>{timeAgo(iso)}</>;
 }
+
+// ------------------------------------------------------------
+// Image upload (local → /public/uploads)
+// ------------------------------------------------------------
+
+export function ImageUpload({
+  onUploaded,
+  label = "Upload",
+  accept = "image/*",
+  variant = "secondary",
+  size = "sm",
+}: {
+  onUploaded: (url: string) => void;
+  label?: string;
+  accept?: string;
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md";
+}) {
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Upload failed");
+      onUploaded(body.url as string);
+      toast("Image uploaded");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Upload failed", "error");
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <Btn
+        variant={variant}
+        size={size}
+        icon="upload"
+        loading={busy}
+        onClick={() => inputRef.current?.click()}
+        type="button"
+      >
+        {busy ? "Uploading…" : label}
+      </Btn>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        hidden
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) void upload(f);
+        }}
+      />
+    </>
+  );
+}

@@ -11,13 +11,17 @@ import {
   IconThermo,
   IconTruck,
 } from "@/components/icons";
-import { CATNAME, isInStock, pic, rupees } from "@/lib/products";
+import { CATNAME, isInStock, pic, productImage, rupees } from "@/lib/products";
 
 const POPULAR = ["Paracetamol", "Vitamin D3", "Immunity", "Diabetes care"];
 
 export default function Hero() {
-  const { products, setCat, setSearch, openQuick, setChatOpen, setRxOpen, scrollToSection } =
+  const { products, categories, setCat, setSearch, openQuick, setChatOpen, setRxOpen, scrollToSection } =
     useStore();
+  const categoryNames = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.cat, c.name])) as Record<string, string>,
+    [categories]
+  );
   const [q, setQ] = useState("");
   const [suggestOpen, setSuggestOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -26,9 +30,13 @@ export default function Hero() {
     const query = q.trim().toLowerCase();
     if (query.length < 2) return [];
     return products
-      .filter((p) => (p.name + " " + p.brand).toLowerCase().includes(query))
+      .filter((p) =>
+        (p.name + " " + p.brand + " " + (categoryNames[p.cat] || CATNAME[p.cat] || p.cat))
+          .toLowerCase()
+          .includes(query)
+      )
       .slice(0, 6);
-  }, [q, products]);
+  }, [categoryNames, q, products]);
 
   // close suggestions on outside click
   useEffect(() => {
@@ -164,14 +172,14 @@ export default function Hero() {
                       >
                         <img
                           className="th"
-                          src={pic(p.seed, 84, 84)}
+                          src={productImage(p, 84, 84)}
                           alt=""
                           loading="lazy"
                         />
                         <span className="si">
                           <span className="nm">{p.name.split("·")[0].trim()}</span>
                           <span className="ct">
-                            {p.brand} · {CATNAME[p.cat] || p.cat}
+                            {p.brand} · {categoryNames[p.cat] || CATNAME[p.cat] || p.cat}
                           </span>
                         </span>
                         <span className="si-meta">

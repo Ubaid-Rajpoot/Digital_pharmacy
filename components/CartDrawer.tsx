@@ -2,7 +2,7 @@
 
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow, IconX } from "@/components/icons";
-import { FREE_AT, pic, PRODUCTS, rupees, type Product } from "@/lib/products";
+import { FREE_AT, productImage, rupees, type Product } from "@/lib/products";
 
 function CartItem({
   p,
@@ -17,7 +17,7 @@ function CartItem({
 }) {
   return (
     <div className="ci">
-      <img className="th" src={pic(p.seed, 140, 140)} alt="" />
+      <img className="th" src={productImage(p, 140, 140)} alt="" />
       <div className="inf">
         <b>{p.name}</b>
         <small>{p.brand}</small>
@@ -49,6 +49,7 @@ function CartItem({
 export default function CartDrawer() {
   const {
     cart,
+    products,
     totals,
     changeQty,
     removeItem,
@@ -102,7 +103,7 @@ export default function CartDrawer() {
             </div>
           ) : (
             items.map(({ id, q }) => {
-              const p = PRODUCTS.find((x) => x.id === id);
+              const p = products.find((x) => x.id === id);
               if (!p) return null;
               return (
                 <CartItem

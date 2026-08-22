@@ -56,3 +56,6 @@ next-env.d.ts
 
 # runtime admin database (generated)
 /data/
+
+# locally uploaded files (generated)
+/public/uploads/

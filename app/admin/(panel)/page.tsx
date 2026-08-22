@@ -58,10 +58,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="admin-kpi-grid">
-        <Kpi label="Total revenue" value={compactMoney(k.revenue)} icon="wallet" tone="blue" delta={18.4} foot={<>Lifetime · {data.charts.salesByMonth.length} months tracked</>} />
-        <Kpi label="Orders today" value={k.ordersToday} icon="orders" tone="green" delta={12.1} foot={<>of {k.pendingOrders} pending overall</>} />
+        <Kpi label="Total revenue" value={compactMoney(k.revenue)} icon="wallet" tone="blue" foot={<>Lifetime · {data.charts.salesByMonth.length} months tracked</>} />
+        <Kpi label="Orders today" value={k.ordersToday} icon="orders" tone="green" foot={<>of {k.pendingOrders} pending overall</>} />
         <Kpi label="Pending orders" value={k.pendingOrders} icon="clock" tone="orange" progress={Math.min(100, (k.pendingOrders / Math.max(1, data.charts.ordersByDay.slice(-1)[0]?.orders ?? 1)) * 100)} progressLabel="Need attention today" />
-        <Kpi label="Avg order value" value={money(k.avgOrder)} icon="trendUp" tone="violet" delta={4.6} foot={<>across {k.deliveredOrders} delivered orders</>} />
+        <Kpi label="Avg order value" value={money(k.avgOrder)} icon="trendUp" tone="violet" foot={<>across {k.deliveredOrders} delivered orders</>} />
       </div>
 
       <div className="admin-overview-grid">

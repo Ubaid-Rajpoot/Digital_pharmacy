@@ -29,6 +29,8 @@ type NavItem = {
   module: string;
   color: NavColor;
   badge?: "pendingOrders" | "lowStock" | "dealerPending" | "reviewsPending" | "supportOpen" | "unread";
+  /** Disabled modules are hidden from the sidebar until they go live. */
+  disabled?: boolean;
 };
 
 const NAV: { label: string; items: NavItem[] }[] = [
@@ -46,43 +48,43 @@ const NAV: { label: string; items: NavItem[] }[] = [
     label: "Sales",
     items: [
       { href: "/admin/orders", label: "Orders", icon: "orders", module: "orders", color: "blue", badge: "pendingOrders" },
-      { href: "/admin/coupons", label: "Coupons & Promos", icon: "coupons", module: "coupons", color: "orange" },
+      { href: "/admin/coupons", label: "Coupons & Promos", icon: "coupons", module: "coupons", color: "orange", disabled: true },
     ],
   },
   {
     label: "People",
     items: [
-      { href: "/admin/customers", label: "Customers", icon: "customers", module: "customers", color: "green" },
-      { href: "/admin/reviews", label: "Reviews", icon: "reviews", module: "reviews", color: "violet", badge: "reviewsPending" },
-      { href: "/admin/dealers", label: "Dealers", icon: "dealers", module: "dealers", color: "blue", badge: "dealerPending" },
+      { href: "/admin/customers", label: "Customers", icon: "customers", module: "customers", color: "green", disabled: true },
+      { href: "/admin/reviews", label: "Reviews", icon: "reviews", module: "reviews", color: "violet", badge: "reviewsPending", disabled: true },
+      { href: "/admin/dealers", label: "Dealers", icon: "dealers", module: "dealers", color: "blue", badge: "dealerPending", disabled: true },
     ],
   },
   {
     label: "Content",
     items: [
-      { href: "/admin/content", label: "Content Manager", icon: "content", module: "content", color: "violet" },
-      { href: "/admin/media", label: "Media Library", icon: "media", module: "media", color: "orange" },
+      { href: "/admin/content", label: "Content Manager", icon: "content", module: "content", color: "violet", disabled: true },
+      { href: "/admin/media", label: "Media Library", icon: "media", module: "media", color: "orange", disabled: true },
     ],
   },
   {
     label: "Growth",
     items: [
-      { href: "/admin/newsletter", label: "Newsletter", icon: "newsletter", module: "newsletter", color: "red" },
-      { href: "/admin/reports", label: "Reports", icon: "reports", module: "reports", color: "green" },
+      { href: "/admin/newsletter", label: "Newsletter", icon: "newsletter", module: "newsletter", color: "red", disabled: true },
+      { href: "/admin/reports", label: "Reports", icon: "reports", module: "reports", color: "green", disabled: true },
     ],
   },
   {
     label: "Service",
-    items: [{ href: "/admin/support", label: "Support Center", icon: "support", module: "support", color: "green", badge: "supportOpen" }],
+    items: [{ href: "/admin/support", label: "Support Center", icon: "support", module: "support", color: "green", badge: "supportOpen", disabled: true }],
   },
   {
     label: "System",
     items: [
-      { href: "/admin/users", label: "Users & Roles", icon: "users", module: "users", color: "violet" },
-      { href: "/admin/settings", label: "Settings", icon: "settings", module: "settings", color: "blue" },
-      { href: "/admin/notifications", label: "Notifications", icon: "notifications", module: "notifications", color: "orange", badge: "unread" },
-      { href: "/admin/audit", label: "Audit Logs", icon: "audit", module: "audit", color: "violet" },
-      { href: "/admin/security", label: "Security", icon: "security", module: "security", color: "red" },
+      { href: "/admin/users", label: "Users & Roles", icon: "users", module: "users", color: "violet", disabled: true },
+      { href: "/admin/settings", label: "Settings", icon: "settings", module: "settings", color: "blue", disabled: true },
+      { href: "/admin/notifications", label: "Notifications", icon: "notifications", module: "notifications", color: "orange", badge: "unread", disabled: true },
+      { href: "/admin/audit", label: "Audit Logs", icon: "audit", module: "audit", color: "violet", disabled: true },
+      { href: "/admin/security", label: "Security", icon: "security", module: "security", color: "red", disabled: true },
     ],
   },
 ];
@@ -482,6 +484,20 @@ function Sidebar({ path, collapsed, open, onNavigate }: { path: string; collapse
               {items.map((it) => {
                 const active = path === it.href || (it.href !== "/admin" && path.startsWith(it.href));
                 const badge = (it.badge ? counts?.[it.badge] : 0) ?? 0;
+                if (it.disabled) {
+                  return (
+                    <span
+                      key={it.href}
+                      className={`admin-nav-item disabled c-${it.color}`}
+                      title={collapsed ? `${it.label} — coming soon` : undefined}
+                      aria-disabled="true"
+                    >
+                      <Icon name={it.icon} size={17} />
+                      {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.label}</span>}
+                      {!collapsed && <em className="nav-soon">Soon</em>}
+                    </span>
+                  );
+                }
                 return (
                   <Link
                     key={it.href}

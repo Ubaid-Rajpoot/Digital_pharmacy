@@ -2,13 +2,14 @@
 
 import { useStore } from "@/components/StoreProvider";
 import { IconEye, IconHeart, IconPlus } from "@/components/icons";
-import { CATNAME, isInStock, pic, pctOff, rupees, starStr, type Product } from "@/lib/products";
+import { CATNAME, isInStock, productImage, pctOff, rupees, starStr, type Product } from "@/lib/products";
 
 export default function ProductCard({ p }: { p: Product }) {
-  const { addToCart, openQuick, wishlist, toggleWish } = useStore();
+  const { addToCart, categories, openQuick, wishlist, toggleWish } = useStore();
   const off = pctOff(p);
   const wished = wishlist.includes(p.id);
   const inStock = isInStock(p);
+  const categoryName = categories.find((c) => c.cat === p.cat)?.name ?? CATNAME[p.cat] ?? p.cat;
 
   return (
     <article
@@ -40,7 +41,7 @@ export default function ProductCard({ p }: { p: Product }) {
         >
           <IconHeart size={18} strokeWidth={2} />
         </button>
-        <img src={pic(p.seed, 440, 440)} alt={p.name} loading="lazy" />
+        <img src={productImage(p, 440, 440)} alt={p.name} loading="lazy" />
         <button className="p-quick" onClick={() => openQuick(p.id)}>
           <IconEye size={15} strokeWidth={2} />
           Quick View
@@ -48,7 +49,7 @@ export default function ProductCard({ p }: { p: Product }) {
       </div>
       <div className="p-body">
         <span className="p-brand">
-          {p.brand} · {CATNAME[p.cat] || p.cat}
+          {p.brand} · {categoryName}
         </span>
         <h4 className="p-name">{p.name}</h4>
         <div className="p-rate">

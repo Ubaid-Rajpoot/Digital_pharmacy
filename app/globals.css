@@ -524,6 +524,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.78);margin-top:40px}
 
 .rx-modal{width:min(520px,100%);padding:42px}
 .rx-drop{border:2px dashed var(--line2);border-radius:20px;padding:38px 24px;text-align:center;transition:.3s;cursor:pointer;margin:22px 0}
+.rx-drop svg{margin-inline:auto}
 .rx-drop:hover,.rx-drop.over{border-color:var(--blue);background:var(--blue-t)}
 .rx-drop .big{font-weight:800;margin:12px 0 4px}
 .rx-drop small{color:var(--ink3);font-weight:600}
@@ -665,6 +666,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.78);margin-top:40px}
 .admin-nav-item.c-red svg{color:var(--admin-red)}
 .admin-nav-item:hover{background:#f1f6fc;color:var(--admin-blue)}
 .admin-nav-item.active{background:var(--admin-blue-soft);color:var(--admin-blue)}
+.admin-nav-item.disabled{opacity:.45;cursor:not-allowed;filter:saturate(.3)}
+.admin-nav-item.disabled:hover{background:transparent;color:var(--admin-muted)}
+.admin-nav-item.disabled .nav-soon{margin-left:auto;font-style:normal;font-size:8px;font-weight:800;letter-spacing:.08em;color:var(--admin-muted);border:1px solid var(--admin-line);border-radius:99px;padding:2px 7px;flex:none}
 .admin-nav-item.active::before{content:"";position:absolute;left:-15px;top:9px;bottom:9px;width:3px;background:var(--admin-blue);border-radius:0 4px 4px 0}
 .admin-nav-item em{font-style:normal;font-size:10px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--admin-orange-soft);color:var(--admin-orange);display:grid;place-items:center;margin-left:auto}
 .admin-nav-item em.blue-badge{background:var(--admin-blue-soft);color:var(--admin-blue)}

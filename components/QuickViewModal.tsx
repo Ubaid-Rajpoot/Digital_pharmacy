@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useStore } from "@/components/StoreProvider";
 import { IconShield, IconX } from "@/components/icons";
-import { CATNAME, isInStock, pic, pctOff, rupees } from "@/lib/products";
+import { CATNAME, imageUrl, isInStock, pctOff, productImageSources, rupees } from "@/lib/products";
 
 export default function QuickViewModal() {
-  const { qvId, closeQuick, addToCart, openDrawer, products } = useStore();
+  const { qvId, closeQuick, addToCart, categories, openDrawer, products } = useStore();
   const [qty, setQty] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [zoomed, setZoomed] = useState(false);
@@ -26,8 +26,9 @@ export default function QuickViewModal() {
   if (!p) return null;
 
   const inStock = isInStock(p);
-  const imageSeeds = p.gallery?.length ? p.gallery : [p.seed];
-  const activeImageIndex = Math.min(selectedImageIndex, imageSeeds.length - 1);
+  const categoryName = categories.find((c) => c.cat === p.cat)?.name ?? CATNAME[p.cat] ?? p.cat;
+  const imageSources = productImageSources(p);
+  const activeImageIndex = Math.min(selectedImageIndex, imageSources.length - 1);
 
   const handleImageMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -67,7 +68,7 @@ export default function QuickViewModal() {
             >
               <img
                 className="qv-main-img"
-                src={pic(imageSeeds[activeImageIndex], 600, 600)}
+                src={imageUrl(imageSources[activeImageIndex], 600, 600)}
                 alt={`${p.name} image ${activeImageIndex + 1}`}
                 style={{ transformOrigin: zoomOrigin }}
               />
@@ -75,11 +76,11 @@ export default function QuickViewModal() {
                 Move to zoom
               </span>
             </div>
-            {imageSeeds.length > 1 && (
+            {imageSources.length > 1 && (
               <div className="qv-thumbs" role="list" aria-label="Product images">
-                {imageSeeds.map((seed, index) => (
+                {imageSources.map((source, index) => (
                   <button
-                    key={seed}
+                    key={`${source}-${index}`}
                     type="button"
                     role="listitem"
                     className={`qv-thumb${index === activeImageIndex ? " active" : ""}`}
@@ -92,7 +93,7 @@ export default function QuickViewModal() {
                     }}
                   >
                     <img
-                      src={pic(seed, 120, 120)}
+                      src={imageUrl(source, 120, 120)}
                       alt={`${p.name} thumbnail ${index + 1}`}
                       loading={index === 0 ? "eager" : "lazy"}
                     />
@@ -103,7 +104,7 @@ export default function QuickViewModal() {
           </div>
           <div className="qv-body">
             <span className="p-brand">
-              {p.brand.toUpperCase()} · {CATNAME[p.cat] || p.cat}
+              {p.brand.toUpperCase()} · {categoryName}
             </span>
             <h3>{p.name}</h3>
             <div className="qv-rate">

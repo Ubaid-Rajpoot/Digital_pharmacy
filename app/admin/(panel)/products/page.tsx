@@ -10,7 +10,7 @@ import {
 import { Icon } from "@/components/admin/icons";
 import {
   Btn, Card, Checkbox, Confirm, Drawer, Dropdown, EmptyState, ErrorState, Field,
-  FilterBtn, MenuItem, Modal, PageHeader, Pagination, SearchInput, Select, Skeleton,
+  FilterBtn, ImageUpload, MenuItem, Modal, PageHeader, Pagination, SearchInput, Select, Skeleton,
   SortableTh, Status, StockBadge, Table, Td, Th, TextArea, TextInput, Toggle, useToast, IconBtn,
 } from "@/components/admin/ui";
 import { compactNum, dateShort, money } from "@/components/admin/format";
@@ -246,9 +246,10 @@ export default function ProductsPage() {
         ) : (
           <>
             <Table
-              minWidth={1080}
+              minWidth={1120}
               head={
                 <>
+                  <Th>Sr#</Th>
                   <Th><Checkbox checked={allChecked} onChange={toggleAll} /></Th>
                   <SortableTh sortKey="name" sort={sort} onSort={toggleSort}>Product</SortableTh>
                   <SortableTh sortKey="categoryName" sort={sort} onSort={toggleSort}>Category</SortableTh>
@@ -261,8 +262,9 @@ export default function ProductsPage() {
                 </>
               }
             >
-              {data.items.map((p) => (
+              {data.items.map((p, index) => (
                 <tr key={p.id}>
+                  <Td><span className="admin-muted-cell">{(data.page - 1) * data.pageSize + index + 1}</span></Td>
                   <Td><Checkbox checked={selected.includes(p.id)} onChange={(v) => setSelected((s) => (v ? [...s, p.id] : s.filter((x) => x !== p.id)))} /></Td>
                   <Td>
                     <div className="admin-table-product">
@@ -457,7 +459,7 @@ function ProductForm({
     weight: product?.weight ?? "",
     dimensions: product?.dimensions ?? "",
     tags: product?.tags ?? [],
-    status: product?.status ?? "draft",
+    status: product?.status ?? "active",
     featured: product?.featured ?? false,
     bestSeller: product?.bestSeller ?? false,
     newArrival: product?.newArrival ?? false,
@@ -639,7 +641,10 @@ function ProductForm({
           <h3>Photos & videos</h3>
           <div className="admin-form-grid">
             <Field label="Main photo URL" hint="The photo shown on the product card and product page" className="full">
-              <TextInput value={form.image as string} onChange={(e) => set("image", e.target.value)} placeholder="https://…" />
+              <div style={{ display: "flex", gap: 8 }}>
+                <TextInput value={form.image as string} onChange={(e) => set("image", e.target.value)} placeholder="https://… or /uploads/…" />
+                <ImageUpload onUploaded={(url) => set("image", url)} />
+              </div>
             </Field>
             <Field label="More photos (comma separated)" hint="Extra photos shown in the product gallery" className="full">
               <TextInput value={(form.gallery as string[]).join(", ")} onChange={(e) => set("gallery", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="https://…, https://…" />

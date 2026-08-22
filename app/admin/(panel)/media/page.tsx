@@ -34,14 +34,24 @@ export default function MediaPage() {
     if (!files || !files.length) return;
     setUploading(true);
     for (const f of Array.from(files).slice(0, 5)) {
+      const fd = new FormData();
+      fd.append("file", f);
+      let url = "";
+      try {
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error ?? "Upload failed");
+        url = body.url as string;
+      } catch (err) {
+        toast(err instanceof Error ? err.message : "Upload failed", "error");
+        break;
+      }
       const res = await mutate.create({
         name: f.name,
-        url: `https://picsum.photos/seed/upload-${Date.now()}-${f.name.replace(/[^a-z0-9.]/gi, "")}/600/400`,
+        url,
         folder: folder || "Uncategorized",
         type: f.type.startsWith("video") ? "video" : f.type.startsWith("image") ? "image" : "document",
-        size: `${Math.max(40, Math.round(f.size / 1024))} KB`,
-        width: 600,
-        height: 400,
+        size: `${Math.max(1, Math.round(f.size / 1024))} KB`,
       }, "");
       if (!res.ok) break;
     }

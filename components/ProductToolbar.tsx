@@ -7,27 +7,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow, IconSearch } from "@/components/icons";
-import { CATNAME, CATSUBS, isInStock, pic, rupees } from "@/lib/products";
+import { CATNAME, isInStock, productImage, rupees } from "@/lib/products";
 
-const TABS = [
-  { f: "all", label: "All" },
-  { f: "rx", label: "Prescription" },
-  { f: "vitamins", label: "Vitamins" },
-  { f: "diabetes", label: "Diabetes" },
-  { f: "heart", label: "Heart" },
-  { f: "skin", label: "Skin" },
-  { f: "baby", label: "Baby" },
-  { f: "devices", label: "Devices" },
-  { f: "personal", label: "Personal Care" },
-];
+const LOADING_TABS = [{ f: "all", label: "All" }];
 
 export default function ProductToolbar() {
-  const { products, search, setSearch, cat, setCat, sub, setSub, openQuick } = useStore();
+  const { products, catsubs, categories, catalogReady, search, setSearch, cat, setCat, sub, setSub, openQuick } = useStore();
   const [suggestOpen, setSuggestOpen] = useState(false);
 
+  const tabs = useMemo(
+    () => catalogReady
+      ? [{ f: "all", label: "All" }, ...categories.map((c) => ({ f: c.cat, label: c.name }))]
+      : LOADING_TABS,
+    [catalogReady, categories]
+  );
+
+  const categoryNames = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.cat, c.name])) as Record<string, string>,
+    [categories]
+  );
+
   const subs = useMemo(
-    () => (cat === "all" ? [] : (CATSUBS[cat] ?? []).filter((s) => products.some((p) => p.cat === cat && p.sub === s))),
-    [cat, products]
+    () => (cat === "all" ? [] : (catsubs[cat] ?? []).filter((s) => products.some((p) => p.cat === cat && p.sub === s))),
+    [cat, products, catsubs]
   );
 
   const suggestions = useMemo(() => {
@@ -36,12 +38,12 @@ export default function ProductToolbar() {
 
     return products
       .filter((p) =>
-        `${p.name} ${p.brand} ${CATNAME[p.cat] || p.cat}`
+        `${p.name} ${p.brand} ${categoryNames[p.cat] || CATNAME[p.cat] || p.cat}`
           .toLowerCase()
           .includes(query)
       )
       .slice(0, 6);
-  }, [products, search]);
+  }, [categoryNames, products, search]);
 
   useEffect(() => {
     const onClickOutside = (event: MouseEvent) => {
@@ -109,14 +111,14 @@ export default function ProductToolbar() {
                   >
                     <img
                       className="th"
-                      src={pic(p.seed, 84, 84)}
+                      src={productImage(p, 84, 84)}
                       alt=""
                       loading="lazy"
                     />
                     <span className="si">
                       <span className="nm">{p.name}</span>
                       <span className="ct">
-                        {p.brand} · {CATNAME[p.cat] || p.cat}
+                        {p.brand} · {categoryNames[p.cat] || CATNAME[p.cat] || p.cat}
                       </span>
                     </span>
                     <span className="si-meta">
@@ -134,7 +136,7 @@ export default function ProductToolbar() {
       </div>
 
       <div className="tabs" aria-label="Filter by category">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.f}
             className={`tab${cat === t.f ? " active" : ""}`}
@@ -151,7 +153,7 @@ export default function ProductToolbar() {
             className={`sub-tab${sub === "" ? " active" : ""}`}
             onClick={() => setSub("")}
           >
-            All {CATNAME[cat]}
+            All {categoryNames[cat] || CATNAME[cat] || cat}
           </button>
           {subs.map((s) => (
             <button

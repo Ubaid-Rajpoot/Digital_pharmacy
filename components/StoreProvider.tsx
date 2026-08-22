@@ -14,7 +14,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { PRODUCTS, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
+
+/** Storefront category as served by /api/store/catalog. */
+export type StoreCategory = {
+  cat: string;
+  name: string;
+  count: number;
+  subs: string[];
+  image?: string;
+  icon?: string;
+};
 
 type Totals = { sub: number; save: number; n: number };
 
@@ -22,6 +32,9 @@ type Toast = { id: number; msg: string };
 
 type StoreValue = {
   products: Product[];
+  catsubs: Record<string, string[]>;
+  categories: StoreCategory[];
+  catalogReady: boolean;
 
   // product filter (shared between Hero, Categories and Products)
   cat: string;
@@ -96,6 +109,12 @@ function flyToCart(fromEl: HTMLElement) {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  // The storefront has no product fallback: admin data is the source of
+  // truth, including the valid empty-catalogue state.
+  const [products, setProducts] = useState<Product[]>([]);
+  const [catsubs, setCatsubs] = useState<Record<string, string[]>>({});
+  const [categories, setCategories] = useState<StoreCategory[]>([]);
+  const [catalogReady, setCatalogReady] = useState(false);
   const [cat, setCatState] = useState("all");
   const [sub, setSub] = useState("");
   const [search, setSearch] = useState("");
@@ -113,14 +132,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       save = 0,
       n = 0;
     for (const [id, q] of Object.entries(cart)) {
-      const p = PRODUCTS.find((x) => x.id === Number(id));
+      const p = products.find((x) => x.id === Number(id));
       if (!p) continue;
       sub += p.price * q;
       save += (p.mrp - p.price) * q;
       n += q;
     }
     return { sub, save, n };
-  }, [cart]);
+  }, [cart, products]);
 
   const toast = useCallback((msg: string) => {
     const id = ++toastId.current;
@@ -132,10 +151,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     (id: number, qty = 1, fromEl: HTMLElement | null | undefined = null) => {
       setCart((c) => ({ ...c, [id]: (c[id] || 0) + qty }));
       if (fromEl && !REDUCED) flyToCart(fromEl);
-      const p = PRODUCTS.find((x) => x.id === id);
+      const p = products.find((x) => x.id === id);
       if (p) toast(`${p.name.split("·")[0].trim()} added to your care bag`);
     },
-    [toast]
+    [products, toast]
   );
 
   const changeQty = useCallback((id: number, delta: number) => {
@@ -207,8 +226,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
   }, [drawerOpen, qvId, rxOpen, chatOpen]);
 
+  // Load the live catalogue from the backend (MongoDB via /api/store/catalog).
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/store/catalog", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data: { products?: Product[]; catsubs?: Record<string, string[]>; categories?: StoreCategory[] }) => {
+        if (!alive) return;
+        // A successful empty response is meaningful: the admin may have no
+        // active products yet, so do not silently put the demo catalogue back.
+        setProducts(Array.isArray(data.products) ? data.products : []);
+        setCatsubs(data.catsubs && typeof data.catsubs === "object" ? data.catsubs : {});
+        setCategories(Array.isArray(data.categories) ? data.categories : []);
+        setCatalogReady(true);
+      })
+      .catch(() => {
+        // Do not show stale/demo products when the live catalogue is down.
+        if (alive) setCatalogReady(true);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const value: StoreValue = {
-    products: PRODUCTS,
+    products,
+    catsubs,
+    categories,
+    catalogReady,
     cat,
     setCat,
     sub,

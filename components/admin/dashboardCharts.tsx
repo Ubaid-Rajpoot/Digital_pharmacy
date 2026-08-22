@@ -100,6 +100,18 @@ function ChartOff({ label }: { label: string }) {
   );
 }
 
+function ChartEmpty({ label }: { label: string }) {
+  return (
+    <div className="admin-chart-off">
+      <span className="admin-chart-off-ic">
+        <Icon name="chart" size={20} />
+      </span>
+      <b>{label}</b>
+      <p>Real sales data will appear here after the first order is recorded.</p>
+    </div>
+  );
+}
+
 function ChartSwitch({ on, onChange, title }: { on: boolean; onChange: (v: boolean) => void; title: string }) {
   return (
     <span className="admin-chart-switch">
@@ -135,20 +147,21 @@ export function RevenueChartCard({ data }: { data: { label: string; actual: numb
   const [actual, setActual] = useState(true);
   const [target, setTarget] = useState(true);
   const total = data.reduce((s, m) => s + m.actual, 0);
-  const noSeries = !actual && !target;
+  const hasTarget = data.some((m) => m.target > 0);
+  const noSeries = !actual && (!hasTarget || !target);
 
   return (
     <Card
       className="admin-chart-card"
       kicker="Revenue analytics"
-      title="Revenue vs target"
+      title="Revenue over time"
       actions={
         <>
           <b className="admin-chart-total">{compactMoney(total)} total</b>
           <SeriesToggle
             items={[
               { key: "actual", label: "Actual", color: BLUE, on: actual, toggle: () => setActual((v) => !v) },
-              { key: "target", label: "Target", color: GREEN, on: target, toggle: () => setTarget((v) => !v) },
+              ...(hasTarget ? [{ key: "target", label: "Target", color: GREEN, on: target, toggle: () => setTarget((v) => !v) }] : []),
             ]}
           />
           <ChartSwitch on={on} onChange={setOn} title="Toggle revenue chart" />
@@ -156,11 +169,13 @@ export function RevenueChartCard({ data }: { data: { label: string; actual: numb
       }
     >
       {!on ? (
-        <ChartOff label="Revenue vs target" />
+        <ChartOff label="Revenue over time" />
+      ) : total === 0 ? (
+        <ChartEmpty label="No revenue recorded yet" />
       ) : noSeries ? (
         <div className="admin-chart-off compact">
           <b>No series selected</b>
-          <p>Turn on Actual or Target to view the comparison.</p>
+          <p>Turn on Actual to view the comparison.</p>
         </div>
       ) : (
         <div className="admin-recharts-wrap">
@@ -197,7 +212,7 @@ export function RevenueChartCard({ data }: { data: { label: string; actual: numb
                   activeDot={{ r: 4.5, fill: "#fff", stroke: BLUE, strokeWidth: 2.5 }}
                 />
               )}
-              {target && (
+              {target && hasTarget && (
                 <Line
                   type="monotone"
                   dataKey="target"
@@ -262,6 +277,8 @@ export function SalesChartCard({ data }: { data: { label: string; revenue: numbe
     >
       {!on ? (
         <ChartOff label="Sales by month" />
+      ) : totalOrders === 0 ? (
+        <ChartEmpty label="No sales recorded yet" />
       ) : (
         <div className="admin-recharts-wrap">
           <ResponsiveContainer width="100%" height="100%">
@@ -313,6 +330,8 @@ export function OrdersByDayChartCard({ data }: { data: { label: string; orders: 
     >
       {!on ? (
         <ChartOff label="Order volume" />
+      ) : total === 0 ? (
+        <ChartEmpty label="No orders recorded yet" />
       ) : (
         <div className="admin-recharts-wrap">
           <ResponsiveContainer width="100%" height="100%">
@@ -590,6 +609,8 @@ export function TopProductsChartCard({ data }: { data: ProductPoint[] }) {
     >
       {!on ? (
         <ChartOff label="Top selling products" />
+      ) : data.length === 0 ? (
+        <ChartEmpty label="No product sales recorded yet" />
       ) : (
         <div className="admin-horizontal-recharts-wrap">
           <ResponsiveContainer width="100%" height="100%">
@@ -657,6 +678,8 @@ export function TopCategoriesChartCard({ data }: { data: CategoryPoint[] }) {
     >
       {!on ? (
         <ChartOff label="Top categories" />
+      ) : data.length === 0 ? (
+        <ChartEmpty label="No category sales recorded yet" />
       ) : (
         <div className="admin-horizontal-recharts-wrap">
           <ResponsiveContainer width="100%" height="100%">

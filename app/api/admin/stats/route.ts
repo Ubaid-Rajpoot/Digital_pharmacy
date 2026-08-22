@@ -1,29 +1,43 @@
-import { NextRequest } from "next/server";
-import { fail, handleError, ok } from "@/lib/api";
+import { handleError, ok } from "@/lib/api";
 import { requireAuth } from "@/lib/auth";
 import { read } from "@/lib/db/store";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export async function GET(_request: NextRequest) {
+/**
+ * Older dev databases were populated with generated MD-24xxx orders. They
+ * are not customer sales, so keep them out of analytics without deleting
+ * anything from the database. Newly-created orders are unaffected.
+ */
+function isLegacyDemoOrder(order: { number: string; customerEmail: string }) {
+  return /^MD-24[0-9]+$/.test(order.number) && order.customerEmail.endsWith("@example.com");
+}
+
+export async function GET() {
   try {
     await requireAuth("dashboard");
     return read((db) => {
       const now = new Date();
 
       // ---------- KPIs ----------
+      // Only order records are sales data. Product.sold is catalogue metadata
+      // and must never be used to invent revenue or top-seller figures.
+      const orders = db.orders.filter((order) => !isLegacyDemoOrder(order));
+      const customers = db.customers.filter((customer) => !customer.email.endsWith("@example.com"));
       const revenueStatuses = ["delivered", "shipped", "processing", "packed", "pending"];
-      const revenueOrders = db.orders.filter((o) => revenueStatuses.includes(o.status));
+      const isRevenueOrder = (o: (typeof db.orders)[number]) =>
+        revenueStatuses.includes(o.status) && !["failed", "refunded"].includes(o.paymentStatus);
+      const revenueOrders = orders.filter(isRevenueOrder);
       const revenue = revenueOrders.reduce((s, o) => s + o.total, 0);
-      const ordersToday = db.orders.filter((o) => {
+      const ordersToday = orders.filter((o) => {
         const d = new Date(o.createdAt);
         return d.toDateString() === now.toDateString();
       }).length;
-      const pendingOrders = db.orders.filter((o) => o.status === "pending").length;
-      const deliveredOrders = db.orders.filter((o) => o.status === "delivered").length;
-      const cancelledOrders = db.orders.filter((o) => o.status === "cancelled").length;
-      const refundRequests = db.orders.filter((o) => o.status === "returned" || (o.refund && o.status !== "refunded")).length;
+      const pendingOrders = orders.filter((o) => o.status === "pending").length;
+      const deliveredOrders = orders.filter((o) => o.status === "delivered").length;
+      const cancelledOrders = orders.filter((o) => o.status === "cancelled").length;
+      const refundRequests = orders.filter((o) => o.status === "returned" || (o.refund && o.status !== "refunded")).length;
       const totalProducts = db.products.length;
       const activeProducts = db.products.filter((p) => p.status === "active" && !p.deletedAt).length;
       const outOfStock = db.products.filter((p) => p.stock === 0 && !p.deletedAt).length;
@@ -31,8 +45,8 @@ export async function GET(_request: NextRequest) {
       const totalCategories = db.categories.filter((c) => !c.parentId).length;
       const totalBrands = db.brands.length;
       const totalDealers = db.dealers.length;
-      const totalCustomers = db.customers.length;
-      const newUsers30 = db.customers.filter((c) => now.getTime() - +new Date(c.joinedAt) < 30 * 86400000).length;
+      const totalCustomers = customers.length;
+      const newUsers30 = customers.filter((c) => now.getTime() - +new Date(c.joinedAt) < 30 * 86400000).length;
       const reviewsPending = db.reviews.filter((r) => r.status === "pending").length;
       const supportOpen = db.support.filter((s) => ["new", "open", "pending"].includes(s.status)).length;
       const subscribers = db.subscribers.filter((s) => s.status === "subscribed").length;
@@ -44,14 +58,13 @@ export async function GET(_request: NextRequest) {
       for (let i = 11; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const next = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-        const monthOrders = db.orders.filter((o) => {
+        const monthOrders = orders.filter((o) => {
           const od = new Date(o.createdAt);
           return od >= d && od < next;
         });
-        const monthRevenue = monthOrders
-          .filter((o) => revenueStatuses.includes(o.status))
-          .reduce((s, o) => s + o.total, 0);
-        const monthCustomers = db.customers.filter((c) => {
+        const monthSales = monthOrders.filter(isRevenueOrder);
+        const monthRevenue = monthSales.reduce((s, o) => s + o.total, 0);
+        const monthCustomers = customers.filter((c) => {
           const cd = new Date(c.joinedAt);
           return cd >= d && cd < next;
         }).length;
@@ -59,8 +72,10 @@ export async function GET(_request: NextRequest) {
         last12.push({
           label: MONTHS[d.getMonth()],
           revenue: monthRevenue,
-          orders: monthOrders.length,
-          target: Math.round(monthRevenue * 1.18),
+          orders: monthSales.length,
+          // No target is stored in the database yet. Keep this zero rather
+          // than deriving a fictional target from the actual revenue.
+          target: 0,
           customers: monthCustomers,
           cumulative: cumulativeCustomers,
         });
@@ -69,25 +84,44 @@ export async function GET(_request: NextRequest) {
       const last14: { label: string; orders: number; revenue: number }[] = [];
       for (let i = 13; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-        const dayOrders = db.orders.filter((o) => {
+        const dayOrders = orders.filter((o) => {
           const od = new Date(o.createdAt);
           return od.toDateString() === d.toDateString();
         });
         last14.push({
           label: DAYS[d.getDay()],
           orders: dayOrders.length,
-          revenue: dayOrders.filter((o) => revenueStatuses.includes(o.status)).reduce((s, o) => s + o.total, 0),
+          revenue: dayOrders.filter(isRevenueOrder).reduce((s, o) => s + o.total, 0),
         });
       }
 
-      const topProducts = [...db.products]
-        .filter((p) => !p.deletedAt)
-        .sort((a, b) => b.sold - a.sold)
+      const productSales = new Map<number, { sold: number; revenue: number }>();
+      for (const o of revenueOrders) {
+        for (const item of o.items) {
+          const current = productSales.get(item.productId) ?? { sold: 0, revenue: 0 };
+          current.sold += item.qty;
+          current.revenue += item.price * item.qty;
+          productSales.set(item.productId, current);
+        }
+      }
+
+      const topProducts = [...productSales.entries()]
+        .sort(([, a], [, b]) => b.revenue - a.revenue)
         .slice(0, 5)
-        .map((p) => ({
-          id: p.id, name: p.name.split("·")[0].trim(), image: p.image,
-          sold: p.sold, revenue: p.sold * p.price, stock: p.stock, sku: p.sku,
-        }));
+        .flatMap(([id, sales]) => {
+          const p = db.products.find((product) => product.id === id);
+          return p && !p.deletedAt
+            ? [{
+                id: p.id,
+                name: p.name.split("·")[0].trim(),
+                image: p.image,
+                sold: sales.sold,
+                revenue: sales.revenue,
+                stock: p.stock,
+                sku: p.sku,
+              }]
+            : [];
+        });
 
       const catRevenue = new Map<number, { name: string; revenue: number; orders: number }>();
       for (const o of revenueOrders) {
@@ -110,7 +144,7 @@ export async function GET(_request: NextRequest) {
       const ordersByStatus = Object.fromEntries(
         ["pending", "processing", "packed", "shipped", "delivered", "cancelled", "returned", "refunded"].map((s) => [
           s,
-          db.orders.filter((o) => o.status === s).length,
+          orders.filter((o) => o.status === s).length,
         ])
       );
 
@@ -120,7 +154,7 @@ export async function GET(_request: NextRequest) {
         .slice(0, 6)
         .map((p) => ({ id: p.id, name: p.name, sku: p.sku, image: p.image, stock: p.stock, lowStockAlert: p.lowStockAlert }));
 
-      const recentOrders = db.orders
+      const recentOrders = orders
         .slice()
         .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
         .slice(0, 6)

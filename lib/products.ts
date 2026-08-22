@@ -12,7 +12,9 @@ export type Product = {
   rating: number;
   rev: number;
   seed: string;
-  /** Additional image seeds used by the quick-view product gallery. */
+  /** Optional image URL supplied by the live admin catalogue. */
+  image?: string;
+  /** Additional image seeds/URLs used by the quick-view product gallery. */
   gallery?: string[];
   tint: string;
   rx?: boolean;
@@ -73,3 +75,21 @@ export const isInStock = (p: Product) => p.stock !== false;
 /** picsum.photos url for a seed + dimensions */
 export const pic = (seed: string, w: number, h: number) =>
   `https://picsum.photos/seed/${seed}/${w}/${h}`;
+
+/** Resolve either a stored URL or one of the bundled image seeds. */
+export const imageUrl = (source: string | undefined, w: number, h: number) => {
+  if (!source) return "";
+  return /^(?:https?:|\/|data:|blob:)/i.test(source) ? source : pic(source, w, h);
+};
+
+/** Resolve the main image for a product from live data, with a seed fallback. */
+export const productImage = (product: Pick<Product, "image" | "seed">, w: number, h: number) =>
+  imageUrl(product.image ?? product.seed, w, h);
+
+/** Return all available product gallery sources, preserving live URLs. */
+export const productImageSources = (product: Pick<Product, "image" | "seed" | "gallery">) => {
+  const sources = [product.image, ...(product.gallery ?? [])].filter(
+    (source): source is string => Boolean(source)
+  );
+  return sources.length ? sources : [product.seed];
+};
