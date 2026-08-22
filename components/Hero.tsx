@@ -213,7 +213,7 @@ export default function Hero() {
           </div>
 
           <div className="hero-ctas hero-fade fd-6">
-            <a href="#medicines" className="btn btn-primary">
+            <a href="/#medicines" className="btn btn-primary" onClick={(e) => { e.preventDefault(); scrollToSection("medicines"); }}>
               Order Medicines Now <IconArrow size={17} strokeWidth={2.4} />
             </a>
             <button className="btn btn-ghost" onClick={() => setChatOpen(true)}>

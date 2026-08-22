@@ -5,15 +5,22 @@ import { useStore } from "@/components/StoreProvider";
 import { IconCheck, IconCross, IconMail, IconPhone, IconPin } from "@/components/icons";
 
 export default function Footer() {
-  const { setRxOpen } = useStore();
+  const { setRxOpen, scrollToSection } = useStore();
   const year = new Date().getFullYear();
+
+  // Section links work from any page: scroll when the target is here,
+  // otherwise navigate to /#<section> (see StoreProvider.scrollToSection).
+  const goTo = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    scrollToSection(id);
+  };
 
   return (
     <footer>
       <div className="wrap">
         <div className="foot-top">
           <div className="foot-brand">
-            <a href="#home" className="logo">
+            <a href="/#home" className="logo" onClick={goTo("home")}>
               <span className="mk">
                 <IconCross size={18} strokeWidth={3.2} />
               </span>
@@ -66,12 +73,12 @@ export default function Footer() {
           </div>
           <div className="foot-col">
             <h5>Shop</h5>
-            <a href="#medicines">Prescription Medicines</a>
-            <a href="#categories">Vitamins &amp; Supplements</a>
-            <a href="#categories">Baby &amp; Mother Care</a>
-            <a href="#categories">Diabetes &amp; Heart Care</a>
-            <a href="#categories">Medical Equipment</a>
-            <a href="#medicines">All Products</a>
+            <a href="/#medicines" onClick={goTo("medicines")}>Prescription Medicines</a>
+            <a href="/#categories" onClick={goTo("categories")}>Vitamins &amp; Supplements</a>
+            <a href="/#categories" onClick={goTo("categories")}>Baby &amp; Mother Care</a>
+            <a href="/#categories" onClick={goTo("categories")}>Diabetes &amp; Heart Care</a>
+            <a href="/#categories" onClick={goTo("categories")}>Medical Equipment</a>
+            <a href="/#medicines" onClick={goTo("medicines")}>All Products</a>
           </div>
           <div className="foot-col">
             <h5>Support</h5>
@@ -81,7 +88,7 @@ export default function Footer() {
             <Link href="/track">Track Your Order</Link>
             <Link href="/policies/delivery">Delivery Policy</Link>
             <Link href="/policies/returns">Returns &amp; Refunds</Link>
-            <a href="#consult">Talk to a Pharmacist</a>
+            <a href="/#consult" onClick={goTo("consult")}>Talk to a Pharmacist</a>
           </div>
           <div className="foot-col">
             <h5>Contact</h5>

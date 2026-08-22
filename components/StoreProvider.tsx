@@ -14,6 +14,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/products";
 
 /** Storefront category as served by /api/store/catalog. */
@@ -129,6 +130,7 @@ function flyToCart(fromEl: HTMLElement) {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   // The storefront has no product fallback: admin data is the source of
   // truth, including the valid empty-catalogue state.
   const [products, setProducts] = useState<Product[]>([]);
@@ -220,15 +222,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const openQuick = useCallback((id: number) => setQvId(id), []);
   const closeQuick = useCallback(() => setQvId(null), []);
 
-  const scrollToSection = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
-      return;
-    }
-    // Section lives on the home page — navigate there and land on the anchor.
-    window.location.href = `/#${id}`;
-  }, []);
+  const scrollToSection = useCallback(
+    (id: string) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
+        return;
+      }
+      // The section lives on the home page — navigate there; the browser
+      // then lands on the anchor (e.g. /track → /#medicines).
+      router.push(`/#${id}`);
+    },
+    [router]
+  );
 
   // Switching category clears any active subcategory filter.
   const setCat = useCallback((c: string) => {
