@@ -6,7 +6,7 @@
 // whatever the admin panel edits.
 // ============================================================
 
-import type { DbShape, Category } from "@/lib/db/types";
+import type { DbShape, Category, Product as DbProduct } from "@/lib/db/types";
 import type { Product as StorefrontProduct } from "@/lib/products";
 
 /** Admin category slug → storefront category code. */
@@ -52,42 +52,38 @@ function saltOf(specs: { label: string; value: string }[], name: string): string
   return name;
 }
 
+/** Map one DB product to the storefront shape (used by the catalog, the
+ *  product API and the /product/[id] page). */
+export function mapProduct(db: DbShape, p: DbProduct): StorefrontProduct {
+  const cat = db.categories.find((c) => c.id === p.categoryId);
+  const subCat = p.subcategoryId ? db.categories.find((c) => c.id === p.subcategoryId && c.status === "active") : undefined;
+  const code = codeOf(cat);
+  const seed = seedFromUrl(p.image, `prod-${p.id}-${p.name.toLowerCase().replace(/[^a-z]+/g, "-").slice(0, 20)}`);
+  return {
+    id: p.id,
+    name: p.name,
+    brand: db.brands.find((b) => b.id === p.brandId)?.name ?? "Medora",
+    cat: code,
+    sub: subCat?.name ?? "",
+    price: p.price,
+    mrp: p.mrp || p.price,
+    rating: p.rating,
+    rev: p.reviews,
+    seed,
+    image: p.image,
+    gallery: [p.image, ...(p.gallery ?? [])].filter(Boolean),
+    tint: TINT_BY_CODE[code] ?? "pm-mint",
+    rx: p.rx,
+    stock: p.stock > 0 ? undefined : false,
+    desc: p.description,
+    salt: saltOf(p.specifications ?? [], p.name),
+  };
+}
+
 export function buildStorefrontCatalog(db: DbShape) {
   const products: StorefrontProduct[] = db.products
     .filter((p) => !p.deletedAt && p.status === "active")
-    .map((p) => {
-      const cat = db.categories.find((c) => c.id === p.categoryId);
-      const subCat = p.subcategoryId
-        ? db.categories.find((c) => c.id === p.subcategoryId && c.status === "active")
-        : undefined;
-      const code = codeOf(cat);
-      const brand = db.brands.find((b) => b.id === p.brandId)?.name ?? "Medora";
-      const seed = seedFromUrl(
-        p.image,
-        `prod-${p.id}-${p.name.toLowerCase().replace(/[^a-z]+/g, "-").slice(0, 20)}`
-      );
-      return {
-        id: p.id,
-        name: p.name,
-        brand,
-        cat: code,
-        sub: subCat?.name ?? "",
-        price: p.price,
-        mrp: p.mrp || p.price,
-        rating: p.rating,
-        rev: p.reviews,
-        seed,
-        // Keep the original URLs. The storefront can now show files uploaded
-        // from the admin panel instead of rebuilding every image as a seed.
-        image: p.image,
-        gallery: [p.image, ...(p.gallery ?? [])].filter(Boolean),
-        tint: TINT_BY_CODE[code] ?? "pm-mint",
-        rx: p.rx,
-        stock: p.stock > 0 ? undefined : false,
-        desc: p.description,
-        salt: saltOf(p.specifications ?? [], p.name),
-      };
-    });
+    .map((p) => mapProduct(db, p));
 
   const catsubs: Record<string, string[]> = {};
   const categories: {

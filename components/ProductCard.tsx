@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
 import { IconEye, IconHeart, IconPlus } from "@/components/icons";
 import { CATNAME, isInStock, productImage, pctOff, rupees, starStr, type Product } from "@/lib/products";
@@ -51,7 +52,15 @@ export default function ProductCard({ p }: { p: Product }) {
         <span className="p-brand">
           {p.brand} · {categoryName}
         </span>
-        <h4 className="p-name">{p.name}</h4>
+        <h4 className="p-name">
+          <Link
+            href={`/product/${p.id}`}
+            onClick={(e) => e.stopPropagation()}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            {p.name}
+          </Link>
+        </h4>
         <div className="p-rate">
           <span className="stars">{starStr(p.rating)}</span>
           {p.rating}

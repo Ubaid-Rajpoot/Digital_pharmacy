@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useStore } from "@/components/StoreProvider";
 import { IconArrow, IconX } from "@/components/icons";
 import { FREE_AT, productImage, rupees, type Product } from "@/lib/products";
@@ -47,6 +48,7 @@ function CartItem({
 }
 
 export default function CartDrawer() {
+  const router = useRouter();
   const {
     cart,
     products,
@@ -132,13 +134,14 @@ export default function CartDrawer() {
           </div>
           <button
             className="btn btn-primary"
-            onClick={() =>
-              toast(
-                items.length
-                  ? "Demo checkout — your care bag is safe with us 💙"
-                  : "Your care bag is empty — add something kind first"
-              )
-            }
+            onClick={() => {
+              if (!items.length) {
+                toast("Your care bag is empty — add something kind first");
+                return;
+              }
+              closeDrawer();
+              router.push("/checkout");
+            }}
           >
             Proceed to Secure Checkout <IconArrow size={16} strokeWidth={2.4} />
           </button>

@@ -140,6 +140,8 @@ export interface Order {
   tracking: { carrier: string; number: string; url: string } | null;
   couponCode: string | null;
   notes: string | null;
+  /** Prescription attached by the customer at checkout (Rx-only orders). */
+  prescription?: { url: string; name: string; at: string } | null;
   timeline: { label: string; at: string; note?: string }[];
   refund?: { amount: number; reason: string; at: string } | null;
   createdAt: string;

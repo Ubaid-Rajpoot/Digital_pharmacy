@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
 import {
   IconArrow,
@@ -188,6 +189,13 @@ export default function Hero() {
                           </span>
                           <span className="pr">{rupees(p.price)}</span>
                         </span>
+                        <Link
+                          href={`/product/${p.id}`}
+                          onClick={() => setSuggestOpen(false)}
+                          style={{ fontSize: 11, fontWeight: 800, color: "var(--blue)", padding: "6px 11px", borderRadius: 9, border: "1.5px solid var(--line2)", textDecoration: "none", whiteSpace: "nowrap" }}
+                        >
+                          Details →
+                        </Link>
                       </button>
                     );
                   })

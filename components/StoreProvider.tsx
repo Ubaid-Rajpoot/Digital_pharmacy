@@ -72,6 +72,9 @@ type StoreValue = {
   // prescription modal
   rxOpen: boolean;
   setRxOpen: (v: boolean) => void;
+  /** Uploaded prescription attached to the cart until an order is placed. */
+  rx: { url: string; name: string } | null;
+  setRx: (v: { url: string; name: string } | null) => void;
 
   // chat
   chatOpen: boolean;
@@ -130,6 +133,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // guards against the first client render clobbering stored values.
   const [hydrated, setHydrated] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [rx, setRx] = useState<{ url: string; name: string } | null>(null);
   const [qvId, setQvId] = useState<number | null>(null);
   const [rxOpen, setRxOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -320,6 +324,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     closeQuick,
     rxOpen,
     setRxOpen,
+    rx,
+    setRx,
     chatOpen,
     setChatOpen,
     toasts,
