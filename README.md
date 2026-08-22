@@ -63,6 +63,29 @@ lib/db/             MongoDB data layer, entity types, seed data
 lib/                auth/RBAC, password hashing, storefront mappers, API helpers
 ```
 
+## Deployment (Vercel via GitHub Actions)
+
+Every push to `main` deploys to Vercel automatically (`.github/workflows/deploy.yml`).
+
+**One-time setup:**
+
+1. Push this repo to GitHub, then import it as a project on [vercel.com](https://vercel.com) (Framework: Next.js — no build overrides needed; the app only touches MongoDB at runtime, so builds work without a database).
+2. Add the three secrets to **GitHub → Settings → Secrets and variables → Actions**:
+   - `VERCEL_TOKEN` — Vercel → Settings → Tokens
+   - `VERCEL_ORG_ID` — Vercel team Settings → General → Vercel ID
+   - `VERCEL_PROJECT_ID` — Project → Settings → General → Project ID
+3. Add runtime env vars to **Vercel → Project → Settings → Environment Variables** (Production):
+
+   | Variable | Notes |
+   | --- | --- |
+   | `MONGODB_URI` | A reachable MongoDB (e.g. a free [Atlas](https://www.mongodb.com/atlas) cluster) — `127.0.0.1` will NOT work on Vercel |
+   | `MONGODB_DB` | `medora` |
+   | `AUTH_SECRET` | Random string (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) — sessions break if it changes |
+   | `NEXT_PUBLIC_SITE_URL` | Your production URL |
+   | `SEED_DEMO_DATA` | `true` to auto-seed the demo dataset on the fresh DB, `false` for a blank store |
+
+After that: `git push origin main` → GitHub Action builds and deploys. Uploads still go to local disk, which is ephemeral on Vercel — swap `app/api/*/upload` storage for S3/Cloudinary when you need persistent files.
+
 ## Notes & limitations
 
 - **Payments are simulated** (COD is the only "real" method). No gateway keys are needed to run the demo.

@@ -1,0 +1,51 @@
+# ============================================================
+# MEDORA — CI/CD: deploy to Vercel on every push to `main`
+#
+# One-time setup (repo → Settings → Secrets and variables → Actions):
+#   1. VERCEL_TOKEN      — Vercel → Settings → Tokens → Create (scope: your team)
+#   2. VERCEL_ORG_ID     — Vercel → Settings → General → "Vercel ID" (team scope)
+#   3. VERCEL_PROJECT_ID — Project → Settings → General → "Project ID"
+#
+# Runtime environment variables (Vercel → Project → Settings → Environment
+# Variables → Production): MONGODB_URI, MONGODB_DB, AUTH_SECRET,
+# NEXT_PUBLIC_SITE_URL, SEED_DEMO_DATA (see README "Deployment").
+# ============================================================
+
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    name: Build & deploy (production)
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so Vercel can skip unchanged builds
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to production
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
