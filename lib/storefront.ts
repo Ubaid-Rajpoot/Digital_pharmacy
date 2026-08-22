@@ -112,5 +112,21 @@ export function buildStorefrontCatalog(db: DbShape) {
     });
   }
 
-  return { products, catsubs, categories };
+  // Newest approved reviews power the storefront testimonials (with enough
+  // body text to read well as a quote).
+  const reviews = db.reviews
+    .filter((r) => r.status === "approved" && r.body.length > 60)
+    .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+    .slice(0, 8)
+    .map((r) => ({
+      id: r.id,
+      name: r.customerName,
+      rating: r.rating,
+      quote: r.body,
+      productName: r.productName,
+      verified: r.verifiedPurchase,
+      at: r.createdAt,
+    }));
+
+  return { products, catsubs, categories, reviews };
 }

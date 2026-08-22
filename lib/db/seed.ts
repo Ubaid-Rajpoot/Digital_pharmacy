@@ -236,7 +236,7 @@ export const seedProducts: Product[] = prodSeeds.map((p, i) => {
 // ---------- customers ----------
 const firstNames = ["Aarav", "Priya", "Rohan", "Ananya", "Vikram", "Sneha", "Arjun", "Ishita", "Kabir", "Meera", "Dev", "Kavya", "Rahul", "Nisha", "Aditya", "Pooja", "Sameer", "Tara", "Varun", "Zara", "Manish", "Riya", "Harsh", "Divya"];
 const lastNames = ["Sharma", "Patel", "Gupta", "Iyer", "Khan", "Reddy", "Mehta", "Joshi", "Nair", "Singh", "Verma", "Das", "Bose", "Chopra", "Malhotra", "Rao"];
-const INCLUDE_DEMO_CUSTOMERS = false;
+const INCLUDE_DEMO_CUSTOMERS = true;
 export const seedCustomers: Customer[] = INCLUDE_DEMO_CUSTOMERS ? Array.from({ length: 24 }, (_, i) => {
   const name = `${pick(firstNames)} ${pick(lastNames)}`;
   const id = i + 1;
@@ -296,7 +296,7 @@ function statusSteps(status: OrderStatus): { label: string; note?: string }[] {
   return base.slice(0, idx + 1);
 }
 
-const INCLUDE_DEMO_SALES = false;
+const INCLUDE_DEMO_SALES = true;
 export const seedOrders: Order[] = INCLUDE_DEMO_SALES ? Array.from({ length: 96 }, (_, i) => {
   const id = i + 1;
   const cust = pick(seedCustomers);

@@ -272,6 +272,15 @@ function OrderDetail({
           <b>{money(order.total)}</b>
         </div>
         {order.couponCode && <div className="admin-payment" style={{ marginTop: 8 }}>Coupon applied: <b className="admin-order-id">{order.couponCode}</b></div>}
+        {"prescription" in order && order.prescription?.url && (
+          <div className="admin-payment" style={{ marginTop: 8 }}>
+            Prescription:{" "}
+            <a href={order.prescription.url} target="_blank" rel="noreferrer" className="admin-order-id" style={{ textDecoration: "underline" }}>
+              {order.prescription.name}
+            </a>{" "}
+            <small>({new Date(order.prescription.at).toLocaleString("en-IN")})</small>
+          </div>
+        )}
       </div>
 
       <div className="admin-detail-block">

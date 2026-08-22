@@ -26,6 +26,17 @@ export type StoreCategory = {
   icon?: string;
 };
 
+/** Approved customer review as served by /api/store/catalog. */
+export type StoreReview = {
+  id: number;
+  name: string;
+  rating: number;
+  quote: string;
+  productName: string;
+  verified: boolean;
+  at: string;
+};
+
 type Totals = { sub: number; save: number; n: number };
 
 type Toast = { id: number; msg: string };
@@ -34,6 +45,8 @@ type StoreValue = {
   products: Product[];
   catsubs: Record<string, string[]>;
   categories: StoreCategory[];
+  /** Approved customer reviews (empty until moderation approves some). */
+  reviews: StoreReview[];
   catalogReady: boolean;
   /** Non-null when the live catalogue failed to load (e.g. database down). */
   catalogError: string | null;
@@ -121,6 +134,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [catsubs, setCatsubs] = useState<Record<string, string[]>>({});
   const [categories, setCategories] = useState<StoreCategory[]>([]);
+  const [reviews, setReviews] = useState<StoreReview[]>([]);
   const [catalogReady, setCatalogReady] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const [catalogTick, setCatalogTick] = useState(0);
@@ -273,13 +287,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCatalogError(null);
     fetch("/api/store/catalog", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((data: { products?: Product[]; catsubs?: Record<string, string[]>; categories?: StoreCategory[] }) => {
+      .then((data: { products?: Product[]; catsubs?: Record<string, string[]>; categories?: StoreCategory[]; reviews?: StoreReview[] }) => {
         if (!alive) return;
         // A successful empty response is meaningful: the admin may have no
         // active products yet, so do not silently put the demo catalogue back.
         setProducts(Array.isArray(data.products) ? data.products : []);
         setCatsubs(data.catsubs && typeof data.catsubs === "object" ? data.catsubs : {});
         setCategories(Array.isArray(data.categories) ? data.categories : []);
+        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
         setCatalogReady(true);
       })
       .catch(() => {
@@ -299,6 +314,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     products,
     catsubs,
     categories,
+    reviews,
     catalogReady,
     catalogError,
     retryCatalog,

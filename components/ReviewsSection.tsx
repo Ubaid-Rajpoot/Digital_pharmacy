@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Reveal from "@/components/Reveal";
+import { useStore } from "@/components/StoreProvider";
 import { IconCheck, IconChevLeft, IconChevRight } from "@/components/icons";
 import { pic } from "@/lib/products";
 
@@ -13,7 +14,19 @@ type Review = {
   seed: string;
 };
 
-const REVIEWS: Review[] = [
+/** Live reviews served by /api/store/catalog (approved, moderated). */
+type LiveReview = {
+  id: number;
+  name: string;
+  rating: number;
+  quote: string;
+  productName: string;
+  verified: boolean;
+  at: string;
+};
+
+/** Editorial fallback used until the store has approved customer reviews. */
+const FALLBACK_REVIEWS: Review[] = [
   {
     quote:
       "Finally, a pharmacy I can trust for my family's medicines. My father's cardiac refill arrives two days early, every single month.",
@@ -87,9 +100,42 @@ function ReviewCard({ r }: { r: Review }) {
   );
 }
 
+function LiveReviewCard({ r }: { r: LiveReview }) {
+  return (
+    <article className="rev-card">
+      <div className="rev-top">
+        <span className="rev-stars">{"★".repeat(Math.max(3, Math.min(5, r.rating)))}</span>
+        {r.verified && (
+          <span className="verified">
+            <IconCheck size={11} strokeWidth={3} />
+            Verified purchase
+          </span>
+        )}
+      </div>
+      <blockquote>&quot;{r.quote}&quot;</blockquote>
+      <div className="rev-foot">
+        <img src={pic(`reviewer-${r.id}`, 96, 96)} alt={r.name} loading="lazy" />
+        <div>
+          <b>{r.name}</b>
+          <small>{r.productName}</small>
+        </div>
+        <span className="rev-orders">
+          {new Date(r.at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+        </span>
+      </div>
+    </article>
+  );
+}
+
 export default function ReviewsSection() {
+  const { reviews } = useStore();
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+
+  const list: LiveReview[] = reviews.length >= 4 ? reviews : [];
+  const source = list.length
+    ? [...list, ...list].map((r, i) => <LiveReviewCard key={`${r.id}-${i}`} r={r} />)
+    : [...FALLBACK_REVIEWS, ...FALLBACK_REVIEWS].map((r, i) => <ReviewCard key={i} r={r} />);
 
   const nudge = (dir: 1 | -1) => {
     const t = trackRef.current;
@@ -128,9 +174,7 @@ export default function ReviewsSection() {
       </div>
       <div className="rev-viewport" ref={viewportRef}>
         <div className="rev-track" ref={trackRef}>
-          {[...REVIEWS, ...REVIEWS].map((r, i) => (
-            <ReviewCard key={i} r={r} />
-          ))}
+          {source}
         </div>
       </div>
     </section>

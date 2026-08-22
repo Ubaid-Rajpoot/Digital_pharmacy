@@ -7,15 +7,33 @@ import { pic } from "@/lib/products";
 
 type Msg = { from: "bot" | "me"; text: string };
 
+const STORAGE_KEY = "medora-chat";
+
 export default function ChatWidget() {
   const { chatOpen, setChatOpen } = useStore();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const openedOnce = useRef(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
+
+  // restore a previous conversation, then persist new messages
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setMsgs(JSON.parse(saved));
+    } catch {
+      /* corrupted — start fresh */
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs.slice(-80)));
+  }, [msgs, loaded]);
 
   // greet the user the first time the chat opens — timers are NOT cleared on
   // close so the greeting still lands even if the user opens & closes quickly
@@ -68,6 +86,15 @@ export default function ChatWidget() {
     setMsgs((m) => [...m, { from: "me", text: v }]);
     setInput("");
     setTyping(true);
+    // The message is delivered to the Support Center; the instant reply is a
+    // scripted acknowledgement (no live pharmacist/AI backend in this demo).
+    void fetch("/api/store/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: v }),
+    }).catch(() => {
+      /* queued messages are best-effort */
+    });
     setTimeout(() => {
       setTyping(false);
       setMsgs((m) => [

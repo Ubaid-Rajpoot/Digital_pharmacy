@@ -36,12 +36,33 @@ const ARTICLES = [
 export default function WellnessSection() {
   const { toast } = useStore();
   const [subscribed, setSubscribed] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    e.currentTarget.style.display = "none";
-    setSubscribed(true);
-    toast("Subscribed! Your first wellness letter is on its way 💌");
+    const input = e.currentTarget.elements.namedItem("email") as HTMLInputElement | null;
+    const email = input?.value?.trim() ?? "";
+    if (!email) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/store/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast(data.error ?? "Couldn't subscribe — please try again");
+        return;
+      }
+      e.currentTarget.style.display = "none";
+      setSubscribed(true);
+      toast(data.already ? "You're already on the list — thank you! 💚" : "Subscribed! Your first wellness letter is on its way 💌");
+    } catch {
+      toast("Network hiccup — please try again");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -59,6 +80,7 @@ export default function WellnessSection() {
             <form className="news-form" onSubmit={handleSubscribe}>
               <input
                 type="email"
+                name="email"
                 required
                 placeholder="Your email address"
                 aria-label="Email address"
@@ -67,8 +89,9 @@ export default function WellnessSection() {
                 className="btn btn-primary"
                 type="submit"
                 style={{ padding: "12px 22px" }}
+                disabled={busy}
               >
-                Subscribe
+                {busy ? "Subscribing…" : "Subscribe"}
               </button>
             </form>
           ) : (
