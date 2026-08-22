@@ -15,8 +15,11 @@ npm run dev        # http://localhost:3000
 **Requirements:** a reachable MongoDB instance. Copy `.env.example` to `.env.local` and set
 `MONGODB_URI` (a local `mongodb://127.0.0.1:27017` works out of the box).
 
-On first run against an empty database, Medora seeds itself with a deterministic demo dataset
-(`lib/db/seed.ts`): products, categories, brands, coupons, users, roles and more.
+On first run against a fresh database, Medora seeds itself once with a deterministic demo
+dataset (`lib/db/seed.ts`) — tracked by a `meta.seed` flag, so wiping the data never
+re-seeds it. Set `SEED_DEMO_DATA=false` in `.env.local` to start with a **completely blank
+store** (only admin users, roles and settings are initialized — you then create your own
+categories/products from the admin panel).
 
 ### Admin panel
 
@@ -44,6 +47,7 @@ On first run against an empty database, Medora seeds itself with a deterministic
 | `MONGODB_DB` | Database name | `medora` |
 | `AUTH_SECRET` | Secret for admin session cookies (set a random value in production) | dev fallback |
 | `ADMIN_PASSWORD` | Password for seeded admin accounts | `demo1234` |
+| `SEED_DEMO_DATA` | `true` seeds the demo dataset on a fresh DB; `false` starts blank | `true` |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL for metadata/sitemap | `http://localhost:3000` |
 
 ## Project layout
@@ -66,4 +70,6 @@ lib/                auth/RBAC, password hashing, storefront mappers, API helpers
   swap for S3/Cloudinary in `app/api/admin/upload` before deploying serverless.
 - Chat replies and emails are canned placeholders (no AI/SMS/SMTP providers are configured).
   Chat messages, consultations and newsletter sign-ups are persisted and appear in the admin panel.
-- Reset the demo data at any time by dropping the `medora` database (it re-seeds on next request).
+- Reset to a blank store at any time: delete the business-data collections in MongoDB and
+  restart (the `meta.seed` flag prevents re-seeding), or drop the whole database with
+  `SEED_DEMO_DATA=false` set.

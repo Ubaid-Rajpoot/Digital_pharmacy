@@ -45,11 +45,29 @@ async function load(): Promise<DbShape> {
   if (cache) return cache;
   const database = await connect();
 
-  const productCount = await database.collection("products").countDocuments();
-  if (productCount === 0) {
-    // Fresh database — seed it once.
-    cache = buildSeed();
+  // A database is seeded at most once, tracked by the `meta.seed` flag —
+  // NOT by collection emptiness, so wiping the data never triggers a
+  // re-seed. SEED_DEMO_DATA=false initializes a blank store (only system
+  // records: admin users, roles, settings) instead of the demo dataset.
+  const seeded = await database.collection("meta").findOne({ key: "seed" } as Filter<Document>);
+  if (!seeded) {
+    if (process.env.SEED_DEMO_DATA === "false") {
+      const sys = buildSeed();
+      cache = {
+        ...sys,
+        products: [], categories: [], brands: [], dealers: [], orders: [],
+        customers: [], reviews: [], warehouses: [], purchaseOrders: [],
+        stockAdjustments: [], inventory: [], coupons: [], flashSales: [],
+        content: [], faqs: [], menu: [], socials: [], media: [], support: [],
+        subscribers: [], notifications: [], audit: [],
+      };
+    } else {
+      cache = buildSeed();
+    }
     await persist();
+    await database
+      .collection("meta")
+      .updateOne({ key: "seed" } as Filter<Document>, { $set: { key: "seed", value: true } }, { upsert: true });
     return cache;
   }
 
