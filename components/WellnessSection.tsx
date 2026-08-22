@@ -40,7 +40,9 @@ export default function WellnessSection() {
 
   const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const input = e.currentTarget.elements.namedItem("email") as HTMLInputElement | null;
+    // capture the form synchronously — e.currentTarget is null after await
+    const form = e.currentTarget;
+    const input = form.elements.namedItem("email") as HTMLInputElement | null;
     const email = input?.value?.trim() ?? "";
     if (!email) return;
     setBusy(true);
@@ -55,7 +57,7 @@ export default function WellnessSection() {
         toast(data.error ?? "Couldn't subscribe — please try again");
         return;
       }
-      e.currentTarget.style.display = "none";
+      form.style.display = "none";
       setSubscribed(true);
       toast(data.already ? "You're already on the list — thank you! 💚" : "Subscribed! Your first wellness letter is on its way 💌");
     } catch {
