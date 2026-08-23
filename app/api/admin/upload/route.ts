@@ -1,14 +1,13 @@
 // ============================================================
-// MEDORA — local file upload
-// Saves uploaded files into public/uploads/ so they are served
-// at /uploads/<file>. Swap for S3/Cloudinary later if needed.
+// MEDORA — admin media upload
+// Validates the file, stores it in Vercel Blob (public URL) so it
+// works identically in dev and on serverless deploys.
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/api";
+import { putInBlob } from "@/lib/blob";
 
 const ALLOWED_EXT = new Set([
   ".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif",
@@ -29,25 +28,13 @@ export async function POST(request: NextRequest) {
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "File is too large (max 15 MB)." }, { status: 400 });
     }
-    const ext = path.extname(file.name).toLowerCase();
-    if (!ALLOWED_EXT.has(ext)) {
+    const name = file.name.toLowerCase();
+    if (![...ALLOWED_EXT].some((ext) => name.endsWith(ext))) {
       return NextResponse.json({ error: "Unsupported file type." }, { status: 400 });
     }
 
-    const dir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(dir, { recursive: true });
-
-    // Unique, safe filename: timestamp + sanitized original name
-    const safeBase = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeBase}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(dir, filename), buffer);
-
-    return NextResponse.json({
-      url: `/uploads/${filename}`,
-      name: file.name,
-      size: file.size,
-    });
+    const { url } = await putInBlob(file, "uploads");
+    return NextResponse.json({ url, name: file.name, size: file.size });
   } catch (e) {
     return handleError(e);
   }

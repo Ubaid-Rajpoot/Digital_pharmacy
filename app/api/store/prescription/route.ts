@@ -1,14 +1,14 @@
 // ============================================================
 // MEDORA — prescription upload (public storefront API)
-// Customers attach an Rx at checkout; the file is stored under
-// public/uploads/prescriptions/ and registered in the media
-// library so pharmacists can review it from the admin panel.
+// Customers attach an Rx at checkout; the file is stored in
+// Vercel Blob (permanent public URL) and registered in the
+// media library so pharmacists can review it from the admin
+// panel. Works identically in dev and on serverless deploys.
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { nextId, write } from "@/lib/db/store";
+import { putInBlob } from "@/lib/blob";
 
 export const dynamic = "force-dynamic";
 
@@ -26,17 +26,13 @@ export async function POST(request: NextRequest) {
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "That file is too large — prescriptions can be up to 10 MB." }, { status: 400 });
     }
-    const ext = path.extname(file.name).toLowerCase();
-    if (!ALLOWED_EXT.has(ext)) {
+    const name = file.name.toLowerCase();
+    const isPdf = name.endsWith(".pdf");
+    if (![...ALLOWED_EXT].some((ext) => name.endsWith(ext))) {
       return NextResponse.json({ error: "Please upload a JPG, PNG, WEBP or PDF file." }, { status: 400 });
     }
 
-    const dir = path.join(process.cwd(), "public", "uploads", "prescriptions");
-    await mkdir(dir, { recursive: true });
-    const safeBase = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeBase}`;
-    await writeFile(path.join(dir, filename), Buffer.from(await file.arrayBuffer()));
-    const url = `/uploads/prescriptions/${filename}`;
+    const { url } = await putInBlob(file, "prescriptions");
 
     // Register in the media library (folder "prescriptions") so the admin
     // sees every uploaded Rx alongside order records.
@@ -46,7 +42,7 @@ export async function POST(request: NextRequest) {
         name: patient ? `Rx — ${patient} (${file.name})` : file.name,
         url,
         folder: "prescriptions",
-        type: ext === ".pdf" ? "document" : "image",
+        type: isPdf ? "document" : "image",
         size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
         createdAt: new Date().toISOString(),
       });
@@ -55,7 +51,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url, name: file.name }, { status: 201 });
   } catch (e) {
+    const message = e instanceof Error && e.message.includes("BLOB_READ_WRITE_TOKEN")
+      ? "Upload storage is not configured — please contact support."
+      : "Upload failed — please try again.";
     console.error("[store-prescription]", e);
-    return NextResponse.json({ error: "Upload failed — please try again." }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
