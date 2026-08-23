@@ -277,8 +277,51 @@ export function Field({
   );
 }
 
-export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} />;
+export function TextInput({
+  icon,
+  right,
+  style,
+  ref,
+  ...rest
+}: React.InputHTMLAttributes<HTMLInputElement> & {
+  /** Optional icon rendered inside the input on the left. */
+  icon?: IconName;
+  /** Optional right-side slot (e.g. a show/hide password button). */
+  right?: React.ReactNode;
+  /** React 19 passes ref as a normal prop. */
+  ref?: React.Ref<HTMLInputElement>;
+}) {
+  if (!icon && !right) return <input {...rest} ref={ref} style={style} />;
+  return (
+    <span style={{ position: "relative", display: "block" }}>
+      {icon && (
+        <span
+          aria-hidden="true"
+          style={{
+            position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+            color: "var(--admin-muted)", display: "inline-flex", pointerEvents: "none",
+          }}
+        >
+          <Icon name={icon} size={15} />
+        </span>
+      )}
+      <input
+        {...rest}
+        ref={ref}
+        style={{
+          ...style,
+          width: "100%",
+          ...(icon ? { paddingLeft: 38 } : null),
+          ...(right ? { paddingRight: 44 } : null),
+        }}
+      />
+      {right && (
+        <span style={{ position: "absolute", right: 5, top: "50%", transform: "translateY(-50%)", display: "inline-flex" }}>
+          {right}
+        </span>
+      )}
+    </span>
+  );
 }
 
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {

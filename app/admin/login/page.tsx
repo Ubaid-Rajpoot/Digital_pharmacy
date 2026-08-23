@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { api, ApiError } from "@/components/admin/api";
 import { Icon } from "@/components/admin/icons";
-import { Btn, useToast } from "@/components/admin/ui";
+import { Btn, Field, TextInput, useToast } from "@/components/admin/ui";
 
 // Demo credentials exist only in the seeded development dataset; never
 // surface them in production builds (NODE_ENV is inlined at build time).
@@ -13,7 +13,6 @@ const IS_DEV = process.env.NODE_ENV !== "production";
 const DEMO_USERS = [
   { role: "Super Admin", email: "admin@medora.health" },
   { role: "Manager", email: "sneha@medora.health" },
-  { role: "Inventory", email: "amit@medora.health" },
   { role: "Support", email: "priya@medora.health" },
 ];
 
@@ -55,6 +54,9 @@ export default function AdminLoginPage() {
     }
   };
 
+  const trackCapsLock = (e: React.KeyboardEvent<HTMLInputElement>) =>
+    setCapsLock(e.getModifierState?.("CapsLock") ?? false);
+
   return (
     <div className="admin-login-page">
       <div className="admin-login-glow" />
@@ -72,85 +74,75 @@ export default function AdminLoginPage() {
         </p>
 
         <form onSubmit={submit} noValidate>
-          <label style={{ display: "grid", gap: 7, marginBottom: 14 }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--admin-ink)" }}>Email address</span>
-            <div style={{ position: "relative" }}>
-              <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--admin-muted)", display: "inline-flex" }}>
-                <Icon name="send" size={15} />
-              </span>
-              <input
+          <div className="admin-form-stack">
+            <Field label="Email address" required>
+              <TextInput
                 ref={emailRef}
                 type="email"
+                icon="send"
                 autoComplete="email"
                 spellCheck={false}
                 placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%", padding: "13px 14px 13px 40px", borderRadius: 12,
-                  border: "1.6px solid var(--admin-line)", background: "#fff",
-                  fontSize: 14.5, fontFamily: "inherit", outline: "none",
-                }}
               />
-            </div>
-          </label>
+            </Field>
 
-          <label style={{ display: "grid", gap: 7, marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: "var(--admin-ink)" }}>Password</span>
-            <div style={{ position: "relative" }}>
-              <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--admin-muted)", display: "inline-flex" }}>
-                <Icon name="lock" size={15} />
-              </span>
-              <input
+            <Field label="Password" required>
+              <TextInput
                 type={showPassword ? "text" : "password"}
+                icon="lock"
                 autoComplete="current-password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyUp={(e) => setCapsLock(e.getModifierState?.("CapsLock") ?? false)}
-                onKeyDown={(e) => setCapsLock(e.getModifierState?.("CapsLock") ?? false)}
-                style={{
-                  width: "100%", padding: "13px 44px 13px 40px", borderRadius: 12,
-                  border: "1.6px solid var(--admin-line)", background: "#fff",
-                  fontSize: 14.5, fontFamily: "inherit", outline: "none",
-                  letterSpacing: password ? ".08em" : undefined,
-                }}
+                onKeyUp={trackCapsLock}
+                onKeyDown={trackCapsLock}
+                right={
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{
+                      background: "none", border: 0, cursor: "pointer",
+                      color: "var(--admin-muted)", padding: 8, display: "inline-flex",
+                    }}
+                  >
+                    <Icon name={showPassword ? "eyeOff" : "eye"} size={16} />
+                  </button>
+                }
               />
-              <button
-                type="button"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                onClick={() => setShowPassword((v) => !v)}
-                style={{
-                  position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
-                  background: "none", border: 0, cursor: "pointer", color: "var(--admin-muted)",
-                  padding: 8, display: "inline-flex",
-                }}
-              >
-                <Icon name={showPassword ? "eyeOff" : "eye"} size={16} />
-              </button>
-            </div>
-          </label>
+            </Field>
+          </div>
 
           {capsLock && (
-            <p style={{ margin: "0 0 10px", fontSize: 11.5, color: "#b7791f", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+            <p style={{ margin: "6px 2px 0", fontSize: 11.5, color: "#b7791f", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
               <Icon name="alertTriangle" size={13} /> Caps Lock is on
             </p>
           )}
 
           {error && (
-            <div className="admin-login-error" style={{ marginTop: 4 }}>
+            <div className="admin-login-error" style={{ marginTop: 12 }}>
               <Icon name="alertTriangle" size={15} /> {error}
             </div>
           )}
 
-          <Btn type="submit" loading={loading} className="admin-login-submit" icon={!loading ? "arrowRight" : undefined} style={{ width: "100%", marginTop: 12 }}>
+          <Btn type="submit" loading={loading} className="admin-login-submit" icon={!loading ? "arrowRight" : undefined}>
             Sign in securely
           </Btn>
         </form>
 
-        <p style={{ textAlign: "center", fontSize: 11.5, color: "var(--admin-muted)", margin: "14px 0 0", fontWeight: 600 }}>
-          Forgot your password? Contact your system administrator.
-        </p>
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            margin: "16px 0 4px", fontSize: 11.5, fontWeight: 700,
+          }}
+        >
+          <span style={{ color: "var(--admin-muted)" }}>Forgot your password? Contact your administrator.</span>
+          <a href="/" style={{ color: "var(--admin-blue)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 5 }}>
+            <Icon name="home" size={12} /> Storefront
+          </a>
+        </div>
 
         {IS_DEV && (
           <div className="admin-login-demo">
