@@ -59,3 +59,6 @@ next-env.d.ts
 
 # locally uploaded files (generated)
 /public/uploads/
+
+# ZCode internal files
+.zcode/

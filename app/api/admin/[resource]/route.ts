@@ -82,9 +82,9 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ resour
       if (resource === "users") {
         // Optional plaintext `password` in the payload; defaults to the
         // seed default so every account can always sign in.
-        row.passwordHash = hashPassword(
-          typeof body.password === "string" && body.password ? body.password : DEFAULT_ADMIN_PASSWORD
-        );
+        const pwd = typeof body.password === "string" && body.password ? body.password : DEFAULT_ADMIN_PASSWORD;
+        if (pwd.length < 8) return fail("Admin passwords must be at least 8 characters.", 400);
+        row.passwordHash = hashPassword(pwd);
         delete row.password;
       }
       rows.unshift(row);

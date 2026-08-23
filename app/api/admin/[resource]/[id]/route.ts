@@ -82,6 +82,7 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ resou
 
       // A plaintext `password` on user edits is hashed, never stored as-is.
       if (resource === "users" && typeof body.password === "string" && body.password) {
+        if (body.password.length < 8) return fail("Admin passwords must be at least 8 characters.", 400);
         row.passwordHash = hashPassword(body.password);
         delete body.password;
       }

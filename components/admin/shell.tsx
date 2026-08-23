@@ -517,10 +517,16 @@ function Sidebar({ path, collapsed, open, onNavigate }: { path: string; collapse
           </div>
           <i />
         </div>
-        <button className="admin-sidebar-help">
+        <a
+          className="admin-sidebar-help"
+          href="https://github.com/Ubaid-Rajpoot/Digital_pharmacy#readme"
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: "none" }}
+        >
           <Icon name="help" size={15} />
-          {!collapsed && <span>Help & documentation</span>}
-        </button>
+          {!collapsed && <span>Help &amp; documentation</span>}
+        </a>
       </div>
     </aside>
   );

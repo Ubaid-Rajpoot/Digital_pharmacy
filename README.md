@@ -88,6 +88,27 @@ Every push to `main` deploys to Vercel automatically (`.github/workflows/deploy.
 
 After that: `git push origin main` → GitHub Action builds and deploys. Uploads (media + prescriptions) go to Vercel Blob — just set `BLOB_READ_WRITE_TOKEN` (and `BLOB_STORE_ID`) on both Vercel and your `.env.local`.
 
+## Production launch checklist
+
+Before handing the store to real customers:
+
+1. **Environment secrets** (Vercel → Settings → Environment Variables → Production):
+   - `AUTH_SECRET` — random 32-byte hex (sessions break if it changes later)
+   - `ADMIN_EMAIL` + `ADMIN_PASSWORD` (+ optional `ADMIN_NAME`) — the first sign-in at
+     `/admin/login` with these credentials **auto-creates a Super Admin** in the database.
+     Use a strong, unique password; it is stored scrypt-hashed.
+   - `MONGODB_URI` — Atlas (or any reachable MongoDB); a local `127.0.0.1` will NOT work on Vercel
+   - `BLOB_READ_WRITE_TOKEN` (+ `BLOB_STORE_ID`) — uploads go to Vercel Blob
+   - `NEXT_PUBLIC_SITE_URL` — e.g. `https://your-domain.com` (with https://)
+   - `SEED_DEMO_DATA=false` — prevents demo products/orders/demo admin accounts in production
+2. **Admin users**: after bootstrap sign-in, create real staff accounts from
+   **Users & Roles** (each gets its own password, min 8 chars, scrypt-hashed) and remove
+   any unused seeded accounts. Passwords are never exposed via the API.
+3. **Security posture**: sessions are HMAC-signed httpOnly cookies (12h), login is
+   rate-limited (8 attempts / 10 min / IP), all admin actions are audit-logged.
+4. **Payments**: online methods are simulated — wire Razorpay/Stripe into
+   `app/api/store/orders` before accepting real money (COD works as-is).
+
 ## Notes & limitations
 
 - **Payments are simulated** (COD is the only "real" method). No gateway keys are needed to run the demo.

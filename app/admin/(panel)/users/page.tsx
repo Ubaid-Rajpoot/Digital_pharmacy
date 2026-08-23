@@ -109,13 +109,19 @@ function UserForm({ user, roles, onClose, onSaved }: { user: AdminUser | null; r
     role: user?.role ?? roles[0],
     status: user?.status ?? "active",
     twoFactor: user?.twoFactor ?? false,
+    password: "",
   });
   const set = (k: string, v: unknown) => setForm((f) => ({ ...f, [k]: v }));
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!String(form.name).trim() || !String(form.email).trim()) return toast("Name and email are required", "error");
-    const res = user ? await mutate.update(user.id, form) : await mutate.create({ ...form, avatar: `https://picsum.photos/seed/new-admin-${Date.now()}/120/120` });
+    const password = String(form.password ?? "");
+    if (password && password.length < 8) return toast("Password must be at least 8 characters", "error");
+    // Omit an untouched password so edits never reset it.
+    const payload = { ...form };
+    if (!password) delete payload.password;
+    const res = user ? await mutate.update(user.id, payload) : await mutate.create({ ...payload, avatar: `https://picsum.photos/seed/new-admin-${Date.now()}/120/120` });
     if (res.ok) onSaved();
   };
 
@@ -123,9 +129,9 @@ function UserForm({ user, roles, onClose, onSaved }: { user: AdminUser | null; r
     <Modal
       open
       onClose={onClose}
-      title={user ? `Edit ${user.name}` : "Invite admin user"}
-      sub="Invitations are delivered by email with a secure link."
-      footer={<><Btn variant="secondary" onClick={onClose}>Cancel</Btn><Btn icon="check" onClick={submit} loading={mutate.loading}>{user ? "Save changes" : "Send invite"}</Btn></>}
+      title={user ? `Edit ${user.name}` : "Create admin user"}
+      sub={user ? "Update role, status or set a new password." : "Set a strong password — it is stored as a scrypt hash."}
+      footer={<><Btn variant="secondary" onClick={onClose}>Cancel</Btn><Btn icon="check" onClick={submit} loading={mutate.loading}>{user ? "Save changes" : "Create user"}</Btn></>}
     >
       <form onSubmit={submit} className="admin-form-grid">
         <Field label="Full name" required><TextInput value={form.name as string} onChange={(e) => set("name", e.target.value)} /></Field>
@@ -140,6 +146,18 @@ function UserForm({ user, roles, onClose, onSaved }: { user: AdminUser | null; r
             <option value="active">Active</option>
             <option value="disabled">Disabled</option>
           </Select>
+        </Field>
+        <Field
+          label={user ? "Set new password (optional)" : "Password"}
+          hint={user ? "Leave blank to keep the current password" : "Minimum 8 characters"}
+        >
+          <TextInput
+            type="password"
+            autoComplete="new-password"
+            placeholder={user ? "•••••••••• (unchanged)" : "Minimum 8 characters"}
+            value={form.password as string}
+            onChange={(e) => set("password", e.target.value)}
+          />
         </Field>
         <div className="admin-choice" style={{ gridColumn: "1 / -1" }}>
           <span>Require two-factor authentication</span>
