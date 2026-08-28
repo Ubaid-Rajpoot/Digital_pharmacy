@@ -73,7 +73,13 @@ export async function getSessionUser(): Promise<AdminUser | null> {
   if (!token) return null;
   const payload = verifyToken(token);
   if (!payload) return null;
-  return read((db) => db.users.find((u) => u.id === payload.uid && u.status === "active") ?? null);
+  const user = await read((db) => db.users.find((u) => u.id === payload.uid && u.status === "active") ?? null);
+  if (!user) {
+    // Valid session pointing at a missing or disabled account — usually
+    // means the users collection was rolled back or the account removed.
+    console.warn("[auth] session valid but user missing", { uid: payload.uid });
+  }
+  return user;
 }
 
 /** Throws a Response (403/401) when unauthenticated / not permitted. */

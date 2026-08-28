@@ -5,6 +5,11 @@
 // mutation is persisted to MongoDB so data survives restarts.
 // The API layer (app/api/**) is the only consumer and keeps
 // the same read()/write() interface as before.
+//
+// Every read()/write() loads a fresh snapshot from MongoDB.
+// Serverless platforms run many instances in parallel, and a
+// long-lived in-memory copy would let one stale instance roll
+// the whole database back when it persists.
 // ============================================================
 
 import { MongoClient, type Db, type Filter, type Document } from "mongodb";
@@ -33,7 +38,6 @@ const globalForDb = globalThis as unknown as {
 
 let client: MongoClient | null = globalForDb.medoraMongo?.client ?? null;
 let db: Db | null = globalForDb.medoraMongo?.db ?? null;
-let cache: DbShape | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 
 async function connect(): Promise<Db> {
@@ -68,8 +72,19 @@ function stripId<T extends Record<string, unknown>>(doc: T): T {
   return rest as T;
 }
 
+/** System records only — used when SEED_DEMO_DATA=false. */
+function blankShape(): DbShape {
+  return {
+    ...buildSeed(),
+    products: [], categories: [], brands: [], dealers: [], orders: [],
+    customers: [], reviews: [], warehouses: [], purchaseOrders: [],
+    stockAdjustments: [], inventory: [], coupons: [], flashSales: [],
+    content: [], faqs: [], menu: [], socials: [], media: [], support: [],
+    subscribers: [], notifications: [], audit: [],
+  };
+}
+
 async function load(): Promise<DbShape> {
-  if (cache) return cache;
   const database = await connect();
 
   // A database is seeded at most once, tracked by the `meta.seed` flag —
@@ -78,24 +93,12 @@ async function load(): Promise<DbShape> {
   // records: admin users, roles, settings) instead of the demo dataset.
   const seeded = await database.collection("meta").findOne({ key: "seed" } as Filter<Document>);
   if (!seeded) {
-    if (process.env.SEED_DEMO_DATA === "false") {
-      const sys = buildSeed();
-      cache = {
-        ...sys,
-        products: [], categories: [], brands: [], dealers: [], orders: [],
-        customers: [], reviews: [], warehouses: [], purchaseOrders: [],
-        stockAdjustments: [], inventory: [], coupons: [], flashSales: [],
-        content: [], faqs: [], menu: [], socials: [], media: [], support: [],
-        subscribers: [], notifications: [], audit: [],
-      };
-    } else {
-      cache = buildSeed();
-    }
-    await persist();
+    const shape = process.env.SEED_DEMO_DATA === "false" ? blankShape() : buildSeed();
+    await persistShape(shape);
     await database
       .collection("meta")
       .updateOne({ key: "seed" } as Filter<Document>, { $set: { key: "seed", value: true } }, { upsert: true });
-    return cache;
+    return shape;
   }
 
   const shape = {} as DbShape;
@@ -107,15 +110,14 @@ async function load(): Promise<DbShape> {
   shape.seq = typeof meta?.value === "number" ? meta.value : 10000;
   const settingsDoc = await database.collection("settings").findOne({ key: "settings" } as Filter<Document>);
   shape.settings = (settingsDoc?.value as DbShape["settings"]) ?? buildSeed().settings;
-  cache = shape;
-  return cache;
+  return shape;
 }
 
-async function persist() {
-  if (!cache) return;
-  // Snapshot so a queued write persists a consistent state.
-  const snap = structuredClone(cache);
-  writeQueue = writeQueue.then(async () => {
+/** Replace every collection in MongoDB from a full snapshot. */
+function persistShape(snap: DbShape): Promise<void> {
+  // Swallow any previous failure so one failed persist does not
+  // poison every later write on this instance.
+  writeQueue = writeQueue.catch(() => undefined).then(async () => {
     const database = await connect();
     for (const name of ARRAY_COLLECTIONS) {
       const docs = (snap as unknown as Record<string, unknown>)[name] as Record<string, unknown>[] | undefined;
@@ -130,20 +132,19 @@ async function persist() {
       .collection("settings")
       .replaceOne({ key: "settings" } as Filter<Document>, { key: "settings", value: snap.settings }, { upsert: true });
   });
-  await writeQueue;
+  return writeQueue;
 }
 
-/** Run a read-only transaction against the store. */
+/** Run a read-only transaction against a fresh snapshot of the store. */
 export async function read<T>(fn: (db: DbShape) => T): Promise<T> {
-  const database = await load();
-  return fn(database);
+  return fn(await load());
 }
 
 /** Run a write transaction; the store is persisted to MongoDB afterwards. */
 export async function write<T>(fn: (db: DbShape) => T | Promise<T>): Promise<T> {
   const database = await load();
   const result = await fn(database);
-  await persist();
+  await persistShape(database);
   return result;
 }
 
@@ -154,7 +155,7 @@ export async function nextId(db: DbShape): Promise<number> {
 
 /** Wipe the database and re-seed it. */
 export async function resetDb() {
-  cache = buildSeed();
-  await persist();
-  return cache;
+  const shape = buildSeed();
+  await persistShape(shape);
+  return shape;
 }
