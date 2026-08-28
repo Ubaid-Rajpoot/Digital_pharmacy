@@ -11,7 +11,11 @@ import { MongoClient, type Db, type Filter, type Document } from "mongodb";
 import { buildSeed } from "./seed";
 import type { DbShape } from "./types";
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+// Local dev may run against a local MongoDB; deployed environments must
+// set MONGODB_URI — fail fast below instead of hanging on a bad address.
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  (process.env.NODE_ENV === "production" ? "" : "mongodb://127.0.0.1:27017");
 const MONGODB_DB = process.env.MONGODB_DB || "medora";
 
 const ARRAY_COLLECTIONS = [
@@ -21,18 +25,41 @@ const ARRAY_COLLECTIONS = [
   "support", "subscribers", "users", "roles", "notifications", "audit",
 ] as const;
 
-let client: MongoClient | null = null;
-let db: Db | null = null;
+// The connection lives on globalThis so Next.js dev hot-reloads (and any
+// module re-evaluation) reuse it instead of opening a new one.
+const globalForDb = globalThis as unknown as {
+  medoraMongo?: { client: MongoClient; db: Db };
+};
+
+let client: MongoClient | null = globalForDb.medoraMongo?.client ?? null;
+let db: Db | null = globalForDb.medoraMongo?.db ?? null;
 let cache: DbShape | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 
 async function connect(): Promise<Db> {
-  if (!db) {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    db = client.db(MONGODB_DB);
+  if (db) return db;
+  if (!MONGODB_URI) {
+    throw new Error(
+      "MONGODB_URI is not configured. Set it in the environment variables of this deployment."
+    );
   }
+  client = new MongoClient(MONGODB_URI, {
+    // Fail fast instead of the driver's 30 s default: on serverless a
+    // hanging connection gets killed by the platform and the client
+    // just sees a spinner that never stops.
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 5000,
+  });
+  await client.connect();
+  db = client.db(MONGODB_DB);
+  globalForDb.medoraMongo = { client, db };
   return db;
+}
+
+/** Lightweight connectivity probe used by /api/health. */
+export async function pingDb(): Promise<void> {
+  const database = await connect();
+  await database.command({ ping: 1 });
 }
 
 /** Strip MongoDB's _id so rows match the JSON shape the API expects. */

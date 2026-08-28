@@ -6,6 +6,10 @@ import { DEFAULT_ADMIN_PASSWORD, hashPassword, verifyPassword } from "@/lib/pass
 import { nextId, read, write } from "@/lib/db/store";
 import type { AdminUser } from "@/lib/db/types";
 
+// First sign-in on a fresh database seeds the store and persists it,
+// which can exceed Vercel's default 10 s serverless limit.
+export const maxDuration = 60;
+
 const attempts = new Map<string, { n: number; reset: number }>();
 const MAX_ATTEMPTS = 8;
 const WINDOW_MS = 10 * 60 * 1000;

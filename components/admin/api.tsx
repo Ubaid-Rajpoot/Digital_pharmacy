@@ -51,10 +51,22 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
-    ...init,
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      ...init,
+      // Never let a request hang the UI indefinitely; callers may pass
+      // their own signal to override the 30 s default.
+      signal: init?.signal ?? AbortSignal.timeout(30_000),
+    });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "TimeoutError") {
+      throw new ApiError("Request timed out. The server took too long to respond.", 408);
+    }
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    throw new ApiError("Network error. Please check your connection and try again.", 0);
+  }
   let body: unknown = null;
   try {
     body = await res.json();

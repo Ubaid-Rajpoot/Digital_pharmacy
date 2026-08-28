@@ -62,6 +62,9 @@ export default function AdminLoginPage() {
       await api("/api/admin/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
+        // First-ever login on a fresh database seeds the store, which can
+        // take a while — allow it the full serverless budget (maxDuration=60).
+        signal: AbortSignal.timeout(60_000),
       });
       toast("Welcome back 👋");
       router.replace("/admin");
